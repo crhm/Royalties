@@ -4,12 +4,34 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-public class SalesHistory {
+/** Main class of this app; a singleton, since it should never be more than one. method get() returns singleton instance.
+ * <br><br>This class acts as a database which holds:
+ * <br>-the complete list of sales, regardless of channel, as an ArrayList<Sale>, because there is no point in retrieving an 
+ *  individual sale and some channels don't provide a unique identifier that could be used as a key.
+ * <br>-the complete list of royalty holders, regardless of channel, as a HashMap where the keys are Person names and the values are Persons.
+ * <br>-the list of books managed by PLP, as a HashMap where the keys are Book titles and the values are Books.
+ * <br>-the total number of units sold per book, as a HashMap where the keys are the Books and the values are the total units sold 
+ *  (a double to allow for negative units aka returns).  
+ * <br>-the list of channels that books are sold on, as a HashMap where the keys are Channel names and the values are Channels. 
+ * <br>-the list of FX rates per month, as a HashMap where the keys are a string representation of the month and year in the format of 
+ * "Oct 2017", and the values are HashMaps mapping currency codes (e.g. "EUR") to exchange rates into US Dollars (as doubles).
+ *  <br><br>This class also calculates all royalties (by doing so sale by sale, see Sale.calculateRoyalties()).
+ *  <br>This class allows the user to add a sale, a royalty holder, a book, a channel or a month's list of FX rates to the database.
+ * @author crhm
+ *
+ */
+public class SalesHistory { 
+	//TODO figure out a way to mark a sale has having had its royalties calculated already so that 
+	//the calculateRoyalties() method only does so for sales where it has not been done. Another 
+	//list of sales perhaps which would be called salesWithCalculatedRoyalties?
 	
 	private static final SalesHistory instance = new SalesHistory();
 	
 	private SalesHistory() {}
 	
+	/** Method to obtain the SalesHistory singleton.
+	 * @return SalesHistory singleton instance
+	 */
 	public static SalesHistory get() {
 		return instance;
 	}
@@ -25,18 +47,29 @@ public class SalesHistory {
 		return cumulativeSalesPerBook;
 	}
 
+	/** Calculates all royalties by calling Sale.calculateRoyalties() on each sale
+	 *  in the list of all sales.
+	 */
 	public void calculateAllRoyalies() {
 		for (Sale s : salesHistory) {
 			s.calculateRoyalties();
 		}
 	}
 
+	/**Returns the List of all sales that have been added to the database.
+	 * @return the list of all sales that have been added to the database.
+	 */
 	public List<Sale> getSalesHistory() {
 		return salesHistory;
 	}
 	
+	/** Adds a sale to the database.
+	 * <br>First places it in the list of all sales, then updates the list holding the total number of units sold 
+	 * for each book by the appropriate number.
+	 * @param sale Sale to add to the database.
+	 */
 	public void addSale(Sale sale) {
-		this.salesHistory.add(sale);	//TODO Fix, identifier won't work	
+		this.salesHistory.add(sale);	
 		if (!this.cumulativeSalesPerBook.keySet().contains(sale.getBook())) {
 			this.cumulativeSalesPerBook.put(sale.getBook(), sale.getNetUnitsSold());
 		}
@@ -44,35 +77,67 @@ public class SalesHistory {
 		double oldTotal = cumulativeSalesPerBook.get(sale.getBook());
 		this.cumulativeSalesPerBook.put(sale.getBook(), unitsToAdd + oldTotal);
 	}
-
+	
+	/** Returns the complete list of royalty holders, regardless of channel, 
+	 * as a HashMap mapping Person names to Persons.
+	 * @return the complete list of royalty holders, regardless of channel.
+	 */
 	public HashMap<String, Person> getListRoyaltyHolders() {
 		return listRoyaltyHolders;
 	}
 	
+	/** Adds a Person to the complete list of Royalty holders
+	 * @param royaltyHolder Person to add to the complete list of Royalty holders
+	 */
 	public void addRoyaltyHolder(Person royaltyHolder) {
 		this.listRoyaltyHolders.put(royaltyHolder.getName(), royaltyHolder);
 	}
-
+	
+	/** Returns the complete list of books managed by PLP, 
+	 * as a HashMap mapping Book titles to Books.
+	 * @return the complete list of books managed by PLP.
+	 */
 	public HashMap<String, Book> getListPLPBooks() {
 		return listPLPBooks;
 	}
 	
+	/** Adds a book to the list of Books managed by PLP
+	 * @param book the Book to add to the list of Books managed by PLP.
+	 */
 	public void addBook(Book book) {
 		this.listPLPBooks.put(book.getTitle(), book);
 	}
 
+	/** Returns the list of channels through which PLP sells books,
+	 *  as a HashMap mapping Channel names to Channels.
+	 * @return the list of channels through which PLP sells books
+	 */
 	public HashMap<String, Channel> getListChannels() {
 		return listChannels;
 	}
 	
+	/** Adds a Channel to the list of channels through which PLP sells books
+	 * @param channel
+	 */
 	public void addChannel(Channel channel) {
 		this.listChannels.put(channel.getName(), channel);
 	}
 
+	/** Returns the list of historical Foreign Exchange rates for different currencies into US Dollars,
+	 *  as a HashMap mapping a String representing a Month and Year (following the format "Oct 2017") to 
+	 *  the list of FX rates for that month, which is itself a HashMap mapping currency codes (following the format 
+	 *  "EUR") with the exchange rate into dollars, as a double.
+	 * @return the list of historical Foreign Exchange rates for different currencies into US Dollars
+	 */
 	public HashMap<String, HashMap<String, Double>> getHistoricalForex() {
 		return historicalForex;
 	}
 	
+	/** Adds a list of Foreign Exchange rates for different currencies into US Dollars, associated with the month and year 
+	 *  that it corresponds to, to the database's list of historical FX rates.
+	 * @param monthAndYear String representing the month and year (following the format "Oct 2017")
+	 * @param listForex HashMap mapping currency codes (a String following the format "EUR") with the exchange rate into dollars (a double).
+	 */
 	public void addHistoricalForex(String monthAndYear, HashMap<String, Double> listForex) {
 		this.historicalForex.put(monthAndYear, listForex);
 	}

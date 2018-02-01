@@ -2,19 +2,41 @@ package main;
 
 import java.util.Currency;
 
+/**Class which represents a sale of a book managed by PLP through one of its channels. 
+ * <br>A Sale has a channel of sale, a country of sale, a date of sale, a book sold, 
+ * a net number of units sold, a royalty percentage to be applied to the price to obtain PLP revenues on sale,
+ *  an item price, a delivery cost to be deducted from the price before calculating PLP revenue, 
+ *  a PLP revenue for the sale, and a currency which price, delivery cost and revenue are in.
+ *  <br>This class is where the details of royalties calculation happen (see the caculateRoyalties() method).
+ * @author crhm
+ *
+ */
 public class Sale {
 
 	private final Channel channel;
-	private final String country; //Make an Enum for countries?
-	private final String date; //change to a date format? //May be empty
+	private final String country;
+	private final String date;
 	private final Book book;
 	private final double netUnitsSold;
 	private final double royaltyTypePLP;
-	private final double price; //including offer if there be
+	private final double price;
 	private final double deliveryCost;
 	private final double revenuesPLP;
 	private final Currency currency;
 	
+	//TODO enforce these assumptions!
+	/**Sale constructor. Initialises all variables as the arguments passed by user.
+	 * @param channel Channel through which the sale was made.
+	 * @param country Format is not fixed for this at this stage.
+	 * @param date String representing month and year following the format "Oct 2017"
+	 * @param book Item sold. Must be a book managed by PLP.
+	 * @param netUnitsSold May be negative to represent returns / refunds.
+	 * @param royaltyTypePLP Percentage of channel revenue that PLP gets per sale.
+	 * @param price May be 0. Always without tax. Use offer price if there is one rather than full price.
+	 * @param deliveryCost May be 0.
+	 * @param revenuesPLP Should be (Price - deliverCost) * netUnitsSold * royaltyPLP
+	 * @param currency Need to calculate balances in USD if the sale was in a foreign currency
+	 */
 	public Sale(Channel channel, String country, String date, Book book, double netUnitsSold, 
 			double royaltyTypePLP, double price, double deliveryCost, double revenuesPLP, Currency currency) {
 		this.channel = channel;
@@ -69,8 +91,10 @@ public class Sale {
 		return currency;
 	}
 
-	//TODO fix this; doesn't work because it gets called on each sale when it only needs to be called once per channel.
-	//Problem being that it needs to use info from sale...
+	/**Calculates royalties for this sale and adds the amounts due to each royalty holder's balance.
+	 * <br>As all balances are in USD but all sales are not, FX rates are applied using SalesHistory's 
+	 * list of historical FX sales to find the correct one.
+	 */
 	public void calculateRoyalties() {
 		double exchangeRate = SalesHistory.get().getHistoricalForex().get(date).get(currency.getCurrencyCode());
 		for (Person p : channel.getListRoyalties().get(book).keySet()) {

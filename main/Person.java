@@ -1,10 +1,19 @@
 package main;
 
+/**Class that represents a person who has a balance, likely because they have a royalty on one of PLP's books.
+ * <br>A Person has a name and a balance, to which an amount can be added (or substracted) via the addToBalance method.
+ * <br>A balanace may be negative, and is always in USD.
+ * @author crhm
+ *
+ */
 public class Person {
 	
 	private final String name;
 	private double balance;
 	
+	/**Person constructor. Initialises Person name to the String passed as argument by the user, and Person balance to 0.
+	 * @param name String name of Person.
+	 */
 	public Person(String name) {
 		this.name = name;
 		this.balance = 0;
