@@ -3,21 +3,42 @@ package importing;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Currency;
 import java.util.Date;
+import java.util.Locale;
+import java.util.Map;
+import java.util.TreeMap;
+
+import org.junit.platform.commons.util.StringUtils;
 
 import main.Book;
 import main.Channel;
 import main.Sale;
 import main.SalesHistory;
 
+/**Class that represents the format for raw monthly sales data files from Nook channel and performs the import of the data found
+ *  in such files, through method importData(). It is an implementation of the IFileFormat interface.
+ * @author crhm
+ *
+ */
 public class NookFileFormat implements IFileFormat{
 
+	/**Imports the sales data found in the raw monthly sales data file from Kobo channel into the database.
+	 * <br>Reads the file and then performs data processing for each sale.
+	 * <br>Expects to find the first sale on the second line of the csv.
+	 * <br>Expects sale lines to be longer than 15 characters.
+	 * <br>Expects the dates to be of the format '01/23/2017'.
+	 * <br>Always sets sale currency to USD because the conversion is done in the raw data already.
+	 * @param filePath path (from src folder) + name + extension of file to be read and imported.
+	 */
 	@Override
 	public void importData(String filePath) {
 		try {
+			//Reads file
 			BufferedReader br = new BufferedReader(new FileReader(filePath));
 			StringBuilder lines = new StringBuilder();
 			String line = "";
@@ -25,26 +46,38 @@ public class NookFileFormat implements IFileFormat{
 				line = br.readLine();
 				lines.append(line + "\n");
 			}
-			String temp = lines.toString();
+			br.close();
 			
 			// Places each line as an element in an array of Strings
+			String temp = lines.toString();
 			String[] allLines = temp.split("\n");
-			br.close();
+			
+			//Parses data for each sale and imports it by calling importSale on each sales line of csv
+			//Considers that the first line of sales is the second line of csv.
+			//Stops if counter reaches the total number of lines of csv, or if the line is shorter than 15 characters,
+			//so that it doesn't try to parse the summary lines below the last sale line.
 			int counter = 1;
 			while (counter< allLines.length && allLines[counter].length() > 15) {
 				importSale(allLines[counter]);
 				counter++;
 			}
 		} catch (IOException e) {
-			// TODO Auto-generated catch block
+			System.out.println("There was an error reading this file.");
 			e.printStackTrace();
 		}
 	}
 	
 	private void importSale(String line) {
+		//Divides sales line into its individual cells by splitting on commas that are not within quotes
+		//And trims all leading and trailing whitespace from each value.
 		String[] lineDivided = line.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)", -1);
-		
+		int counter = 0;
+		for (String s : lineDivided) {
+			lineDivided[counter] = s.trim();
+			counter++;
+		}		
 	
+		//Checks if the Nook channel already exists in database; if not, creates it.
 		Channel channel = null;
 		Boolean flag1 = true;
 		for (Channel ch : SalesHistory.get().getListChannels().values()) {
@@ -57,16 +90,40 @@ public class NookFileFormat implements IFileFormat{
 			channel = new Channel("Nook", new NookFileFormat());
 			SalesHistory.get().addChannel(channel);
 		}
+		
+		//Sets country depending on the value of the 10th cell (Selling Currency):
+			//if it is USD, country = US
+			//if it is EUR, country = Eurozone
+			//if it is anything else, try to obtain a country from the list (see getCountry method)
+			//if no single country is associated with this currency, country = empty string
 		String country = "";
+		if (lineDivided[9].equals("USD")) {
+			country = "US";
+		} else if (lineDivided[9].equals("EUR")) {
+			country = "Eurozone";
+		}	else {
+			try {
+				country = getCountry(lineDivided[9]);
+			} catch (Exception e) { //if the above fails, stay with country = "";
+			}
+		}
+		
+		//Obtains the date from the first cell and formats it into the expected format.
 		SimpleDateFormat oldFormat = new SimpleDateFormat("MM/dd/yyyy");
 		SimpleDateFormat newFormat = new SimpleDateFormat("MMM yyyy");
 		Date date = null;
 		try {
 			date = oldFormat.parse(lineDivided[2]);
 		} catch (ParseException e) {
-			// TODO Auto-generated catch block
+			System.out.println("There was parsing the date in the second cell of the first line of the csv."
+					+ " A date of the format '01/23/2017' was expected.");
 			e.printStackTrace();
 		}
+		
+		//Checks the database to see if a book of that title already exists in the list of books managed by PLP, and assigns it to 
+		//the sale if there is. If there is not, it creates one with the title provided in the 4th column, the string provided
+		// in the 7th cell for author, and the ID provided in the 5th (ebook ISBN), 
+		//and adds it to the database, as well as assigning it to the sale.
 		Book book = null;
 		Boolean flag2 = true;
 		for (Book b : SalesHistory.get().getListPLPBooks().values()) {
@@ -79,16 +136,63 @@ public class NookFileFormat implements IFileFormat{
 			book = new Book(lineDivided[3], lineDivided[6], lineDivided[4]);
 			SalesHistory.get().addBook(book);			
 		}
-		double netUnitsSold = Integer.parseInt(lineDivided[11]);
+		
+		//Assigns the value of the 12th cell (Net Units Sold) to netUnitsSold
+		double netUnitsSold = Double.parseDouble(lineDivided[11]);
+		
+		//Assigns the value of the 11th cell (Royalty Percent) to royaltyTypePLP
 		double royaltyTypePLP = Double.parseDouble(lineDivided[10]);
-		double price = Double.parseDouble(lineDivided[8]);
+		
+		//Sets deliveryCost to zero.
 		double deliveryCost = 0;
+	
+		//Assigns the value of the 14th cell (Total Royalty Paid) to PLPrevenues
 		double revenuesPLP = Double.parseDouble(lineDivided[13]);
-		Currency currency = Currency.getInstance(lineDivided[9].trim());
+		
+		//Assigns the rounded value of revenuesPLP / royaltyTypePLP to price, so as to get the price in USD
+		BigDecimal revenuesTemp = new BigDecimal(revenuesPLP);
+		BigDecimal royaltyTypeTemp = new BigDecimal(royaltyTypePLP);
+		double price = revenuesTemp.divide(royaltyTypeTemp, 3, RoundingMode.HALF_UP).doubleValue();
+
+		//Sets the Currency of the sale to US Dollars, since they do the conversion themselves in the file
+		Currency currency = Currency.getInstance("USD");
 		
 		
 		Sale sale = new Sale(channel, country, newFormat.format(date), book, netUnitsSold, royaltyTypePLP, price, deliveryCost, revenuesPLP, currency);
 		SalesHistory.get().addSale(sale);
 	}
+	
+	/** Returns a country based on the currency symbol found in the string passed as argument
+	 * 
+	 * @param cellWithCode currency symbol whose associated country is to be found
+	 * @return the corresponding country
+	 */
+	private String getCountry(String cellWithCode) {
+		String country;
+	    country = getAllCountries().get(cellWithCode);
+		return country;
+		
+	}
+	
+	/** Provides a HashMap mapping currency codes to countries
+	 * 
+	 * @return a HashMap mapping currency codes to countries
+	 */
+	private static Map<String, String> getAllCountries() {
+	    Map<String, String> countries = new TreeMap<String, String>();
+	    for (Locale locale : Locale.getAvailableLocales()) { //For each locale (aka country) in this list
+	        if (StringUtils.isNotBlank(locale.getCountry())) {
+	        		//Make sure that currencies that have more than one country associated with it are not mapped
+	        		if (countries.containsKey(locale.getCountry())) {  
+	        			countries.remove(locale.getCountry());
+	        		} else {
+	        			Currency currency = Currency.getInstance(locale); //get the associated currency
+	    	            countries.put(currency.getCurrencyCode(), locale.getCountry()); //and map that currency's code to its country	
+	        		}
+	        }
+	    }
+	    return countries;
+	}
+	
 	
 }

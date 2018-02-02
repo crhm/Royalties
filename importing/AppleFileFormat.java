@@ -41,9 +41,9 @@ public class AppleFileFormat implements IFileFormat {
 				lines.append(line + "\n");
 			}
 			br.close();
-			String temp = lines.toString();
 			
 			// Places each line as an element in an array of Strings
+			String temp = lines.toString();
 			String[] allLines = temp.split("\n");
 			
 			//Parses data for each sale and imports it by calling importSale on each sales line of txt file

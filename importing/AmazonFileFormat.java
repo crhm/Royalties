@@ -46,9 +46,9 @@ public class AmazonFileFormat implements IFileFormat{
 				lines.append(line + "\n");
 			}
 			br.close();
-			String temp = lines.toString();
 			
 			// Places each line as an element in an array of Strings
+			String temp = lines.toString();
 			String[] allLines = temp.split("\n");
 			
 			//Obtains the date to give to all sales from the cell in the first line and second column of the csv

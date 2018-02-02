@@ -46,13 +46,13 @@ public class CreatespaceFileFormat implements IFileFormat {
 				lines.append(line + "\n");
 			}
 			br.close();
-			String temp = lines.toString();
 			
 			// Places each line as an element in an array of Strings
+			String temp = lines.toString();
 			String[] allLines = temp.split("\n");
 			
 			//Parses data for each sale and imports it by calling importSale on each sales line of csv
-			//Considers that the first line of sales is the second line of csv.
+			//Considers that the first line of sales is the fifth line of csv.
 			//Stops if counter reaches the total number of lines of csv, or if the line is shorter than 25 characters,
 			//so that it doesn't try to parse the summary lines below the last sale line.
 			int counter = 4;
