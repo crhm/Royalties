@@ -153,7 +153,7 @@ public class CreatespaceFileFormat implements IFileFormat {
 	private Currency getCurrency(String cellWithSymbol) {
 		Currency currency = null;
 		//Gets first character, expecting it to be the currency symbol
-	    String symbol = cellWithSymbol.substring(0, 2);
+	    String symbol = cellWithSymbol.substring(0, 1);
 	    //Retrieves the currency based on its symbol from a HashMap mapping symbols to currency codes
 	    currency = Currency.getInstance(getAllCurrencies().get(symbol));
 		return currency;

@@ -31,7 +31,7 @@ public class NookFileFormat implements IFileFormat{
 	 * <br>Reads the file and then performs data processing for each sale.
 	 * <br>Expects to find the first sale on the second line of the csv.
 	 * <br>Expects sale lines to be longer than 15 characters.
-	 * <br>Expects the dates to be of the format '01/23/2017'.
+	 * <br>Expects the dates to be of the format '01/23/17'.
 	 * <br>Always sets sale currency to USD because the conversion is done in the raw data already.
 	 * @param filePath path (from src folder) + name + extension of file to be read and imported.
 	 */
@@ -109,7 +109,7 @@ public class NookFileFormat implements IFileFormat{
 		}
 		
 		//Obtains the date from the first cell and formats it into the expected format.
-		SimpleDateFormat oldFormat = new SimpleDateFormat("MM/dd/yyyy");
+		SimpleDateFormat oldFormat = new SimpleDateFormat("MM/dd/yy");
 		SimpleDateFormat newFormat = new SimpleDateFormat("MMM yyyy");
 		Date date = null;
 		try {
@@ -152,7 +152,7 @@ public class NookFileFormat implements IFileFormat{
 		//Assigns the rounded value of revenuesPLP / royaltyTypePLP to price, so as to get the price in USD
 		BigDecimal revenuesTemp = new BigDecimal(revenuesPLP);
 		BigDecimal royaltyTypeTemp = new BigDecimal(royaltyTypePLP);
-		double price = revenuesTemp.divide(royaltyTypeTemp, 3, RoundingMode.HALF_UP).doubleValue();
+		double price = revenuesTemp.divide(royaltyTypeTemp, 2, RoundingMode.HALF_UP).doubleValue() / netUnitsSold;
 
 		//Sets the Currency of the sale to US Dollars, since they do the conversion themselves in the file
 		Currency currency = Currency.getInstance("USD");
