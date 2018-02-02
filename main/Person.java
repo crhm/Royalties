@@ -1,5 +1,8 @@
 package main;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
+
 /**Class that represents a person who has a balance, likely because they have a royalty on one of PLP's books.
  * <br>A Person has a name and a balance, to which an amount can be added (or substracted) via the addToBalance method.
  * <br>A balanace may be negative, and is always in USD.
@@ -27,8 +30,13 @@ public class Person {
 		return balance;
 	}
 	
+	/**Adds double passed as argument to the person's balance (rounded half up to 2 decimal places).
+	 * 
+	 * @param amount Amount to add to balance.
+	 */
 	public void addToBalance(double amount) {
-		this.balance = this.balance + amount;
+		BigDecimal tempAmount = new BigDecimal(amount).setScale(2, RoundingMode.HALF_UP);
+		this.balance = this.balance + tempAmount.doubleValue();
 	}
 
 	@Override

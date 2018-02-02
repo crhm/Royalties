@@ -1,5 +1,7 @@
 package main;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.Currency;
 
 /**Class which represents a sale of a book managed by PLP through one of its channels. 
@@ -31,10 +33,11 @@ public class Sale {
 	 * @param date String representing month and year following the format "Oct 2017"
 	 * @param book Item sold. Must be a book managed by PLP.
 	 * @param netUnitsSold May be negative to represent returns / refunds.
-	 * @param royaltyTypePLP Percentage of channel revenue that PLP gets per sale.
-	 * @param price May be 0. Always without tax. Use offer price if there is one rather than full price.
-	 * @param deliveryCost May be 0.
-	 * @param revenuesPLP Should be (Price - deliverCost) * netUnitsSold * royaltyPLP
+	 * @param royaltyTypePLP Percentage of channel revenue that PLP gets per sale. (Will be rounded Half Up to two decimal places).
+	 * @param price May be 0. Always without tax. Use offer price if there is one rather than full price. 
+	 * (Will be rounded Half Up to two decimal places).
+	 * @param deliveryCost May be 0. (Will be rounded Half Up to two decimal places).
+	 * @param revenuesPLP Should be (Price - deliverCost) * netUnitsSold * royaltyPLP. (Will be rounded Half Up to two decimal places).
 	 * @param currency Need to calculate balances in USD if the sale was in a foreign currency
 	 */
 	public Sale(Channel channel, String country, String date, Book book, double netUnitsSold, 
@@ -44,10 +47,14 @@ public class Sale {
 		this.date = date;
 		this.book = book;
 		this.netUnitsSold = netUnitsSold;
-		this.royaltyTypePLP = royaltyTypePLP;
-		this.price = price;
-		this.deliveryCost = deliveryCost;
-		this.revenuesPLP = revenuesPLP;
+		BigDecimal tempRoyaltyType = new BigDecimal(royaltyTypePLP).setScale(2, RoundingMode.HALF_UP);
+		this.royaltyTypePLP = tempRoyaltyType.doubleValue();
+		BigDecimal tempPrice = new BigDecimal(price).setScale(2, RoundingMode.HALF_UP);
+		this.price = tempPrice.doubleValue();
+		BigDecimal tempDeliveryCost = new BigDecimal(deliveryCost).setScale(2, RoundingMode.HALF_UP);
+		this.deliveryCost = tempDeliveryCost.doubleValue();
+		BigDecimal tempRevenuesPLP = new BigDecimal(revenuesPLP).setScale(2, RoundingMode.HALF_UP);
+		this.revenuesPLP = tempRevenuesPLP.doubleValue();
 		this.currency = currency;
 	}
 	
