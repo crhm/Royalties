@@ -27,7 +27,8 @@ public class Person {
 	}
 
 	public double getBalance() {
-		return balance;
+		BigDecimal tempAmount = new BigDecimal(this.balance).setScale(2, RoundingMode.HALF_UP);
+		return tempAmount.doubleValue();
 	}
 	
 	/**Adds double passed as argument to the person's balance (rounded half up to 2 decimal places).

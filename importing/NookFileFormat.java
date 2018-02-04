@@ -9,11 +9,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Currency;
 import java.util.Date;
-import java.util.Locale;
-import java.util.Map;
-import java.util.TreeMap;
-
-import org.junit.platform.commons.util.StringUtils;
 
 import main.Book;
 import main.Channel;
@@ -91,22 +86,8 @@ public class NookFileFormat implements IFileFormat{
 			SalesHistory.get().addChannel(channel);
 		}
 		
-		//Sets country depending on the value of the 10th cell (Selling Currency):
-			//if it is USD, country = US
-			//if it is EUR, country = Eurozone
-			//if it is anything else, try to obtain a country from the list (see getCountry method)
-			//if no single country is associated with this currency, country = empty string
-		String country = "";
-		if (lineDivided[9].equals("USD")) {
-			country = "US";
-		} else if (lineDivided[9].equals("EUR")) {
-			country = "Eurozone";
-		}	else {
-			try {
-				country = getCountry(lineDivided[9]);
-			} catch (Exception e) { //if the above fails, stay with country = "";
-			}
-		}
+		//Set country to US since Nook only sells in US
+		String country = "US";
 		
 		//Obtains the date from the first cell and formats it into the expected format.
 		SimpleDateFormat oldFormat = new SimpleDateFormat("MM/dd/yy");
@@ -161,38 +142,5 @@ public class NookFileFormat implements IFileFormat{
 		Sale sale = new Sale(channel, country, newFormat.format(date), book, netUnitsSold, royaltyTypePLP, price, deliveryCost, revenuesPLP, currency);
 		SalesHistory.get().addSale(sale);
 	}
-	
-	/** Returns a country based on the currency symbol found in the string passed as argument
-	 * 
-	 * @param cellWithCode currency symbol whose associated country is to be found
-	 * @return the corresponding country
-	 */
-	private String getCountry(String cellWithCode) {
-		String country;
-	    country = getAllCountries().get(cellWithCode);
-		return country;
-		
-	}
-	
-	/** Provides a HashMap mapping currency codes to countries
-	 * 
-	 * @return a HashMap mapping currency codes to countries
-	 */
-	private static Map<String, String> getAllCountries() {
-	    Map<String, String> countries = new TreeMap<String, String>();
-	    for (Locale locale : Locale.getAvailableLocales()) { //For each locale (aka country) in this list
-	        if (StringUtils.isNotBlank(locale.getCountry())) {
-	        		//Make sure that currencies that have more than one country associated with it are not mapped
-	        		if (countries.containsKey(locale.getCountry())) {  
-	        			countries.remove(locale.getCountry());
-	        		} else {
-	        			Currency currency = Currency.getInstance(locale); //get the associated currency
-	    	            countries.put(currency.getCurrencyCode(), locale.getCountry()); //and map that currency's code to its country	
-	        		}
-	        }
-	    }
-	    return countries;
-	}
-	
 	
 }

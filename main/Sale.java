@@ -103,12 +103,23 @@ public class Sale {
 	 * list of historical FX sales to find the correct one.
 	 */
 	public void calculateRoyalties() {
-		double exchangeRate = SalesHistory.get().getHistoricalForex().get(date).get(currency.getCurrencyCode());
-		for (Person p : channel.getListRoyalties().get(book).keySet()) {
-			IRoyaltyType royalty = channel.getListRoyalties().get(book).get(p);
-			double amount = royalty.getAmountDue(revenuesPLP * exchangeRate, SalesHistory.get().getCumulativeSalesPerBook().get(book));
-			p.addToBalance(amount);
+		double exchangeRate = 0;
+		try {
+			exchangeRate = SalesHistory.get().getHistoricalForex().get(date).get(currency.getCurrencyCode());
+		} catch (NullPointerException e) {
+			System.out.println("There was a problem getting the exchange rate of this sale: " + this);
 		}
+		
+		try {
+			for (Person p : channel.getListRoyalties().get(book).keySet()) {
+				IRoyaltyType royalty = channel.getListRoyalties().get(book).get(p);
+				double amount = royalty.getAmountDue(revenuesPLP * exchangeRate, SalesHistory.get().getCumulativeSalesPerBook().get(book));
+				p.addToBalance(amount);
+			}
+		} catch (NullPointerException e) {
+			System.out.println("There was a problem getting the royalty list for this sale: " + this);
+		}
+		
 	}
 
 	@Override
