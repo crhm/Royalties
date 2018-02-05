@@ -1,5 +1,8 @@
 package main;
 
+import java.util.ArrayList;
+import java.util.List;
+
 /** Class representing books managed by PLP and sold via different channels.
  * <br> A book has a title, an author and an identifier which is unique but whose format
  * depends on the channel through which it was added (usually a variation on ISBN).
@@ -10,7 +13,7 @@ public class Book {
 	
 	private final String title;
 	private final String author;
-	private final String identifier;
+	private final List<String> identifier;
 	
 	/** Book constructor. Initialises title, author and identifier to the corresponding arguments passed by the user.
 	 * @param title String title of book
@@ -20,7 +23,8 @@ public class Book {
 	public Book(String title, String author, String identifier) {
 		this.title = title;
 		this.author = author;
-		this.identifier = identifier;
+		this.identifier = new ArrayList<String>();
+		this.identifier.add(identifier);
 	}
 	
 	public String getTitle() {
@@ -31,10 +35,14 @@ public class Book {
 		return author;
 	}
 
-	public String getIdentifier() {
+	public List<String> getIdentifier() {
 		return identifier;
 	}
-
+	
+	public void addIdentifier(String identifier)	{
+		this.identifier.add(identifier);
+	}
+	
 	@Override
 	public String toString() {
 		return "Book [title=" + title + ", author=" + author + ", identifier=" + identifier + "]";

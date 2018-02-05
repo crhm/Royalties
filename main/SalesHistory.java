@@ -13,10 +13,8 @@ import java.util.List;
  * <br>-the total number of units sold per book, as a HashMap where the keys are the Books and the values are the total units sold 
  *  (a double to allow for negative units aka returns).  
  * <br>-the list of channels that books are sold on, as a HashMap where the keys are Channel names and the values are Channels. 
- * <br>-the list of FX rates per month, as a HashMap where the keys are a string representation of the month and year in the format of 
- * "Oct 2017", and the values are HashMaps mapping currency codes (e.g. "EUR") to exchange rates into US Dollars (as doubles).
  *  <br><br>This class also calculates all royalties (by doing so sale by sale, see Sale.calculateRoyalties()).
- *  <br>This class allows the user to add a sale, a royalty holder, a book, a channel or a month's list of FX rates to the database.
+ *  <br>This class allows the user to add a sale, a royalty holder, a book, or a channel to the database.
  * @author crhm
  *
  */
@@ -26,6 +24,7 @@ public class SalesHistory {
 	//list of sales perhaps which would be called salesWithCalculatedRoyalties?
 	
 	private static final SalesHistory instance = new SalesHistory();
+	public int counter = 0;
 	
 	private SalesHistory() {}
 	
@@ -41,7 +40,6 @@ public class SalesHistory {
 	private final HashMap<String, Person> listRoyaltyHolders = new HashMap<String, Person>();
 	private final HashMap<String, Book> listPLPBooks = new HashMap<String, Book>();
 	private final HashMap<String, Channel> listChannels = new HashMap<String, Channel>();
-	private final HashMap<String, HashMap<String, Double>> historicalForex = new HashMap<String, HashMap<String, Double>>();
 	
 	public HashMap<Book, Double> getCumulativeSalesPerBook() {
 		return cumulativeSalesPerBook;
@@ -121,25 +119,6 @@ public class SalesHistory {
 	 */
 	public void addChannel(Channel channel) {
 		this.listChannels.put(channel.getName(), channel);
-	}
-
-	/** Returns the list of historical Foreign Exchange rates for different currencies into US Dollars,
-	 *  as a HashMap mapping a String representing a Month and Year (following the format "Oct 2017") to 
-	 *  the list of FX rates for that month, which is itself a HashMap mapping currency codes (following the format 
-	 *  "EUR") with the exchange rate into dollars, as a double.
-	 * @return the list of historical Foreign Exchange rates for different currencies into US Dollars
-	 */
-	public HashMap<String, HashMap<String, Double>> getHistoricalForex() {
-		return historicalForex;
-	}
-	
-	/** Adds a list of Foreign Exchange rates for different currencies into US Dollars, associated with the month and year 
-	 *  that it corresponds to, to the database's list of historical FX rates.
-	 * @param monthAndYear String representing the month and year (following the format "Oct 2017")
-	 * @param listForex HashMap mapping currency codes (a String following the format "EUR") with the exchange rate into dollars (a double).
-	 */
-	public void addHistoricalForex(String monthAndYear, HashMap<String, Double> listForex) {
-		this.historicalForex.put(monthAndYear, listForex);
 	}
 
 }

@@ -100,7 +100,8 @@ public class KoboFileFormat implements IFileFormat {
 		}
 		
 		//Checks the database to see if a book of that title already exists in the list of books managed by PLP, and assigns it to 
-		//the sale if there is. If there is not, it creates one with the title provided in the 13th column, the string provided
+		//the sale if there is, and adds the ID to the list of IDs of the book if it is not alrady in it. 
+		//If there is not, it creates one with the title provided in the 13th column, the string provided
 		// in the 12th cell for author, and the ID provided in the 11th (eISBN), 
 		//and adds it to the database, as well as assigning it to the sale.
 		Book book = null;
@@ -109,6 +110,9 @@ public class KoboFileFormat implements IFileFormat {
 			if (b.getTitle().equals(lineDivided[12])) {
 				book = b;
 				flag2 = false;
+				if (!b.getIdentifier().contains(lineDivided[10])) {
+					b.addIdentifier(lineDivided[10]);
+				}
 			}
 		}
 		if (flag2) {

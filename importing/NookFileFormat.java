@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Currency;
 import java.util.Date;
 
@@ -26,7 +27,8 @@ public class NookFileFormat implements IFileFormat{
 	 * <br>Reads the file and then performs data processing for each sale.
 	 * <br>Expects to find the first sale on the second line of the csv.
 	 * <br>Expects sale lines to be longer than 15 characters.
-	 * <br>Expects the dates to be of the format '01/23/17'.
+	 * <br>Expects the dates to be of the format '01/23/17' and to be payment dates rather than sale dates, 
+	 * so it will obtain the actual date by substracting two months from the date it does find.
 	 * <br>Always sets sale currency to USD because the conversion is done in the raw data already.
 	 * @param filePath path (from src folder) + name + extension of file to be read and imported.
 	 */
@@ -89,12 +91,18 @@ public class NookFileFormat implements IFileFormat{
 		//Set country to US since Nook only sells in US
 		String country = "US";
 		
-		//Obtains the date from the first cell and formats it into the expected format.
+		//Obtains the date from the third cell and formats it into the expected format.
+		//Date is two month later than actual sale since it's payment info, so substract two months from it.
 		SimpleDateFormat oldFormat = new SimpleDateFormat("MM/dd/yy");
 		SimpleDateFormat newFormat = new SimpleDateFormat("MMM yyyy");
 		Date date = null;
+		Date actualDate = null;
 		try {
 			date = oldFormat.parse(lineDivided[2]);
+			Calendar c = Calendar.getInstance(); 
+			c.setTime(date); 
+			c.add(Calendar.MONTH, -2);
+			actualDate = c.getTime();
 		} catch (ParseException e) {
 			System.out.println("There was parsing the date in the second cell of the first line of the csv."
 					+ " A date of the format '01/23/2017' was expected.");
@@ -102,7 +110,8 @@ public class NookFileFormat implements IFileFormat{
 		}
 		
 		//Checks the database to see if a book of that title already exists in the list of books managed by PLP, and assigns it to 
-		//the sale if there is. If there is not, it creates one with the title provided in the 4th column, the string provided
+		//the sale if there is, and adds the ID to the list of IDs of the book if it is not alrady in it. 
+		//If there is not, it creates one with the title provided in the 4th column, the string provided
 		// in the 7th cell for author, and the ID provided in the 5th (ebook ISBN), 
 		//and adds it to the database, as well as assigning it to the sale.
 		Book book = null;
@@ -111,6 +120,9 @@ public class NookFileFormat implements IFileFormat{
 			if (b.getTitle().equals(lineDivided[3])) {
 				book = b;
 				flag2 = false;
+				if (!b.getIdentifier().contains(lineDivided[4])) {
+					b.addIdentifier(lineDivided[4]);
+				}
 			}
 		}
 		if (flag2) {
@@ -139,7 +151,7 @@ public class NookFileFormat implements IFileFormat{
 		Currency currency = Currency.getInstance("USD");
 		
 		
-		Sale sale = new Sale(channel, country, newFormat.format(date), book, netUnitsSold, royaltyTypePLP, price, deliveryCost, revenuesPLP, currency);
+		Sale sale = new Sale(channel, country, newFormat.format(actualDate), book, netUnitsSold, royaltyTypePLP, price, deliveryCost, revenuesPLP, currency);
 		SalesHistory.get().addSale(sale);
 	}
 	

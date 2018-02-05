@@ -99,13 +99,18 @@ public class Sale {
 	}
 
 	/**Calculates royalties for this sale and adds the amounts due to each royalty holder's balance.
-	 * <br>As all balances are in USD but all sales are not, FX rates are applied using SalesHistory's 
-	 * list of historical FX sales to find the correct one.
+	 * <br>As all balances are in USD but some sales from Amazon and Apple are not, FX rates are applied 
+	 * where appropriate.
+	 * <br>Will print an error message if it cannot find an exchange rate or a list of royalties for a sale.
 	 */
 	public void calculateRoyalties() {
 		double exchangeRate = 0;
 		try {
-			exchangeRate = SalesHistory.get().getHistoricalForex().get(date).get(currency.getCurrencyCode());
+			if (channel.getName().equals("Amazon") || channel.getName().equals("Apple")) {
+				exchangeRate = channel.getHistoricalForex().get(date).get(currency.getCurrencyCode());
+			} else {
+				exchangeRate = 1; //Because it will be in dollars for every sale of every other channel
+			}
 		} catch (NullPointerException e) {
 			System.out.println("There was a problem getting the exchange rate of this sale: " + this);
 		}

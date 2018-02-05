@@ -106,7 +106,8 @@ public class CreatespaceFileFormat implements IFileFormat {
 		}
 		
 		//Checks the database to see if a book of that title already exists in the list of books managed by PLP, and assigns it to 
-		//the sale if there is. If there is not, it creates one with the title provided in the second column, an empty string for author, 
+		//the sale if there is, and adds the ID to the list of IDs of the book if it is not alrady in it. 
+		//If there is not, it creates one with the title provided in the second column, an empty string for author, 
 		// and the ID provided in the sixth (UPC/ISBN), and adds it to the database, as well as assigning it to the sale.
 		Book book = null;
 		Boolean flag2 = true;
@@ -114,6 +115,9 @@ public class CreatespaceFileFormat implements IFileFormat {
 			if (b.getTitle().equals(lineDivided[1])) {
 				book = b;
 				flag2 = false;
+				if (!b.getIdentifier().contains(lineDivided[5])) {
+					b.addIdentifier(lineDivided[5]);
+				}
 			}
 		}
 		if (flag2) {

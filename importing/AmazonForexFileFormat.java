@@ -3,11 +3,14 @@ package importing;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 
+import main.Channel;
 import main.SalesHistory;
 
 /**Class that represents the format for FX rates and payment data files from Amazon channel and performs the import of the data found
@@ -76,16 +79,24 @@ public class AmazonForexFileFormat implements IFileFormat {
 				counter = counter + 2;
 			}
 			
+			//Checks to see if the channel exists already, and if not, creates it.
+			Channel amazon = null;
+			try {
+				amazon = SalesHistory.get().getListChannels().get("Amazon");
+			} catch (NullPointerException e) {
+				SalesHistory.get().addChannel(new Channel("Amazon", new AmazonFileFormat()));
+				amazon = SalesHistory.get().getListChannels().get("Amazon");
+			}
 			//Places the imported data in the database,
 			//making sure not to replace the existing list of FX rates for this month and year if there is one.
 			//It does however update the FX rate value for currencies that are already in the database for this month.
-			if (SalesHistory.get().getHistoricalForex().get(monthAndYear) != null) {
-				HashMap<String, Double> existingList = SalesHistory.get().getHistoricalForex().get(monthAndYear);
+			if (amazon.getHistoricalForex().containsKey(monthAndYear)) {
+				HashMap<String, Double> existingList = amazon.getHistoricalForex().get(monthAndYear);
 				for (String s : existingList.keySet()) {
 					listForex.put(s, existingList.get(s));
 				}	
 			}
-			SalesHistory.get().addHistoricalForex(monthAndYear, listForex);
+			amazon.addHistoricalForex(monthAndYear, listForex);
 		} catch (IOException e) {
 			System.out.println("There was a problem importing this file.");
 			e.printStackTrace();
@@ -112,7 +123,10 @@ public class AmazonForexFileFormat implements IFileFormat {
 		//Sets the exchange rate as the division of amount paid to PLP in US dollars and the amount owed to PLP in the foreign currency,
 		//thus obtaining a more exact measure than their listed FX rate.
 		double exchangeRate = 0;
-		exchangeRate = Double.parseDouble(lineDivided[15]) / Double.parseDouble(lineDivided[8]);
+		BigDecimal amountPaid = new BigDecimal(lineDivided[15]);
+		BigDecimal amountOwed = new BigDecimal(lineDivided[8]);
+		BigDecimal rate = amountPaid.divide(amountOwed, 5, RoundingMode.HALF_UP);
+		exchangeRate = rate.doubleValue();
 		
 		this.listForex.put(currency, exchangeRate);
 	}

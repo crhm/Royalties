@@ -7,7 +7,6 @@ import java.io.IOException;
 import main.Book;
 import main.Channel;
 import main.IRoyaltyType;
-import main.Person;
 import main.RoyaltyPercentage;
 import main.SalesHistory;
 
@@ -46,8 +45,7 @@ public class ChannelRoyaltiesFileFormat implements IFileFormat {
 			while (counter< allLines.length && allLines[counter].length() > 5) {
 				importRoyalties(allLines[counter]);
 				counter++;
-			}
-			
+			}			
 		} catch (IOException e) {
 			System.out.println("There was a problem importing this file.");
 			e.printStackTrace();
@@ -69,21 +67,29 @@ public class ChannelRoyaltiesFileFormat implements IFileFormat {
 		if (SalesHistory.get().getListPLPBooks().get(lineDivided[0])!=null) {
 			book = SalesHistory.get().getListPLPBooks().get(lineDivided[0]);
 		} else {
-			book = new Book(lineDivided[0], "", lineDivided[1]);
-			SalesHistory.get().addBook(book);
+			Boolean newBook = true;
+			for (Book b : SalesHistory.get().getListPLPBooks().values()) {
+				if (b.getIdentifier().contains(lineDivided[1])) {
+					book = b;
+					newBook = false;
+				} else if (b.getTitle().toLowerCase().equals(lineDivided[0].toLowerCase())){
+					book = b;
+					newBook = false;
+				} else if (b.getTitle().toLowerCase().contains(lineDivided[0].toLowerCase()) || lineDivided[0].toLowerCase().contains(b.getTitle().toLowerCase())) {
+					book = b;
+					newBook = false;
+				}
+			}
+			if (newBook) {
+				book = new Book(lineDivided[0], "", lineDivided[1]);
+				SalesHistory.get().addBook(book);
+			}
 		}
 		int personsIndex = 2;
 		while (personsIndex < 9) {
 			if (lineDivided[personsIndex].length() > 1) {
-				Person person = null;
-				if (SalesHistory.get().getListRoyaltyHolders().get(lineDivided[personsIndex])!=null) {
-					person = SalesHistory.get().getListRoyaltyHolders().get(lineDivided[personsIndex]);
-				} else {
-					person = new Person(lineDivided[personsIndex]);
-				}
 				IRoyaltyType royalty = new RoyaltyPercentage(Double.parseDouble(lineDivided[personsIndex + 1]));
-				this.channel.addRoyalty(book, person, royalty);
-				
+				this.channel.addRoyalty(book, lineDivided[personsIndex], royalty);
 			}
 			personsIndex = personsIndex + 2;
 		}

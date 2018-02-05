@@ -28,4 +28,11 @@ public class RoyaltyPercentage implements IRoyaltyType {
 		return percentage * revenuesPLP;
 	}
 
+	@Override
+	public String toString() {
+		return "RoyaltyPercentage: " + percentage;
+	}
+	
+	
+
 }
