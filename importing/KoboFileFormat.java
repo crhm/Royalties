@@ -113,6 +113,9 @@ public class KoboFileFormat implements IFileFormat {
 				if (!b.getIdentifier().contains(lineDivided[10])) {
 					b.addIdentifier(lineDivided[10]);
 				}
+				if (b.getAuthor().equals("")) {
+					b.setAuthor(lineDivided[6]);
+				}
 			}
 		}
 		if (flag2) {

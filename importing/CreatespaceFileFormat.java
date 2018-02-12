@@ -7,11 +7,6 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Currency;
 import java.util.Date;
-import java.util.Locale;
-import java.util.Map;
-import java.util.TreeMap;
-
-import org.junit.platform.commons.util.StringUtils;
 
 import main.Book;
 import main.Channel;
@@ -31,7 +26,6 @@ public class CreatespaceFileFormat implements IFileFormat {
 	 * <br>Expects sale lines to be longer than 25 characters.
 	 * <br>Expects that the currency of all monetary amounts in a sale are the same.
 	 * <br>Expects the dates to be of the format '2017-01-23'.
-	 * <br>Expects currency symbols to never be more than 1 character.
 	 * @param filePath path (from src folder) + name + extension of file to be read and imported.
 	 */
 	@Override
@@ -88,10 +82,7 @@ public class CreatespaceFileFormat implements IFileFormat {
 		if (flag1) {
 			channel = new Channel("Createspace", new CreatespaceFileFormat());
 			SalesHistory.get().addChannel(channel);
-		}
-		
-		//Sets country to an empty String
-		String country = "";
+		}		
 		
 		//Obtains the date from the first cell and formats it into the expected format.
 		SimpleDateFormat oldFormat = new SimpleDateFormat("yyyy-MM-dd");
@@ -140,43 +131,46 @@ public class CreatespaceFileFormat implements IFileFormat {
 		//Divides revenues PLP by netUnitsSold times (price - deliverCost) and assigns it to royaltyTypePLP
 		double royaltyTypePLP = revenuesPLP / (netUnitsSold * (price - deliveryCost));
 		
-		//Initialises the Currency of the sale, from the currency symbol found in the 11th cell (List Price)
+		//Initialises the Currency of the sale, from the currency code found in the 5th cell (Sales Channel), and assumes
+		// that if there isn't one (because it can't split on "-", or parse what it expects to be a currency code) then it is USD.
 		//Assumes that the currency of all monetary amounts in a sale are the same.
-		Currency currency = getCurrency(lineDivided[10]);
+		Currency currency = getCurrency(lineDivided[4]);
+		
+		//Sadly no way to automate country obtention for Createspace
+		String country = "";
+		switch (currency.getCurrencyCode()) {
+		case "EUR": country = "Eurozone";
+            break;
+		case "CAD": country = "CA";
+			break;
+		case "USD" : country = "US";
+			break;
+		case "GBP" : country = "UK";
+			break;
+		}
 		
 		//Creates the sale and adds its to the database
 		Sale sale = new Sale(channel, country, newFormat.format(date), book, netUnitsSold, royaltyTypePLP, price, deliveryCost, revenuesPLP, currency);
 		SalesHistory.get().addSale(sale);
 	}
 	
-	/** Returns a currency based on the symbol found as the first character of the string passed as argument
-	 * 
-	 * @param cellWithSymbol String whose first character is a currency symbol
+	/** Returns a currency based on the currency code found after the "-" in the argument passed, 
+	 * or if either it cannot find a "-" in the string or what is after it is not a currency code,
+	 * it returns the US currency (USD).
+	 * @param cellWithCode String to be analysed
 	 * @return the corresponding currency
 	 */
-	private Currency getCurrency(String cellWithSymbol) {
+	private Currency getCurrency(String cellWithCode) {
 		Currency currency = null;
-		//Gets first character, expecting it to be the currency symbol
-	    String symbol = cellWithSymbol.substring(0, 1);
-	    //Retrieves the currency based on its symbol from a HashMap mapping symbols to currency codes
-	    currency = Currency.getInstance(getAllCurrencies().get(symbol));
+	    
+		if(cellWithCode.contains("-")) {
+			String[] nameAndSymbol = cellWithCode.split("-", -1);
+		    currency = Currency.getInstance(nameAndSymbol[1].trim());
+		} else {
+			currency = Currency.getInstance("USD");
+		}
 		return currency;
 		
-	}
-	
-	/** Provides a HashMap mapping currency symbols to currency codes
-	 * 
-	 * @return a HashMap mapping currency symbols to currency codes
-	 */
-	private static Map<String, String> getAllCurrencies() {
-	    Map<String, String> currencies = new TreeMap<String, String>();
-	    for (Locale locale : Locale.getAvailableLocales()) { //For each locale (aka country) in this list
-	        if (StringUtils.isNotBlank(locale.getCountry())) {
-	            Currency currency = Currency.getInstance(locale); //get the associated currency
-	            currencies.put(currency.getSymbol(locale), currency.getCurrencyCode()); //and map that currency's symbol to its code
-	        }
-	    }
-	    return currencies;
 	}
 	
 }

@@ -123,6 +123,9 @@ public class NookFileFormat implements IFileFormat{
 				if (!b.getIdentifier().contains(lineDivided[4])) {
 					b.addIdentifier(lineDivided[4]);
 				}
+				if (b.getAuthor().equals("")) {
+					b.setAuthor(lineDivided[6]);
+				}
 			}
 		}
 		if (flag2) {

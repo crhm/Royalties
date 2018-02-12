@@ -129,6 +129,9 @@ public class AmazonFileFormat implements IFileFormat{
 				if (!b.getIdentifier().contains(lineDivided[2])) {
 					b.addIdentifier(lineDivided[2]);
 				}
+				if (b.getAuthor().equals("")) {
+					b.setAuthor(lineDivided[6]);
+				}
 			}
 		}
 		if (flag2) {
