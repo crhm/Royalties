@@ -175,7 +175,13 @@ public class AmazonFileFormat implements IFileFormat{
 					+ "either 'N/A' or a number in american format was expected.");
 			e.printStackTrace();
 		}
-		double deliveryCost = number2.doubleValue();
+		double deliveryCost = 0;
+		//In the raw data sales are given a negative delivery cost if there was an odd number of returns, this fixes that
+		if (number2.doubleValue() < 0) {
+			deliveryCost = number2.doubleValue() * -1;
+		} else {
+			deliveryCost = number2.doubleValue();
+		}
 	   
 		//Parses the value in 15th column (Royalty) as a number in american format 
 		//(comma for thousands, full stop for decimals), and assigns it to amount PLP made off this sale.

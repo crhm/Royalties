@@ -35,7 +35,6 @@ public class RoyaltyHoldersPanel extends JPanel {
 				@Override
 	            public Class<?> getColumnClass(int column) {
 				 switch (column ) {
-				 case 0 : return String.class;
 				 case 1 : return Double.class;
 				 default : return String.class;
 				 }
