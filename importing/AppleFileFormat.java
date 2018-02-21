@@ -107,7 +107,9 @@ public class AppleFileFormat implements IFileFormat {
 		Book book = null;
 		Boolean flag2 = true;
 		for (Book b : SalesHistory.get().getListPLPBooks().values()) {
-			if (b.getTitle().replace("\"", "").equals(lineDivided[12].replace("\"", ""))) {
+			String existingBookTitle = b.getTitle().replace("\"", "");
+			String bookTitleFound = lineDivided[12].replace("\"", "");
+			if (existingBookTitle.contains(bookTitleFound) || bookTitleFound.contains(existingBookTitle)) {
 				book = b;
 				flag2 = false;
 				if (!b.getIdentifier().contains(lineDivided[10])) {
