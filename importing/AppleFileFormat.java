@@ -1,12 +1,8 @@
 package importing;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
 import java.io.IOException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Currency;
-import java.util.Date;
 
 import main.Book;
 import main.Channel;
@@ -15,50 +11,45 @@ import main.SalesHistory;
 
 /**Class that represents the format for raw monthly sales data files from Apple channel and performs the import of the data found
  *  in such files, through method importData(). It is an implementation of the IFileFormat interface.
+ * <br>Expects to find the first sale on the second line of the txt file.
+ * <br>Expects that the currency of all monetary amounts in a sale are the same.
+ * <br>Expects sale lines to be longer than 25 characters.
+ * <br>Expects dates to be of the format '10/23/2017'.
  * @author crhm
  *
  */
 public class AppleFileFormat extends FileFormat {
+	
+	public AppleFileFormat() {
+		super();
+		super.firstLineOfData = 1;
+		super.minLengthOfLine = 25;
+		super.oldDateFormat = new SimpleDateFormat("MM/dd/yyyy");
+	}
 
 	/**Imports the sales data found in the raw monthly sales data files from Apple channel into the database.
 	 * <br>Reads the file and then performs data processing for each sale.
-	 * <br>Expects to find the first sale on the second line of the txt file.
-	 * <br>Expects that the currency of all monetary amounts in a sale are the same.
-	 * <br>Expects sale lines to be longer than 25 characters.
-	 * <br>Expects dates to be of the format '10/23/2017'.
 	 * <br>Expects column values to be separated by a single tabulation.
 	 * @param filePath path (from src folder) + name + extension of file to be read and imported.
 	 */
 	@Override
 	public void importData(String filePath) {
+		String[] allLines = readFile(filePath);
+			
+		//Parses data for each sale and imports it by calling importSale on each sales line of txt file
+		//Considers that the first line of sales is the second line of txt file.
+		//Stops if counter reaches the total number of lines of txt file, or if the line is shorter than 25 characters,
+		//so that it doesn't try to parse the summary lines below the last sale line.
 		try {
-			//Reads file
-			BufferedReader br = new BufferedReader(new FileReader(filePath));
-			StringBuilder lines = new StringBuilder();
-			String line = "";
-			while (line!= null) {
-				line = br.readLine();
-				lines.append(line + "\n");
-			}
-			br.close();
-			
-			// Places each line as an element in an array of Strings
-			String temp = lines.toString();
-			String[] allLines = temp.split("\n");
-			
-			//Parses data for each sale and imports it by calling importSale on each sales line of txt file
-			//Considers that the first line of sales is the second line of txt file.
-			//Stops if counter reaches the total number of lines of txt file, or if the line is shorter than 25 characters,
-			//so that it doesn't try to parse the summary lines below the last sale line.
-			int counter = 1;
-			while (counter< allLines.length && allLines[counter].length() > 25) {
+			int counter = firstLineOfData;
+			while (counter< allLines.length && allLines[counter].length() > minLengthOfLine) {
 				importSale(allLines[counter]);
 				counter++;
 			}
 		} catch (IOException e) {
-			System.out.println("There was an error reading this file.");
 			e.printStackTrace();
 		}
+		
 	}
 	
 	private void importSale(String line) throws IOException {
@@ -71,34 +62,12 @@ public class AppleFileFormat extends FileFormat {
 			counter++;
 		}
 		
-		//Checks if the Apple channel already exists in database; if not, creates it.
-		Channel channel = null;
-		Boolean flag1 = true;
-		for (Channel ch : SalesHistory.get().getListChannels().values()) {
-			if (ch.getName().equals("Apple")) {
-				channel = ch;
-				flag1 = false;
-			}
-		}
-		if (flag1) {
-			channel = new Channel("Apple", new AppleFileFormat());
-			SalesHistory.get().addChannel(channel);
-		}
+		Channel channel = obtainChannel("Apple", new AppleFileFormat());
 		
 		//Initialises the country as the value of the 18th cell (Country of Sale)
 		String country = lineDivided[17];
 		
-		//Obtains the date from the first cell and formats it into the expected format.
-		SimpleDateFormat oldFormat = new SimpleDateFormat("MM/dd/yyyy");
-		SimpleDateFormat newFormat = new SimpleDateFormat("MMM yyyy");
-		Date date = null;
-		try {
-			date = oldFormat.parse(lineDivided[0]);
-		} catch (ParseException e) {
-			System.out.println("There was parsing the date in the second cell of the first line of the csv."
-					+ " A date of the format '10/23/2017' was expected.");
-			e.printStackTrace();
-		}
+		String date = obtainDate(lineDivided[0]);
 		
 		Book book = obtainBook(lineDivided[12], lineDivided[11], lineDivided[10]);
 		
@@ -137,7 +106,7 @@ public class AppleFileFormat extends FileFormat {
 		}
 		
 		//Creates the sale and adds its to the database
-		Sale sale = new Sale(channel, country, newFormat.format(date), book, netUnitsSold, royaltyTypePLP, price, deliveryCost, revenuesPLP, currency);
+		Sale sale = new Sale(channel, country, date, book, netUnitsSold, royaltyTypePLP, price, deliveryCost, revenuesPLP, currency);
 		SalesHistory.get().addSale(sale);
 	}
 	

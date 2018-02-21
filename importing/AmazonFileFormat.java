@@ -1,13 +1,9 @@
 package importing;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.text.NumberFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Currency;
-import java.util.Date;
 import java.util.Locale;
 
 import main.Book;
@@ -17,6 +13,10 @@ import main.SalesHistory;
 
 /**Class that represents the new (?) format for raw monthly sales data files from Amazon channel and performs the import of the data found
  *  in such files, through method importData(). It is an implementation of the IFileFormat interface.
+ * <br>Expects to find the first sale on the third line of the csv.
+ * <br>Expects sale lines to be longer than 15 characters.
+ * <br>Obtains the date from the cell in the first line and second column of the csv.
+ * <br>Expects the date in the file name to be of the format 'October 2017'.
  * @author crhm
  *
  */
@@ -24,61 +24,36 @@ public class AmazonFileFormat extends FileFormat{
 
 	private String date = "";
 	
+	public AmazonFileFormat() {
+		super();
+		super.firstLineOfData = 2;
+		super.minLengthOfLine = 15;
+		super.oldDateFormat = new SimpleDateFormat("MMMMM yyyy");
+	}
+	
 	/**Imports the sales data found in the raw monthly sales data file from Amazon channel into the database.
 	 * <br>Reads the file and then performs data processing for each sale.
-	 * <br>Expects to find the first sale on the third line of the csv.
-	 * <br>Expects sale lines to be longer than 15 characters.
-	 * <br>Obtains the date from the cell in the first line and second column of the csv.
-	 * <br>Expects the date in the file name to be of the format 'October 2017'.
 	 * <br>Expects prices to be in american number format (commas for thousands, full stop for decimals)
 	 * <br>Expects values for 'Royalty Type' to be of the format '70%' rather than '0.7'
 	 * @param filePath path (from src folder) + name + extension of file to be read and imported.
 	 */
 	@Override
 	public void importData(String filePath) {
-		try {
-			//Reads file
-			BufferedReader br = new BufferedReader(new FileReader(filePath));
-			StringBuilder lines = new StringBuilder();
-			String line = "";
-			while (line!= null) {
-				line = br.readLine();
-				lines.append(line + "\n");
-			}
-			br.close();
-			
-			// Places each line as an element in an array of Strings
-			String temp = lines.toString();
-			String[] allLines = temp.split("\n");
-			
-			//Obtains the date to give to all sales from the cell in the first line and second column of the csv
-			//And formats it into the expected format.
-			SimpleDateFormat oldFormat = new SimpleDateFormat("MMMMM yyyy");
-			SimpleDateFormat newFormat = new SimpleDateFormat("MMM yyyy");
-			Date date = null;
-			String[] firstLine = allLines[0].split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)", -1);
-			String oldDate = firstLine[1];
-			try {
-				date = oldFormat.parse(oldDate);
-			} catch (ParseException e) {
-				System.out.println("There was parsing the date in the second cell of the first line of the csv."
-						+ " A date of the format 'October 2017' was expected.");
-				e.printStackTrace();
-			}
-			this.date = newFormat.format(date);
-			
-			//Parses data for each sale and imports it by calling importSale on each sales line of csv
-			//Considers that the first line of sales is the third line of csv.
-			//Stops if counter reaches the total number of lines of csv, or if the line is shorter than 15 characters,
-			//so that it doesn't try to parse the summary lines below the last sale line.
-			int counter = 2;
-			while (counter< allLines.length && allLines[counter].length() > 15) {
-				importSale(allLines[counter]);
-				counter++;
-			}
-		} catch (IOException e) {
-			System.out.println("There was an error reading this file.");
-			e.printStackTrace();
+		String[] allLines = readFile(filePath);
+		
+		//Obtains the date to give to all sales from the cell in the first line and second column of the csv
+		//And formats it into the expected format.
+		String[] firstLine = allLines[0].split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)", -1);
+		this.date = obtainDate(firstLine[1]);
+		
+		//Parses data for each sale and imports it by calling importSale on each sales line of csv
+		//Considers that the first line of sales is the third line of csv.
+		//Stops if counter reaches the total number of lines of csv, or if the line is shorter than 15 characters,
+		//so that it doesn't try to parse the summary lines below the last sale line.
+		int counter = firstLineOfData;
+		while (counter< allLines.length && allLines[counter].length() > minLengthOfLine) {
+			importSale(allLines[counter]);
+			counter++;
 		}
 	}
 	
@@ -92,19 +67,7 @@ public class AmazonFileFormat extends FileFormat{
 			counter++;
 		}
 		
-		//Checks if the Amazon channel already exists in database; if not, creates it.
-		Channel channel = null;
-		Boolean flag1 = true;
-		for (Channel ch : SalesHistory.get().getListChannels().values()) {
-			if (ch.getName().equals("Amazon")) {
-				channel = ch;
-				flag1 = false;
-			}
-		}
-		if (flag1) {
-			channel = new Channel("Amazon", new AmazonFileFormat());
-			SalesHistory.get().addChannel(channel);
-		}
+		Channel channel = obtainChannel("Amazon", new AmazonFileFormat());
 		
 		//Checks the column called 'Marketplace' for the last two characters, which it converts to upper case and assigns to
 		//country, unless the value is '.com', in which case the country is "US".

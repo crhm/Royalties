@@ -1,12 +1,7 @@
 package importing;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Currency;
-import java.util.Date;
 
 import main.Book;
 import main.Channel;
@@ -15,48 +10,39 @@ import main.SalesHistory;
 
 /**Class that represents the format for raw monthly sales data files from Createspace channel and performs the import of the data found
  *  in such files, through method importData(). It is an implementation of the IFileFormat interface.
+ *<br>Expects to find the first sale on the fifth line of the csv.
+ *<br>Expects sale lines to be longer than 25 characters.
+ *<br>Expects the dates to be of the format '2017-01-23'.
  * @author crhm
  *
  */
 public class CreatespaceFileFormat extends FileFormat {
 	
+	public CreatespaceFileFormat() {
+		super();
+		super.firstLineOfData = 4;
+		super.minLengthOfLine = 25;
+		super.oldDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+	}
+	
 	/**Imports the sales data found in the raw monthly sales data file from Createspace channel into the database.
 	 * <br>Reads the file and then performs data processing for each sale.
-	 * <br>Expects to find the first sale on the fifth line of the csv.
-	 * <br>Expects sale lines to be longer than 25 characters.
 	 * <br>Expects that the currency of all monetary amounts in a sale are the same.
-	 * <br>Expects the dates to be of the format '2017-01-23'.
 	 * @param filePath path (from src folder) + name + extension of file to be read and imported.
 	 */
 	@Override
 	public void importData(String filePath) {
-		try {
-			//Reads file
-			BufferedReader br = new BufferedReader(new FileReader(filePath));
-			StringBuilder lines = new StringBuilder();
-			String line = "";
-			while (line!= null) {
-				line = br.readLine();
-				lines.append(line + "\n");
-			}
-			br.close();
-			
-			// Places each line as an element in an array of Strings
-			String temp = lines.toString();
-			String[] allLines = temp.split("\n");
-			
-			//Parses data for each sale and imports it by calling importSale on each sales line of csv
-			//Considers that the first line of sales is the fifth line of csv.
-			//Stops if counter reaches the total number of lines of csv, or if the line is shorter than 25 characters,
-			//so that it doesn't try to parse the summary lines below the last sale line.
-			int counter = 4;
-			while (counter< allLines.length && allLines[counter].length() > 25) {
-				importSale(allLines[counter]);
-				counter++;
-			}
-		} catch (IOException e) {
-			System.out.println("There was an error reading this file.");
-			e.printStackTrace();
+		
+		String[] allLines = readFile(filePath);
+		
+		//Parses data for each sale and imports it by calling importSale on each sales line of csv
+		//Considers that the first line of sales is the fifth line of csv.
+		//Stops if counter reaches the total number of lines of csv, or if the line is shorter than 25 characters,
+		//so that it doesn't try to parse the summary lines below the last sale line.
+		int counter = firstLineOfData;
+		while (counter< allLines.length && allLines[counter].length() > minLengthOfLine) {
+			importSale(allLines[counter]);
+			counter++;
 		}
 	}
 	
@@ -70,31 +56,9 @@ public class CreatespaceFileFormat extends FileFormat {
 			counter++;
 		}
 		
-		//Checks if the Createspace channel already exists in database; if not, creates it.
-		Channel channel = null;
-		Boolean flag1 = true;
-		for (Channel ch : SalesHistory.get().getListChannels().values()) {
-			if (ch.getName().equals("Createspace")) {
-				channel = ch;
-				flag1 = false;
-			}
-		}
-		if (flag1) {
-			channel = new Channel("Createspace", new CreatespaceFileFormat());
-			SalesHistory.get().addChannel(channel);
-		}		
+		Channel channel = obtainChannel("Createspace", new CreatespaceFileFormat());
 		
-		//Obtains the date from the first cell and formats it into the expected format.
-		SimpleDateFormat oldFormat = new SimpleDateFormat("yyyy-MM-dd");
-		SimpleDateFormat newFormat = new SimpleDateFormat("MMM yyyy");
-		Date date = null;
-		try {
-			date = oldFormat.parse(lineDivided[0]);
-		} catch (ParseException e) {
-			System.out.println("There was parsing the date in the second cell of the first line of the csv."
-					+ " A date of the format '2017-01-23' was expected.");
-			e.printStackTrace();
-		}
+		String date = obtainDate(lineDivided[0]);
 		
 		Book book = obtainBook(lineDivided[1], "", lineDivided[5]);
 		
@@ -132,7 +96,7 @@ public class CreatespaceFileFormat extends FileFormat {
 		}
 		
 		//Creates the sale and adds its to the database
-		Sale sale = new Sale(channel, country, newFormat.format(date), book, netUnitsSold, royaltyTypePLP, price, deliveryCost, revenuesPLP, currency);
+		Sale sale = new Sale(channel, country, date, book, netUnitsSold, royaltyTypePLP, price, deliveryCost, revenuesPLP, currency);
 		SalesHistory.get().addSale(sale);
 	}
 	

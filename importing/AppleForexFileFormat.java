@@ -1,8 +1,5 @@
 package importing;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.ParseException;
@@ -36,69 +33,52 @@ public class AppleForexFileFormat extends FileFormat {
 	 */
 	@Override
 	public void importData(String filePath) {
+		String[] allLines = readFile(filePath);
+		
+		//Obtains the date to give to all sales from the cell in the first line and first column of the csv
+		//And formats it into the expected format.
+		String[] firstLine = allLines[0].split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)", -1);
+		String[] title = firstLine[0].split("\\(");
+		SimpleDateFormat oldFormat = new SimpleDateFormat("MMMMM, yyyy");
+		SimpleDateFormat newFormat = new SimpleDateFormat("MMM yyyy");
+		Date date = null;
 		try {
-			//Reads the file
-			BufferedReader br = new BufferedReader(new FileReader(filePath));
-			StringBuilder lines = new StringBuilder();
-			String line = "";
-			while (line!= null) {
-				line = br.readLine();
-				lines.append(line + "\n");
-			}
-			br.close();
-			
-			// Places each line as an element in an array of Strings
-			String temp = lines.toString();
-			String[] allLines = temp.split("\n");
-			
-			//Obtains the date to give to all sales from the cell in the first line and first column of the csv
-			//And formats it into the expected format.
-			String[] firstLine = allLines[0].split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)", -1);
-			String[] title = firstLine[0].split("\\(");
-			SimpleDateFormat oldFormat = new SimpleDateFormat("MMMMM, yyyy");
-			SimpleDateFormat newFormat = new SimpleDateFormat("MMM yyyy");
-			Date date = null;
-			try {
-				date = oldFormat.parse(title[1].replaceAll("[()]", ""));
-			} catch (ParseException e) {
-				System.out.println("There was parsing the date in the first cell of the first line of the csv.\n" 
-						+ " A date of the format 'October, 2017' was expected.");
-				e.printStackTrace();
-			}
-			this.monthAndYear = newFormat.format(date);
-			
-			//Parses data for each currency and places it in class variable listForex by calling importForex() on each currency line of csv
-			//Considers that the first line of currencies is the fourth line of csv.
-			//Stops if counter reaches the total number of lines of csv, or if the line is shorter than 15 characters,
-			//so that it doesn't try to parse the summary lines below the last currency line.
-			int counter = 3;
-			while (counter< allLines.length && allLines[counter].length() > 15) {
-				importForex(allLines[counter]);
-				counter++;
-			}
-			
-			//Checks to see if the channel exists already, and if not, creates it.
-			Channel apple = null;
-			try {
-				apple = SalesHistory.get().getListChannels().get("Apple");
-			} catch (NullPointerException e) {
-				SalesHistory.get().addChannel(new Channel("Apple", new AppleFileFormat()));
-				apple = SalesHistory.get().getListChannels().get("Apple");
-			}
-			//Places the imported data in the database,
-			//making sure not to replace the existing list of FX rates for this month and year if there is one.
-			//It does however update the FX rate value for currencies that are already in the database for this month.
-			if (apple.getHistoricalForex().containsKey(monthAndYear)) {
-				HashMap<String, Double> existingList = apple.getHistoricalForex().get(monthAndYear);
-				for (String s : existingList.keySet()) {
-					listForex.put(s, existingList.get(s));
-				}	
-			}
-			apple.addHistoricalForex(monthAndYear, listForex);
-		} catch (IOException e) {
-			System.out.println("There was a problem importing this file.");
+			date = oldFormat.parse(title[1].replaceAll("[()]", ""));
+		} catch (ParseException e) {
+			System.out.println("There was parsing the date in the first cell of the first line of the csv.\n" 
+					+ " A date of the format 'October, 2017' was expected.");
 			e.printStackTrace();
 		}
+		this.monthAndYear = newFormat.format(date);
+		
+		//Parses data for each currency and places it in class variable listForex by calling importForex() on each currency line of csv
+		//Considers that the first line of currencies is the fourth line of csv.
+		//Stops if counter reaches the total number of lines of csv, or if the line is shorter than 15 characters,
+		//so that it doesn't try to parse the summary lines below the last currency line.
+		int counter = 3;
+		while (counter< allLines.length && allLines[counter].length() > 15) {
+			importForex(allLines[counter]);
+			counter++;
+		}
+		
+		//Checks to see if the channel exists already, and if not, creates it.
+		Channel apple = null;
+		try {
+			apple = SalesHistory.get().getListChannels().get("Apple");
+		} catch (NullPointerException e) {
+			SalesHistory.get().addChannel(new Channel("Apple", new AppleFileFormat()));
+			apple = SalesHistory.get().getListChannels().get("Apple");
+		}
+		//Places the imported data in the database,
+		//making sure not to replace the existing list of FX rates for this month and year if there is one.
+		//It does however update the FX rate value for currencies that are already in the database for this month.
+		if (apple.getHistoricalForex().containsKey(monthAndYear)) {
+			HashMap<String, Double> existingList = apple.getHistoricalForex().get(monthAndYear);
+			for (String s : existingList.keySet()) {
+				listForex.put(s, existingList.get(s));
+			}	
+		}
+		apple.addHistoricalForex(monthAndYear, listForex);
 	}
 
 	/**Parses a currency line and places the currency and its associated FX rate into the class variable listForex.
