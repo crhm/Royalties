@@ -22,7 +22,7 @@ public class RoyaltiesApp extends JFrame implements Runnable {
     }
 
     private void initialize() {
-    		this.setBounds(100, 100, 450, 300);
+    		this.setExtendedState(JFrame.MAXIMIZED_BOTH);
     		this.setTitle("Royalties App");
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
       
@@ -31,6 +31,7 @@ public class RoyaltiesApp extends JFrame implements Runnable {
         allTabs.addTab("Royalty Holders", new RoyaltyHoldersPanel());
         allTabs.addTab("PLP Books", new BookPanel());
         allTabs.addTab("Channels", new ChannelPanel());
+        allTabs.addTab("Royalty Holders Per Channel", new RoyaltiesPerChannelPanel());
         
         
         this.setContentPane(allTabs);
