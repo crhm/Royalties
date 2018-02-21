@@ -117,7 +117,7 @@ public class NookFileFormat implements IFileFormat{
 		Book book = null;
 		Boolean flag2 = true;
 		for (Book b : SalesHistory.get().getListPLPBooks().values()) {
-			if (b.getTitle().equals(lineDivided[3])) {
+			if (b.getTitle().replace("\"", "").equals(lineDivided[3].replace("\"", ""))) {
 				book = b;
 				flag2 = false;
 				if (!b.getIdentifier().contains(lineDivided[4])) {

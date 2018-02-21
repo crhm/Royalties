@@ -103,7 +103,7 @@ public class CreatespaceFileFormat implements IFileFormat {
 		Book book = null;
 		Boolean flag2 = true;
 		for (Book b : SalesHistory.get().getListPLPBooks().values()) {
-			if (b.getTitle().equals(lineDivided[1])) {
+			if (b.getTitle().replace("\"", "").equals(lineDivided[1].replace("\"", ""))) {
 				book = b;
 				flag2 = false;
 				if (!b.getIdentifier().contains(lineDivided[5])) {

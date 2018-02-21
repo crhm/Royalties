@@ -62,7 +62,7 @@ public class ChannelRoyaltiesFileFormat implements IFileFormat {
 			lineDivided[counter] = s.trim();
 			counter++;
 		}
-		
+
 		Book book = null; 
 		if (SalesHistory.get().getListPLPBooks().get(lineDivided[0])!=null) {
 			book = SalesHistory.get().getListPLPBooks().get(lineDivided[0]);
@@ -85,13 +85,14 @@ public class ChannelRoyaltiesFileFormat implements IFileFormat {
 				SalesHistory.get().addBook(book);
 			}
 		}
-		int personsIndex = 2;
-		while (personsIndex < 9) {
+		int personsIndex = 2; //Because royalties start in 3d column, given first two are book title and id
+		//because there are never more than 4 royalty holders, hence never more than 10 columns and last royalty holder should be on 9th column
+		while (personsIndex < 9) { //because there are never more than 4 royalty holders, hence never more than 10 columns and last royalty holder should be on 9th
 			if (lineDivided[personsIndex].length() > 1) {
 				IRoyaltyType royalty = new RoyaltyPercentage(Double.parseDouble(lineDivided[personsIndex + 1]));
 				this.channel.addRoyalty(book, lineDivided[personsIndex], royalty);
 			}
-			personsIndex = personsIndex + 2;
+			personsIndex = personsIndex + 2; //because royalty holders are every two columns
 		}
 	}
 
