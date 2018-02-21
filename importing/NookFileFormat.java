@@ -21,7 +21,7 @@ import main.SalesHistory;
  * @author crhm
  *
  */
-public class NookFileFormat implements IFileFormat{
+public class NookFileFormat extends FileFormat{
 
 	/**Imports the sales data found in the raw monthly sales data file from Kobo channel into the database.
 	 * <br>Reads the file and then performs data processing for each sale.
@@ -109,31 +109,7 @@ public class NookFileFormat implements IFileFormat{
 			e.printStackTrace();
 		}
 		
-		//Checks the database to see if a book of that title already exists in the list of books managed by PLP, and assigns it to 
-		//the sale if there is, and adds the ID to the list of IDs of the book if it is not alrady in it. 
-		//If there is not, it creates one with the title provided in the 4th column, the string provided
-		// in the 7th cell for author, and the ID provided in the 5th (ebook ISBN), 
-		//and adds it to the database, as well as assigning it to the sale.
-		Book book = null;
-		Boolean flag2 = true;
-		for (Book b : SalesHistory.get().getListPLPBooks().values()) {
-			String existingBookTitle = b.getTitle().replace("\"", "");
-			String bookTitleFound = lineDivided[3].replace("\"", "");
-			if (existingBookTitle.contains(bookTitleFound) || bookTitleFound.contains(existingBookTitle)) {
-				book = b;
-				flag2 = false;
-				if (!b.getIdentifier().contains(lineDivided[4])) {
-					b.addIdentifier(lineDivided[4]);
-				}
-				if (b.getAuthor().equals("")) {
-					b.setAuthor(lineDivided[6]);
-				}
-			}
-		}
-		if (flag2) {
-			book = new Book(lineDivided[3], lineDivided[6], lineDivided[4]);
-			SalesHistory.get().addBook(book);			
-		}
+		Book book = obtainBook(lineDivided[3], lineDivided[6], lineDivided[4]);
 		
 		//Assigns the value of the 12th cell (Net Units Sold) to netUnitsSold
 		double netUnitsSold = Double.parseDouble(lineDivided[11]);

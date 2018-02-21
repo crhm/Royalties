@@ -3,7 +3,7 @@ package importing;
 public class ImportFactory {
 	
 	public static void ImportData(String fileName) {
-		IFileFormat temp = null;
+		FileFormat temp = null;
 		if (fileName.toLowerCase().contains("kobo")) { //KOBO
 			temp = new KoboFileFormat();
 		} else if (fileName.toLowerCase().contains("nook")) { //NOOK

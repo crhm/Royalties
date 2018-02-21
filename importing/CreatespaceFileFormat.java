@@ -18,7 +18,7 @@ import main.SalesHistory;
  * @author crhm
  *
  */
-public class CreatespaceFileFormat implements IFileFormat {
+public class CreatespaceFileFormat extends FileFormat {
 	
 	/**Imports the sales data found in the raw monthly sales data file from Createspace channel into the database.
 	 * <br>Reads the file and then performs data processing for each sale.
@@ -96,27 +96,7 @@ public class CreatespaceFileFormat implements IFileFormat {
 			e.printStackTrace();
 		}
 		
-		//Checks the database to see if a book of that title already exists in the list of books managed by PLP, and assigns it to 
-		//the sale if there is, and adds the ID to the list of IDs of the book if it is not alrady in it. 
-		//If there is not, it creates one with the title provided in the second column, an empty string for author, 
-		// and the ID provided in the sixth (UPC/ISBN), and adds it to the database, as well as assigning it to the sale.
-		Book book = null;
-		Boolean flag2 = true;
-		for (Book b : SalesHistory.get().getListPLPBooks().values()) {
-			String existingBookTitle = b.getTitle().replace("\"", "");
-			String bookTitleFound = lineDivided[1].replace("\"", "");
-			if (existingBookTitle.contains(bookTitleFound) || bookTitleFound.contains(existingBookTitle)) {
-				book = b;
-				flag2 = false;
-				if (!b.getIdentifier().contains(lineDivided[5])) {
-					b.addIdentifier(lineDivided[5]);
-				}
-			}
-		}
-		if (flag2) {
-			book = new Book(lineDivided[1], "", lineDivided[5]);
-			SalesHistory.get().addBook(book);			
-		}
+		Book book = obtainBook(lineDivided[1], "", lineDivided[5]);
 		
 		//Assigns the value of the 13th cell (Quantity) to net units sold
 		double netUnitsSold = Double.parseDouble(lineDivided[12]);

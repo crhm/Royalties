@@ -19,7 +19,7 @@ import main.SalesHistory;
  * @author crhm
  *
  */
-public class AppleForexFileFormat implements IFileFormat {
+public class AppleForexFileFormat extends FileFormat {
 
 	private String monthAndYear = "";
 	private HashMap<String, Double> listForex = new HashMap<String, Double>();

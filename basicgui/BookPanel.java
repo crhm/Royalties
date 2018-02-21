@@ -45,7 +45,7 @@ public class BookPanel extends JPanel{
 		for (Book b : SalesHistory.get().getListPLPBooks().values()) {
 			data[count][0] = b.getTitle();
 			data[count][1] = b.getAuthor();
-			data[count][2] = b.getIdentifier();
+			data[count][2] = b.getIdentifiers();
 			BigDecimal totalSold = new BigDecimal(0.00);
 			try {
 				totalSold = new BigDecimal(SalesHistory.get().getCumulativeSalesPerBook().get(b));

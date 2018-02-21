@@ -2,13 +2,13 @@ package main;
 
 import java.util.HashMap;
 
-import importing.IFileFormat;
+import importing.FileFormat;
 
 /**Class designed to represent the different channels through which PLP sells books, e.g. Apple, Amazon, Nook, Kobo, Createspace...
  * <br>A Channel has a name, an import File Format it is associated with, a list of royalties, since it can vary per channel for 
  * the same book and the same royalty holder, and a list of historical FX rates, since they vary per channel.
  * <br>The list of royalties maps books to a list of persons associated with the type of royalty they hold for that book.
- * <br>The import file Format must be an implementation of the IFileFormat interface, and can be changed at runtime.
+ * <br>The import file Format must be an implementation of the FileFormat interface, and can be changed at runtime.
  * <br>This class allows the user to add a royalty to the list of royalties through the addRoyalty method.
  * <br>The list of FX rates is per month, as a HashMap where the keys are a string representation of the month and year in the format of 
  * "Oct 2017", and the values are HashMaps mapping currency codes (e.g. "EUR") to exchange rates into US Dollars (as doubles).
@@ -18,7 +18,7 @@ import importing.IFileFormat;
  */
 public class Channel {
 	
-	private IFileFormat fileFormat;
+	private FileFormat fileFormat;
 	private final String name;
 	private final HashMap<Book, HashMap<Person, IRoyaltyType>> listRoyalties = new HashMap<Book, HashMap<Person, IRoyaltyType>>();
 	private final HashMap<String, HashMap<String, Double>> historicalForex = new HashMap<String, HashMap<String, Double>>();
@@ -27,18 +27,18 @@ public class Channel {
 	
 	/**Channel constructor. Initialises channel names and fileFormat to the corresponding arguments passed by user.
 	 * @param name String name of channel
-	 * @param fileFormat IFileFormat implementation to be associated with the channel
+	 * @param fileFormat FileFormat implementation to be associated with the channel
 	 */
-	public Channel(String name, IFileFormat fileFormat) {
+	public Channel(String name, FileFormat fileFormat) {
 		this.name = name;
 		this.fileFormat = fileFormat;
 	}
 
-	public IFileFormat getfileFormat() {
+	public FileFormat getfileFormat() {
 		return fileFormat;
 	}
 
-	public void setfileFormat(IFileFormat fileFormat) {
+	public void setfileFormat(FileFormat fileFormat) {
 		this.fileFormat = fileFormat;
 	}
 

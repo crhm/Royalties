@@ -13,7 +13,7 @@ public class Book {
 	
 	private final String title;
 	private String author;
-	private final List<String> identifier;
+	private final List<String> identifiers;
 	
 	/** Book constructor. Initialises title, author and identifier to the corresponding arguments passed by the user.
 	 * @param title String title of book
@@ -23,8 +23,8 @@ public class Book {
 	public Book(String title, String author, String identifier) {
 		this.title = title;
 		this.author = author;
-		this.identifier = new ArrayList<String>();
-		this.identifier.add(identifier);
+		this.identifiers = new ArrayList<String>();
+		this.identifiers.add(identifier);
 	}
 	
 	public String getTitle() {
@@ -39,17 +39,17 @@ public class Book {
 		return author;
 	}
 
-	public List<String> getIdentifier() {
-		return identifier;
+	public List<String> getIdentifiers() {
+		return identifiers;
 	}
 	
 	public void addIdentifier(String identifier)	{
-		this.identifier.add(identifier);
+		this.identifiers.add(identifier);
 	}
 	
 	@Override
 	public String toString() {
-		return "Book [title=" + title + ", author=" + author + ", identifier=" + identifier + "]";
+		return "Book [title=" + title + ", author=" + author + ", identifier=" + identifiers + "]";
 	}
 
 	@Override

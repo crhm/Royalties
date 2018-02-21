@@ -20,7 +20,7 @@ import main.SalesHistory;
  * @author crhm
  *
  */
-public class AmazonFileFormat implements IFileFormat{
+public class AmazonFileFormat extends FileFormat{
 
 	private String date = "";
 	
@@ -116,30 +116,7 @@ public class AmazonFileFormat implements IFileFormat{
 			country = lineDivided[3].substring(length - 2, length).toUpperCase();
 		}
 		
-		//Checks the database to see if a book of that title already exists in the list of books managed by PLP, and assigns it to 
-		//the sale if there is, and adds the ID to the list of IDs of the book if it is not alrady in it. 
-		//If there is not, it creates one with the title provided in the first column, the author provided in
-		//the second column, and the ID provided in the third (ASIN), and adds it to the database, as well as assigning it to the sale.
-		Book book = null;
-		Boolean flag2 = true;
-		for (Book b : SalesHistory.get().getListPLPBooks().values()) {
-			String existingBookTitle = b.getTitle().replace("\"", "");
-			String bookTitleFound = lineDivided[0].replace("\"", "");
-			if (existingBookTitle.contains(bookTitleFound) || bookTitleFound.contains(existingBookTitle)) {
-				book = b;
-				flag2 = false;
-				if (!b.getIdentifier().contains(lineDivided[2])) {
-					b.addIdentifier(lineDivided[2]);
-				}
-				if (b.getAuthor().equals("")) {
-					b.setAuthor(lineDivided[6]);
-				}
-			}
-		}
-		if (flag2) {
-			book = new Book(lineDivided[0], lineDivided[1], lineDivided[2]);
-			SalesHistory.get().addBook(book);			
-		}
+		Book book = obtainBook(lineDivided[0], lineDivided[1], lineDivided[2]);
 		
 		//Assigns value of seventh column ('Net Units Sold') as the netUnitsSold
 		int netUnitsSold = Integer.parseInt(lineDivided[6]);

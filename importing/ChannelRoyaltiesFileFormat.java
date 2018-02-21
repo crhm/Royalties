@@ -10,7 +10,7 @@ import main.IRoyaltyType;
 import main.RoyaltyPercentage;
 import main.SalesHistory;
 
-public class ChannelRoyaltiesFileFormat implements IFileFormat {
+public class ChannelRoyaltiesFileFormat extends FileFormat {
 	
 	private Channel channel;
 	
@@ -69,7 +69,7 @@ public class ChannelRoyaltiesFileFormat implements IFileFormat {
 		} else {
 			Boolean newBook = true;
 			for (Book b : SalesHistory.get().getListPLPBooks().values()) {
-				if (b.getIdentifier().contains(lineDivided[1])) {
+				if (b.getIdentifiers().contains(lineDivided[1])) {
 					book = b;
 					newBook = false;
 				} else if (b.getTitle().toLowerCase().equals(lineDivided[0].toLowerCase())){
