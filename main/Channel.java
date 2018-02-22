@@ -13,6 +13,8 @@ import importing.FileFormat;
  * <br>The list of FX rates is per month, as a HashMap where the keys are a string representation of the month and year in the format of 
  * "Oct 2017", and the values are HashMaps mapping currency codes (e.g. "EUR") to exchange rates into US Dollars (as doubles).
  * <br>The method addHistoricalForex() allows one to add a list of FX rates for a certain month to the main list of historical rates.
+ * <br>Its saleCurrencyIsAlwaysUSD variable is a boolean reflecting whether or not all monetary values in all sales through that channel are in USD. 
+ * This is used to determine whether or not to use historical forexes to calculate royalties.
  * @author crhm
  *
  */
@@ -23,8 +25,6 @@ public class Channel {
 	private final HashMap<Book, HashMap<Person, IRoyaltyType>> listRoyalties = new HashMap<Book, HashMap<Person, IRoyaltyType>>();
 	private final HashMap<String, HashMap<String, Double>> historicalForex = new HashMap<String, HashMap<String, Double>>();
 	private final Boolean saleCurrencyIsAlwaysUSD;
-
-	//TODO print list royalties?
 	
 	/**Channel constructor. Initialises channel names and fileFormat to the corresponding arguments passed by user.
 	 * <br>Initialises saleCurrencyIsAlwaysUSD to false by default. Use other constructor for channels that need it set to true.
@@ -129,6 +129,37 @@ public class Channel {
 	@Override
 	public String toString() {
 		return "Channel [name=" + name + "]";
+	}
+
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + ((saleCurrencyIsAlwaysUSD == null) ? 0 : saleCurrencyIsAlwaysUSD.hashCode());
+		return result;
+	}
+
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		Channel other = (Channel) obj;
+		if (name == null) {
+			if (other.name != null)
+				return false;
+		} else if (!name.equals(other.name))
+			return false;
+		if (saleCurrencyIsAlwaysUSD == null) {
+			if (other.saleCurrencyIsAlwaysUSD != null)
+				return false;
+		} else if (!saleCurrencyIsAlwaysUSD.equals(other.saleCurrencyIsAlwaysUSD))
+			return false;
+		return true;
 	}
 	
 	

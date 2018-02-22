@@ -32,6 +32,7 @@ public class RoyaltiesApp extends JFrame implements Runnable {
         allTabs.addTab("PLP Books", new BookPanel());
         allTabs.addTab("Channels", new ChannelPanel());
         allTabs.addTab("Royalty Holders Per Channel", new RoyaltiesPerChannelPanel());
+        allTabs.addTab("Data Verification", new DataVerificationPanel());
         
         
         this.setContentPane(allTabs);
