@@ -27,7 +27,7 @@ public class AppleFileFormat extends FileFormat {
 		super.oldDateFormat = new SimpleDateFormat("MM/dd/yyyy");
 	}
 
-	/**Imports the sales data found in the raw monthly sales data files from Apple channel into the database.
+	/**Imports the sales data found in the raw monthly sales data files from Apple channel into the app.
 	 * <br>Reads the file and then performs data processing for each sale.
 	 * <br>Expects column values to be separated by a single tabulation.
 	 * @param filePath path (from src folder) + name + extension of file to be read and imported.
@@ -62,7 +62,7 @@ public class AppleFileFormat extends FileFormat {
 			counter++;
 		}
 		
-		Channel channel = obtainChannel("Apple", new AppleFileFormat());
+		Channel channel = obtainChannel("Apple", new AppleFileFormat(), false);
 		
 		//Initialises the country as the value of the 18th cell (Country of Sale)
 		String country = lineDivided[17];
@@ -105,7 +105,7 @@ public class AppleFileFormat extends FileFormat {
 					+ " was not the same as the Customer Price Currency (currency that the customer paid in.");
 		}
 		
-		//Creates the sale and adds its to the database
+		//Creates the sale and adds its to the app
 		Sale sale = new Sale(channel, country, date, book, netUnitsSold, royaltyTypePLP, price, deliveryCost, revenuesPLP, currency);
 		SalesHistory.get().addSale(sale);
 	}

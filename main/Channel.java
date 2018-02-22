@@ -22,16 +22,39 @@ public class Channel {
 	private final String name;
 	private final HashMap<Book, HashMap<Person, IRoyaltyType>> listRoyalties = new HashMap<Book, HashMap<Person, IRoyaltyType>>();
 	private final HashMap<String, HashMap<String, Double>> historicalForex = new HashMap<String, HashMap<String, Double>>();
+	private final Boolean saleCurrencyIsAlwaysUSD;
 
 	//TODO print list royalties?
 	
 	/**Channel constructor. Initialises channel names and fileFormat to the corresponding arguments passed by user.
+	 * <br>Initialises saleCurrencyIsAlwaysUSD to false by default. Use other constructor for channels that need it set to true.
 	 * @param name String name of channel
 	 * @param fileFormat FileFormat implementation to be associated with the channel
 	 */
 	public Channel(String name, FileFormat fileFormat) {
 		this.name = name;
 		this.fileFormat = fileFormat;
+		this.saleCurrencyIsAlwaysUSD = false;
+	}
+	
+	/**Channel constructor. Initialises channel names and fileFormat to the corresponding arguments passed by user.
+	 * <br>Allows one to set the value of saleCurrencyIsAlwaysUSD to true, which simplifies royalties calculations.
+	 * @param name String name of channel
+	 * @param fileFormat FileFormat implementation to be associated with the channel
+	 * @param saleCurrencyIsAlwaysUSD
+	 */
+	public Channel(String name, FileFormat fileFormat, Boolean saleCurrencyIsAlwaysUSD) {
+		this.name = name;
+		this.fileFormat = fileFormat;
+		this.saleCurrencyIsAlwaysUSD = saleCurrencyIsAlwaysUSD;
+	}
+
+	/**Returns a boolean reflecting whether or not all monetary values in all sales through that channel are in USD.
+	 * <br>Use to determine whether or not to use historical forexes to calculate royalties.
+	 * @return true if all monetary values in all sales through that channel are in USD, false if some may not be
+	 */
+	public Boolean getSaleCurrencyIsAlwaysUSD() {
+		return saleCurrencyIsAlwaysUSD;
 	}
 
 	public FileFormat getfileFormat() {

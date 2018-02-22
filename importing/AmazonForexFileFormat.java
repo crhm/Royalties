@@ -30,7 +30,7 @@ public class AmazonForexFileFormat extends FileFormat {
 	/** Imports the FX data found in the Amazon raw FX data file designated by the argument passed.
 	 * <br>Expects relevant lines to be only even numbered lines.
 	 * <br>Will rewrite FX rates for existing currencies also present in this file, 
-	 *  if any are present in the database for this month and year.
+	 *  if any are present in the data for this month and year.
 	 * <br>Does not import the FX rate provided by Amazon but the exact FX rate given the amount due in foreign currency and the
 	 *  amount that was actually paid to PLP in dollars.
 	 * @param path (from src folder) + name + extension of file to be read and imported
@@ -55,11 +55,11 @@ public class AmazonForexFileFormat extends FileFormat {
 			counter = counter + 2;
 		}
 		
-		Channel amazon = obtainChannel("Amazon", new AmazonFileFormat());
+		Channel amazon = obtainChannel("Amazon", new AmazonFileFormat(), false);
 		
-		//Places the imported data in the database,
+		//Places the imported data in the app,
 		//making sure not to replace the existing list of FX rates for this month and year if there is one.
-		//It does however update the FX rate value for currencies that are already in the database for this month.
+		//It does however update the FX rate value for currencies that are already in the data for this month.
 		if (amazon.getHistoricalForex().containsKey(monthAndYear)) {
 			HashMap<String, Double> existingList = amazon.getHistoricalForex().get(monthAndYear);
 			for (String s : existingList.keySet()) {

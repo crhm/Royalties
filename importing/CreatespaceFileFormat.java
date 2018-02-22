@@ -25,7 +25,7 @@ public class CreatespaceFileFormat extends FileFormat {
 		super.oldDateFormat = new SimpleDateFormat("yyyy-MM-dd");
 	}
 	
-	/**Imports the sales data found in the raw monthly sales data file from Createspace channel into the database.
+	/**Imports the sales data found in the raw monthly sales data file from Createspace channel into the app.
 	 * <br>Reads the file and then performs data processing for each sale.
 	 * <br>Expects that the currency of all monetary amounts in a sale are the same.
 	 * @param filePath path (from src folder) + name + extension of file to be read and imported.
@@ -56,7 +56,7 @@ public class CreatespaceFileFormat extends FileFormat {
 			counter++;
 		}
 		
-		Channel channel = obtainChannel("Createspace", new CreatespaceFileFormat());
+		Channel channel = obtainChannel("Createspace", new CreatespaceFileFormat(), true);
 		
 		String date = obtainDate(lineDivided[0]);
 		
@@ -95,7 +95,7 @@ public class CreatespaceFileFormat extends FileFormat {
 			break;
 		}
 		
-		//Creates the sale and adds its to the database
+		//Creates the sale and adds its to the app
 		Sale sale = new Sale(channel, country, date, book, netUnitsSold, royaltyTypePLP, price, deliveryCost, revenuesPLP, currency);
 		SalesHistory.get().addSale(sale);
 	}

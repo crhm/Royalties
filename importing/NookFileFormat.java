@@ -31,7 +31,7 @@ public class NookFileFormat extends FileFormat{
 		super.oldDateFormat = new SimpleDateFormat("MM/dd/yy");
 	}
 
-	/**Imports the sales data found in the raw monthly sales data file from Kobo channel into the database.
+	/**Imports the sales data found in the raw monthly sales data file from Kobo channel into the app.
 	 * <br>Reads the file and then performs data processing for each sale.
 	 * <br>Always sets sale currency to USD because the conversion is done in the raw data already.
 	 * @param filePath path (from src folder) + name + extension of file to be read and imported.
@@ -58,7 +58,7 @@ public class NookFileFormat extends FileFormat{
 			counter++;
 		}		
 	
-		Channel channel = obtainChannel("Nook", new NookFileFormat());
+		Channel channel = obtainChannel("Nook", new NookFileFormat(), true);
 		
 		//Set country to US since Nook only sells in US
 		String country = "US";

@@ -8,7 +8,6 @@ import java.util.Date;
 import java.util.HashMap;
 
 import main.Channel;
-import main.SalesHistory;
 
 /**Class that represents the format for FX rates and payment data files from Apple channel and performs the import of the data found
  *  in such files, through method importData(). It is an implementation of the IFileFormat interface.
@@ -26,7 +25,7 @@ public class AppleForexFileFormat extends FileFormat {
 	 * <br>Expects to find the first relevant line at the fifth line of the csv.
 	 * <br>Expects relevant lines to be more than 15 characters long.
 	 * <br>Will rewrite FX rates for existing currencies also present in this file, 
-	 *  if any are present in the database for this month and year.
+	 *  if any are present in the data for this month and year.
 	 * <br>Does not import the FX rate provided by Apple but the exact FX rate given the amount due in foreign currency and the
 	 *  amount that was actually paid to PLP in dollars.
 	 * @param path (from src folder) + name + extension of file to be read and imported
@@ -61,17 +60,11 @@ public class AppleForexFileFormat extends FileFormat {
 			counter++;
 		}
 		
-		//Checks to see if the channel exists already, and if not, creates it.
-		Channel apple = null;
-		try {
-			apple = SalesHistory.get().getListChannels().get("Apple");
-		} catch (NullPointerException e) {
-			SalesHistory.get().addChannel(new Channel("Apple", new AppleFileFormat()));
-			apple = SalesHistory.get().getListChannels().get("Apple");
-		}
-		//Places the imported data in the database,
+		Channel apple = obtainChannel("Apple", new AppleFileFormat(), false);
+		
+		//Places the imported data in the app,
 		//making sure not to replace the existing list of FX rates for this month and year if there is one.
-		//It does however update the FX rate value for currencies that are already in the database for this month.
+		//It does however update the FX rate value for currencies that are already in the data for this month.
 		if (apple.getHistoricalForex().containsKey(monthAndYear)) {
 			HashMap<String, Double> existingList = apple.getHistoricalForex().get(monthAndYear);
 			for (String s : existingList.keySet()) {

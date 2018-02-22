@@ -118,17 +118,19 @@ public class Sale {
 		if (royaltyHasBeenCalculated) {
 			System.out.println("Error: Royalties have already been calculated for this sale.");
 		} else {
+			//Get exchange rate
 			double exchangeRate = 0;
 			try {
-				if (channel.getName().equals("Amazon") || channel.getName().equals("Apple")) { //TODO change to channel variable
-					exchangeRate = channel.getHistoricalForex().get(date).get(currency.getCurrencyCode());
+				if (channel.getSaleCurrencyIsAlwaysUSD()) {
+					exchangeRate = 1;
 				} else {
-					exchangeRate = 1; //Because it will be in dollars for every sale of every other channel
+					exchangeRate = channel.getHistoricalForex().get(date).get(currency.getCurrencyCode());
 				}
 			} catch (NullPointerException e) {
 				System.out.println("There was a problem getting the exchange rate of this sale: " + this);
 			}
 			
+			//Calculate Royalty
 			try {
 				for (Person p : channel.getListRoyalties().get(book).keySet()) {
 					IRoyaltyType royalty = channel.getListRoyalties().get(book).get(p);

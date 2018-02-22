@@ -25,7 +25,7 @@ public class KoboFileFormat extends FileFormat {
 		super.oldDateFormat = new SimpleDateFormat("dd/MM/yyyy");
 	}
 
-	/**Imports the sales data found in the raw monthly sales data file from Kobo channel into the database.
+	/**Imports the sales data found in the raw monthly sales data file from Kobo channel into the app.
 	 * <br>Reads the file and then performs data processing for each sale.
 	 * <br>Always sets sale currency to USD because the conversion is done in the raw data already.
 	 * @param filePath path (from src folder) + name + extension of file to be read and imported.
@@ -55,7 +55,7 @@ public class KoboFileFormat extends FileFormat {
 			counter++;
 		}
 		
-		Channel channel = obtainChannel("Kobo", new KoboFileFormat());
+		Channel channel = obtainChannel("Kobo", new KoboFileFormat(), true);
 		
 		//Assigns the value of the second cell (Country) to country
 		String country = lineDivided[1];
@@ -82,7 +82,7 @@ public class KoboFileFormat extends FileFormat {
 		//Sets the Currency of the sale to US Dollars, since they do the conversion themselves in the file
 		Currency currency = Currency.getInstance("USD");
 		
-		//Creates the sale and adds its to the database
+		//Creates the sale and adds its to the app
 		Sale sale = new Sale(channel, country, date, book, netUnitsSold, royaltyTypePLP, price, deliveryCost, revenuesPLP, currency);
 		SalesHistory.get().addSale(sale);
 	}

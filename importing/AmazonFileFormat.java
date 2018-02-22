@@ -31,7 +31,7 @@ public class AmazonFileFormat extends FileFormat{
 		super.oldDateFormat = new SimpleDateFormat("MMMMM yyyy");
 	}
 	
-	/**Imports the sales data found in the raw monthly sales data file from Amazon channel into the database.
+	/**Imports the sales data found in the raw monthly sales data file from Amazon channel into the app.
 	 * <br>Reads the file and then performs data processing for each sale.
 	 * <br>Expects prices to be in american number format (commas for thousands, full stop for decimals)
 	 * <br>Expects values for 'Royalty Type' to be of the format '70%' rather than '0.7'
@@ -67,7 +67,7 @@ public class AmazonFileFormat extends FileFormat{
 			counter++;
 		}
 		
-		Channel channel = obtainChannel("Amazon", new AmazonFileFormat());
+		Channel channel = obtainChannel("Amazon", new AmazonFileFormat(), false);
 		
 		//Checks the column called 'Marketplace' for the last two characters, which it converts to upper case and assigns to
 		//country, unless the value is '.com', in which case the country is "US".
@@ -141,7 +141,7 @@ public class AmazonFileFormat extends FileFormat{
 		// needed to obtain the correct Currency instance.
 		Currency currency = Currency.getInstance(lineDivided[9]);
 		
-		//Creates the sale and adds its to the database
+		//Creates the sale and adds its to the app
 		Sale sale = new Sale(channel, country, this.date, book, netUnitsSold, royaltyTypePLP, price, deliveryCost, revenuesPLP, currency);
 		SalesHistory.get().addSale(sale);
 	}
