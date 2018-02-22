@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 
 /** Main class of this app; a singleton, since it should never be more than one. method get() returns singleton instance.
- * <br><br>This class acts as a database which holds:
+ * <br><br>This class acts as a container of data which holds:
  * <br>-the complete list of sales, regardless of channel, as an ArrayList<Sale>, because there is no point in retrieving an 
  *  individual sale and some channels don't provide a unique identifier that could be used as a key.
  * <br>-the complete list of royalty holders, regardless of channel, as a HashMap where the keys are Person names and the values are Persons.
@@ -14,7 +14,7 @@ import java.util.List;
  *  (a double to allow for negative units aka returns).  
  * <br>-the list of channels that books are sold on, as a HashMap where the keys are Channel names and the values are Channels. 
  *  <br><br>This class also calculates all royalties (by doing so sale by sale, see Sale.calculateRoyalties()).
- *  <br>This class allows the user to add a sale, a royalty holder, a book, or a channel to the database.
+ *  <br>This class allows the user to add a sale, a royalty holder, a book, or a channel to the app.
  * @author crhm
  *
  */
@@ -24,7 +24,6 @@ public class SalesHistory {
 	//list of sales perhaps which would be called salesWithCalculatedRoyalties?
 	
 	private static final SalesHistory instance = new SalesHistory();
-	public int counter = 0;
 	
 	private SalesHistory() {}
 	
@@ -54,17 +53,17 @@ public class SalesHistory {
 		}
 	}
 
-	/**Returns the List of all sales that have been added to the database.
-	 * @return the list of all sales that have been added to the database.
+	/**Returns the List of all sales that have been added to the app.
+	 * @return the list of all sales that have been added to the app.
 	 */
 	public List<Sale> getSalesHistory() {
 		return salesHistory;
 	}
 	
-	/** Adds a sale to the database.
+	/** Adds a sale to the app.
 	 * <br>First places it in the list of all sales, then updates the list holding the total number of units sold 
 	 * for each book by the appropriate number.
-	 * @param sale Sale to add to the database.
+	 * @param sale Sale to add to the app.
 	 */
 	public void addSale(Sale sale) {
 		this.salesHistory.add(sale);	

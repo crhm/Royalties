@@ -25,6 +25,7 @@ public class Sale {
 	private final double deliveryCost;
 	private final double revenuesPLP;
 	private final Currency currency;
+	private Boolean royaltyHasBeenCalculated = false;
 	
 	//TODO enforce these assumptions!
 	/**Sale constructor. Initialises all variables as the arguments passed by user.
@@ -98,40 +99,55 @@ public class Sale {
 		return currency;
 	}
 
+	/**Indicates whether the calculateRoyalties() method has been called on this sale before or not.
+	 * 
+	 * @return true if royalties have been calculated for this sale, false if not.
+	 */
+	public Boolean getRoyaltyHasBeenCalculated() {
+		return royaltyHasBeenCalculated;
+	}
+
 	/**Calculates royalties for this sale and adds the amounts due to each royalty holder's balance.
 	 * <br>As all balances are in USD but some sales from Amazon and Apple are not, FX rates are applied 
 	 * where appropriate.
 	 * <br>Will print an error message if it cannot find an exchange rate or a list of royalties for a sale.
+	 * <br>Only calculates royalties for each sale once; if a sale's getRoyaltyHasBeenCalculated() returns true, 
+	 * it will print an error message and do nothing else.
 	 */
 	public void calculateRoyalties() {
-		double exchangeRate = 0;
-		try {
-			if (channel.getName().equals("Amazon") || channel.getName().equals("Apple")) {
-				exchangeRate = channel.getHistoricalForex().get(date).get(currency.getCurrencyCode());
-			} else {
-				exchangeRate = 1; //Because it will be in dollars for every sale of every other channel
+		if (royaltyHasBeenCalculated) {
+			System.out.println("Error: Royalties have already been calculated for this sale.");
+		} else {
+			double exchangeRate = 0;
+			try {
+				if (channel.getName().equals("Amazon") || channel.getName().equals("Apple")) { //TODO change to channel variable
+					exchangeRate = channel.getHistoricalForex().get(date).get(currency.getCurrencyCode());
+				} else {
+					exchangeRate = 1; //Because it will be in dollars for every sale of every other channel
+				}
+			} catch (NullPointerException e) {
+				System.out.println("There was a problem getting the exchange rate of this sale: " + this);
 			}
-		} catch (NullPointerException e) {
-			System.out.println("There was a problem getting the exchange rate of this sale: " + this);
-		}
-		
-		try {
-			for (Person p : channel.getListRoyalties().get(book).keySet()) {
-				IRoyaltyType royalty = channel.getListRoyalties().get(book).get(p);
-				double amount = royalty.getAmountDue(revenuesPLP * exchangeRate, SalesHistory.get().getCumulativeSalesPerBook().get(book));
-				p.addToBalance(amount);
+			
+			try {
+				for (Person p : channel.getListRoyalties().get(book).keySet()) {
+					IRoyaltyType royalty = channel.getListRoyalties().get(book).get(p);
+					double amount = royalty.getAmountDue(revenuesPLP * exchangeRate, SalesHistory.get().getCumulativeSalesPerBook().get(book));
+					p.addToBalance(amount);
+					this.royaltyHasBeenCalculated = true;
+				}
+			} catch (NullPointerException e) {
+				System.out.println("There was a problem getting the royalty list for this sale: " + this);
 			}
-		} catch (NullPointerException e) {
-			System.out.println("There was a problem getting the royalty list for this sale: " + this);
-		}
-		
+		}		
 	}
 
 	@Override
 	public String toString() {
 		return "Sale [channel=" + channel + ", country=" + country + ", date=" + date + ", book=" + book
 				+ ", netUnitsSold=" + netUnitsSold + ", royaltyTypePLP=" + royaltyTypePLP
-				+ ", price=" + price + ", deliveryCost=" + deliveryCost + ", revenuesPLP=" + revenuesPLP + ", currency=" + currency + "]";
+				+ ", price=" + price + ", deliveryCost=" + deliveryCost + ", revenuesPLP=" + revenuesPLP + ", currency=" + currency 
+				+ ", Royalties have been calculated=" + royaltyHasBeenCalculated + "]";
 	}
 	
 }

@@ -1,6 +1,7 @@
 package basicgui;
 
 import java.awt.GridLayout;
+import java.util.Currency;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -27,7 +28,7 @@ public class SalesPanel extends JPanel {
 
     private JTable getTable() {
 		Object[] columnNames = {"Channel", "Country", "Date", "Book", "Net Units Sold", "PLP's Royalty", 
-	    		"Price", "Delivery Costs", "PLP's Revenues", "Currency"};
+	    		"Price", "Delivery Costs", "PLP's Revenues", "Currency", "Royalties Have Been Calculated"};
 		DefaultTableModel model = new DefaultTableModel(getData(), columnNames) {
 			@Override
             public Class<?> getColumnClass(int column) {
@@ -37,6 +38,8 @@ public class SalesPanel extends JPanel {
 				case 6 : return Double.class;
 				case 7 : return Double.class;
 				case 8 : return Double.class;
+				case 9 : return Currency.class;
+				case 10 : return Boolean.class;
 				default : return String.class;
 				}
 			}
@@ -56,13 +59,14 @@ public class SalesPanel extends JPanel {
 		columnModel.getColumn(7).setMaxWidth(110);
 		columnModel.getColumn(8).setMaxWidth(110);
 		columnModel.getColumn(9).setMaxWidth(60);
+		columnModel.getColumn(10).setMaxWidth(110);
 		table.setAutoCreateRowSorter(true);
 		return table;
     }
     
     private Object[][] getData() {
 		int numberOfSales = SalesHistory.get().getSalesHistory().size();
-		Object[][] data = new Object[numberOfSales][10];
+		Object[][] data = new Object[numberOfSales][11];
 		int rowCounter = 0;
 		for (Sale s : SalesHistory.get().getSalesHistory()) {
 			data[rowCounter][0] = s.getChannel().getName();
@@ -75,6 +79,7 @@ public class SalesPanel extends JPanel {
 			data[rowCounter][7] = s.getDeliveryCost();
 			data[rowCounter][8] = s.getRevenuesPLP();
 			data[rowCounter][9] = s.getCurrency();
+			data[rowCounter][10] = s.getRoyaltyHasBeenCalculated();
 			rowCounter++;
 		}
 		return data;

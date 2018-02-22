@@ -95,7 +95,7 @@ public class Channel {
 	}
 	
 	/** Adds a list of Foreign Exchange rates for different currencies into US Dollars, associated with the month and year 
-	 *  that it corresponds to, to the database's list of historical FX rates.
+	 *  that it corresponds to, to the app's list of historical FX rates.
 	 * @param monthAndYear String representing the month and year (following the format "Oct 2017")
 	 * @param listForex HashMap mapping currency codes (a String following the format "EUR") with the exchange rate into dollars (a double).
 	 */

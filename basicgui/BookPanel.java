@@ -9,6 +9,8 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 
+import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
+
 import main.Book;
 import main.SalesHistory;
 
@@ -27,6 +29,7 @@ public class BookPanel extends JPanel{
 			@Override
             public Class<?> getColumnClass(int column) {
 				switch (column) {
+				case 2 : return Array.class;
 				case 3 : return Double.class;
 				default : return String.class;
 				}
@@ -47,8 +50,8 @@ public class BookPanel extends JPanel{
 		Object[][] data = new Object[SalesHistory.get().getListPLPBooks().values().size()][4];
 		int count = 0;
 		for (Book b : SalesHistory.get().getListPLPBooks().values()) {
-			data[count][0] = b.getTitle();
-			data[count][1] = b.getAuthor();
+			data[count][0] = b.getTitle().replace("\"", "");
+			data[count][1] = b.getAuthor().replace("\"", "");
 			data[count][2] = b.getIdentifiers();
 			BigDecimal totalSold = new BigDecimal(0.00);
 			try {
