@@ -32,13 +32,17 @@ public class RoyaltyHoldersPanel extends JPanel {
 	private JTable getTable() {
 		String[] columnNames = {"Name", "Balance (USD)"};
 		DefaultTableModel model = new DefaultTableModel(getData(), columnNames) {
-				@Override
-	            public Class<?> getColumnClass(int column) {
-				 switch (column ) {
-				 case 1 : return Double.class;
-				 default : return String.class;
-				 }
-			 }
+			@Override
+            public Class<?> getColumnClass(int column) {
+				switch (column ) {
+				case 1 : return Double.class;
+				default : return String.class;
+				}
+			}
+			@Override
+		    public boolean isCellEditable(int row, int column) {
+		       return false;
+		    }
 		};
 		JTable table = new JTable(model);
 		table.setAutoCreateRowSorter(true);

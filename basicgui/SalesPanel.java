@@ -31,15 +31,19 @@ public class SalesPanel extends JPanel {
 		DefaultTableModel model = new DefaultTableModel(getData(), columnNames) {
 			@Override
             public Class<?> getColumnClass(int column) {
-			 switch (column) {
-			 case 4 : return Double.class;
-			 case 5 : return Double.class;
-			 case 6 : return Double.class;
-			 case 7 : return Double.class;
-			 case 8 : return Double.class;
-			 default : return String.class;
-			 }
-		 }
+				switch (column) {
+				case 4 : return Double.class;
+				case 5 : return Double.class;
+				case 6 : return Double.class;
+				case 7 : return Double.class;
+				case 8 : return Double.class;
+				default : return String.class;
+				}
+			}
+			@Override
+		    public boolean isCellEditable(int row, int column) {
+		       return false;
+		    }
 		};
 		JTable table = new JTable(model);
 		TableColumnModel columnModel = table.getColumnModel();

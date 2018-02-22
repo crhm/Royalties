@@ -170,8 +170,7 @@ public class RoyaltiesPerChannelPanel extends JPanel implements ActionListener, 
 			@Override
 		    public boolean isCellEditable(int row, int column) {
 		       return false;
-		    }
-			
+		    }	
 		};
 		JTable table = new JTable(model);
 		table.setAutoCreateRowSorter(true);

@@ -10,7 +10,7 @@ public class RoyaltiesApp extends JFrame implements Runnable {
 
     public static void main(String[] args) {
         try {
-        		Thread importThread = new Thread(new ImportEverything(), "Importing database");
+        		Thread importThread = new Thread(new ImportEverything(), "Importing data");
         		importThread.start();
         		importThread.join(); //wait for this thread to die before starting next one
         		RoyaltiesApp test = new RoyaltiesApp();

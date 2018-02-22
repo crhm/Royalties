@@ -26,11 +26,15 @@ public class BookPanel extends JPanel{
 		DefaultTableModel model = new DefaultTableModel(getData(), columnNames) {
 			@Override
             public Class<?> getColumnClass(int column) {
-			 switch (column) {
-			 case 3 : return Double.class;
-			 default : return String.class;
-			 }
-		 }
+				switch (column) {
+				case 3 : return Double.class;
+				default : return String.class;
+				}
+			}
+			@Override
+		    public boolean isCellEditable(int row, int column) {
+		       return false;
+		    }
 		};
 		JTable table = new JTable(model);
 		TableColumnModel columnModel = table.getColumnModel();
