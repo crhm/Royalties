@@ -3,17 +3,22 @@ package basicgui;
 import java.awt.BorderLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 import javax.swing.JComboBox;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.ListSelectionModel;
+import javax.swing.RowSorter;
+import javax.swing.SortOrder;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 import main.Book;
 import main.IRoyaltyType;
@@ -54,6 +59,16 @@ public class RoyaltiesPerChannelPanel extends JPanel implements ActionListener, 
         
         //Gets the list of book titles for initial channel (apple)
         bookTitles = getTableBooks();
+		bookTitles.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+        //Sort the table 
+		TableRowSorter<TableModel> sorter = new TableRowSorter<>(bookTitles.getModel());
+		bookTitles.setRowSorter(sorter);
+		List<RowSorter.SortKey> sortKeys = new ArrayList<>();
+		int columnIndexToSort = 0;
+		sortKeys.add(new RowSorter.SortKey(columnIndexToSort, SortOrder.ASCENDING));
+		sorter.setSortKeys(sortKeys);
+		sorter.sort();	
+		//Add ListSelectionListener
         bookTitles.getSelectionModel().addListSelectionListener(this);
         
         //Adds components to the main container panel (the tab)
@@ -81,6 +96,15 @@ public class RoyaltiesPerChannelPanel extends JPanel implements ActionListener, 
 		//Fills the table with the new data (as obtained by getting the model off of a new table)
 		TableModel model = getTableBooks().getModel();
 		bookTitles.setModel(model);
+		bookTitles.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		//Sorts table
+		TableRowSorter<TableModel> sorter = new TableRowSorter<>(bookTitles.getModel());
+		bookTitles.setRowSorter(sorter);
+		List<RowSorter.SortKey> sortKeys = new ArrayList<>();
+		int columnIndexToSort = 0;
+		sortKeys.add(new RowSorter.SortKey(columnIndexToSort, SortOrder.ASCENDING));
+		sorter.setSortKeys(sortKeys);
+		sorter.sort();
 		
 		//Repaint with current data
 		bookTitles.revalidate();
@@ -173,8 +197,6 @@ public class RoyaltiesPerChannelPanel extends JPanel implements ActionListener, 
 		    }	
 		};
 		JTable table = new JTable(model);
-		table.setAutoCreateRowSorter(true);
-		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		return table;
 	}
 	

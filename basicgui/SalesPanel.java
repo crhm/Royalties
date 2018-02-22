@@ -1,13 +1,19 @@
 package basicgui;
 
 import java.awt.GridLayout;
+import java.util.ArrayList;
 import java.util.Currency;
+import java.util.List;
 
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.RowSorter;
+import javax.swing.SortOrder;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
+import javax.swing.table.TableRowSorter;
 
 import main.Sale;
 import main.SalesHistory;
@@ -60,7 +66,21 @@ public class SalesPanel extends JPanel {
 		columnModel.getColumn(8).setMaxWidth(110);
 		columnModel.getColumn(9).setMaxWidth(60);
 		columnModel.getColumn(10).setMaxWidth(110);
-		table.setAutoCreateRowSorter(true);
+		
+		TableRowSorter<TableModel> sorter = new TableRowSorter<>(table.getModel());
+		table.setRowSorter(sorter);
+		List<RowSorter.SortKey> sortKeys = new ArrayList<>();
+		int columnIndexToSortFirst = 2;
+		sortKeys.add(new RowSorter.SortKey(columnIndexToSortFirst, SortOrder.ASCENDING));
+		int columnIndexToSortSecond = 0;
+		sortKeys.add(new RowSorter.SortKey(columnIndexToSortSecond, SortOrder.ASCENDING));
+		int columnIndexToSortThird = 1;
+		sortKeys.add(new RowSorter.SortKey(columnIndexToSortThird, SortOrder.ASCENDING));
+		int columnIndexToSortFourth = 3;
+		sortKeys.add(new RowSorter.SortKey(columnIndexToSortFourth, SortOrder.ASCENDING));
+		sorter.setSortKeys(sortKeys);
+		sorter.sort();
+		
 		return table;
     }
     

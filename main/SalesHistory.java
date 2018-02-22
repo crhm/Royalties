@@ -19,9 +19,6 @@ import java.util.List;
  *
  */
 public class SalesHistory { 
-	//TODO figure out a way to mark a sale has having had its royalties calculated already so that 
-	//the calculateRoyalties() method only does so for sales where it has not been done. Another 
-	//list of sales perhaps which would be called salesWithCalculatedRoyalties?
 	
 	private static final SalesHistory instance = new SalesHistory();
 	
