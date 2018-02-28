@@ -5,11 +5,18 @@ import javax.swing.JTabbedPane;
 
 import importing.ImportEverything;
 
+/**GUI for royalties app. Opens a full screen window with several panels displaying different information:
+ * <br>Sales, Royalty Holders, PLP Books, Channels, Royalty Holders Per Channel, Data Verification.
+ * 
+ * @author crhm
+ *
+ */
 @SuppressWarnings("serial")
 public class RoyaltiesApp extends JFrame implements Runnable {
 
 	public static void main(String[] args) {
 		try {
+			//Import data first, and only when done start with the GUI
 			Thread importThread = new Thread(new ImportEverything(), "Importing data");
 			importThread.start();
 			importThread.join(); //wait for this thread to die before starting next one
