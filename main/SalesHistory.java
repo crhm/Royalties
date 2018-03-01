@@ -124,6 +124,16 @@ public class SalesHistory implements java.io.Serializable {
 		this.listChannels.put(channel.getName(), channel);
 	}
 
+	/**Writes SalesHistory state to the ObjectOutputStream.
+	 * <br>Writes by serialising the following SalesHistory variables (in this order, same as read by readObject()):
+	 * <br>HashMap<Book, Double> cumulativeSalesPerBook
+	 * <br>HashMap<String, Channel> listChannels
+	 * <br>HashMap<String, Book> listPLPBooks
+	 * <br>HashMap<String, Person> listRoyaltyHolders
+	 * <br>List of Sales salesHistory
+	 * @param out ObjectOutputStream to write to.
+	 * @throws IOException
+	 */
 	private void writeObject(java.io.ObjectOutputStream out) throws IOException {
 		try {
 			out.writeObject(cumulativeSalesPerBook);
@@ -138,7 +148,20 @@ public class SalesHistory implements java.io.Serializable {
 		}
 
 	}
-
+	
+	/**Reads SalesHistory state from the ObjectInputStream.
+	 * <br>Expects to find (in same order as written by writeObject()):
+	 * <br>HashMap<Book, Double> cumulativeSalesPerBook
+	 * <br>HashMap<String, Channel> listChannels
+	 * <br>HashMap<String, Book> listPLPBooks
+	 * <br>HashMap<String, Person> listRoyaltyHolders
+	 * <br>List of Sales salesHistory
+	 * <br><br>It then assigns these to the corresponding class variables of the singleton instance of SalesHistory.
+	 * @param in ObjectInputStream to read from.
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 */
+	@SuppressWarnings("unchecked")
 	private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
 		try {
 			HashMap<Book, Double> cumulativeSalesPerBook = (HashMap<Book, Double>) in.readObject();
@@ -158,7 +181,9 @@ public class SalesHistory implements java.io.Serializable {
 			c.printStackTrace();
 		}
 	}
-
+	
+	/**Serialises SalesHistory by calling its custom writeObject() method, and outputs it to a file called "/tmp/data.ser"
+	 */
 	public void serialise() {
 		try {
 			FileOutputStream fileOut = new FileOutputStream("/tmp/data.ser");
@@ -170,6 +195,8 @@ public class SalesHistory implements java.io.Serializable {
 		}
 	}
 
+	/**Deserialises SalesHistory from a file called "/tmp/data.ser" by calling its custom readObject() method.
+	 */
 	public void deSerialise() {
 		try {
 			FileInputStream fileIn = new FileInputStream("/tmp/data.ser");
