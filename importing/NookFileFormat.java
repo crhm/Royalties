@@ -66,12 +66,13 @@ public class NookFileFormat extends FileFormat implements java.io.Serializable {
 		String country = "US";
 
 		String date = obtainDate(lineDivided[2]);
-
+		
+		//Get book
 		Book book = obtainBook(lineDivided[3], lineDivided[6], lineDivided[4]);
 
 		//Assigns the value of the 12th cell (Net Units Sold) to netUnitsSold
 		double netUnitsSold = Double.parseDouble(lineDivided[11]);
-
+		
 		//Assigns the value of the 11th cell (Royalty Percent) to royaltyTypePLP
 		double royaltyTypePLP = Double.parseDouble(lineDivided[10]);
 

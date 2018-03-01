@@ -64,11 +64,12 @@ public class KoboFileFormat extends FileFormat implements java.io.Serializable {
 
 		String date = obtainDate(lineDivided[0]);
 
+		//Get book
 		Book book = obtainBook(lineDivided[12], lineDivided[11], lineDivided[10]);
-
+		
 		//Assigns the value found in the sixth cell (Total Qty) to netUnitsSold
 		double netUnitsSold = Double.parseDouble(lineDivided[5]);
-
+		
 		//Assigns the value found in the 16th cell (COGS %) to royaltyTypePLP
 		double royaltyTypePLP = Double.parseDouble(lineDivided[15]);
 

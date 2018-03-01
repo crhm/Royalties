@@ -61,12 +61,13 @@ public class CreatespaceFileFormat extends FileFormat implements java.io.Seriali
 		Channel channel = obtainChannel("Createspace", new CreatespaceFileFormat(), true);
 
 		String date = obtainDate(lineDivided[0]);
-
+		
+		//Get Book
 		Book book = obtainBook(lineDivided[1], "", lineDivided[5]);
 
 		//Assigns the value of the 13th cell (Quantity) to net units sold
 		double netUnitsSold = Double.parseDouble(lineDivided[12]);
-
+		
 		//Assigns the value of the 11th cell (List Price), minus its first character which is the currency symbol, to price
 		double price = Double.parseDouble(lineDivided[10].substring(1, lineDivided[10].length()));
 

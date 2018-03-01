@@ -79,12 +79,13 @@ public class AmazonFileFormat extends FileFormat implements java.io.Serializable
 			int length = lineDivided[3].length();
 			country = lineDivided[3].substring(length - 2, length).toUpperCase();
 		}
-
+		
+		//Gets book
 		Book book = obtainBook(lineDivided[0], lineDivided[1], lineDivided[2]);
 
 		//Assigns value of seventh column ('Net Units Sold') as the netUnitsSold
-		int netUnitsSold = Integer.parseInt(lineDivided[6]);
-
+		double netUnitsSold = Double.parseDouble(lineDivided[6]);
+		
 		//Assigns the value of the eigth column ('Royalty Type'), minus the '%' sign and converted into a value between 0 and 1,
 		//as the royalty percentage that PLP gets for this sale.
 		double royaltyTypePLP = Double.parseDouble(lineDivided[7].replace("%", "")) / 100;

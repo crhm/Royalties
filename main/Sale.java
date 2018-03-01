@@ -44,6 +44,7 @@ public class Sale implements java.io.Serializable {
 	 */
 	public Sale(Channel channel, String country, String date, Book book, double netUnitsSold, 
 			double royaltyTypePLP, double price, double deliveryCost, double revenuesPLP, Currency currency) {
+		book.addUnitsToTotalSold(netUnitsSold);
 		this.channel = channel;
 		this.country = country;
 		this.date = date;
@@ -135,7 +136,7 @@ public class Sale implements java.io.Serializable {
 			try {
 				for (Person p : channel.getListRoyalties().get(book).keySet()) {
 					IRoyaltyType royalty = channel.getListRoyalties().get(book).get(p);
-					double amount = royalty.getAmountDue(revenuesPLP * exchangeRate, SalesHistory.get().getCumulativeSalesPerBook().get(book));
+					double amount = royalty.getAmountDue(revenuesPLP * exchangeRate, book.getTotalUnitsSold());
 					p.addToBalance(amount);
 					this.royaltyHasBeenCalculated = true;
 				}

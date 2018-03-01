@@ -83,12 +83,7 @@ public class BookPanel extends JPanel{
 			data[count][0] = b.getTitle().replace("\"", "");
 			data[count][1] = b.getAuthor().replace("\"", "");
 			data[count][2] = b.getIdentifiers();
-
-			BigDecimal totalSold = new BigDecimal(0.00);
-			try {
-				totalSold = new BigDecimal(SalesHistory.get().getCumulativeSalesPerBook().get(b));
-			} catch (NullPointerException e) {
-			}
+			BigDecimal totalSold = new BigDecimal(b.getTotalUnitsSold());
 			data[count][3] = totalSold.setScale(0);
 
 			count++;

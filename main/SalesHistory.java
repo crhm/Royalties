@@ -15,8 +15,6 @@ import java.util.List;
  *  individual sale and some channels don't provide a unique identifier that could be used as a key.
  * <br>-the complete list of royalty holders, regardless of channel, as a HashMap where the keys are Person names and the values are Persons.
  * <br>-the list of books managed by PLP, as a HashMap where the keys are Book titles and the values are Books.
- * <br>-the total number of units sold per book, as a HashMap where the keys are the Books and the values are the total units sold 
- *  (a double to allow for negative units aka returns).  
  * <br>-the list of channels that books are sold on, as a HashMap where the keys are Channel names and the values are Channels. 
  *  <br><br>This class also calculates all royalties (by doing so sale by sale, see Sale.calculateRoyalties()).
  *  <br>This class allows the user to add a sale, a royalty holder, a book, or a channel to the app.
@@ -38,15 +36,10 @@ public class SalesHistory implements java.io.Serializable {
 		return instance;
 	}
 
-	private HashMap<Book, Double> cumulativeSalesPerBook = new HashMap<Book, Double>(); //TODO put this info in Book not here
 	private List<Sale> salesHistory = new ArrayList<Sale>();
 	private HashMap<String, Person> listRoyaltyHolders = new HashMap<String, Person>();
 	private HashMap<String, Book> listPLPBooks = new HashMap<String, Book>();
 	private HashMap<String, Channel> listChannels = new HashMap<String, Channel>();
-
-	public HashMap<Book, Double> getCumulativeSalesPerBook() {
-		return cumulativeSalesPerBook;
-	}
 
 	/** Calculates all royalties by calling Sale.calculateRoyalties() on each sale
 	 *  in the list of all sales.
@@ -65,18 +58,11 @@ public class SalesHistory implements java.io.Serializable {
 	}
 
 	/** Adds a sale to the app.
-	 * <br>First places it in the list of all sales, then updates the list holding the total number of units sold 
-	 * for each book by the appropriate number.
+	 * <br>First places it in the list of all sales, then updates the book's total number of units sold appropriately.
 	 * @param sale Sale to add to the app.
 	 */
 	public void addSale(Sale sale) {
 		this.salesHistory.add(sale);	
-		if (!this.cumulativeSalesPerBook.keySet().contains(sale.getBook())) {
-			this.cumulativeSalesPerBook.put(sale.getBook(), sale.getNetUnitsSold());
-		}
-		double unitsToAdd = sale.getNetUnitsSold();
-		double oldTotal = cumulativeSalesPerBook.get(sale.getBook());
-		this.cumulativeSalesPerBook.put(sale.getBook(), unitsToAdd + oldTotal);
 	}
 
 	/** Returns the complete list of royalty holders, regardless of channel, 
@@ -136,7 +122,6 @@ public class SalesHistory implements java.io.Serializable {
 	 */
 	private void writeObject(java.io.ObjectOutputStream out) throws IOException {
 		try {
-			out.writeObject(cumulativeSalesPerBook);
 			out.writeObject(listChannels);
 			out.writeObject(listPLPBooks);
 			out.writeObject(listRoyaltyHolders);
@@ -151,7 +136,6 @@ public class SalesHistory implements java.io.Serializable {
 	
 	/**Reads SalesHistory state from the ObjectInputStream.
 	 * <br>Expects to find (in same order as written by writeObject()):
-	 * <br>HashMap<Book, Double> cumulativeSalesPerBook
 	 * <br>HashMap<String, Channel> listChannels
 	 * <br>HashMap<String, Book> listPLPBooks
 	 * <br>HashMap<String, Person> listRoyaltyHolders
@@ -164,13 +148,11 @@ public class SalesHistory implements java.io.Serializable {
 	@SuppressWarnings("unchecked")
 	private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
 		try {
-			HashMap<Book, Double> cumulativeSalesPerBook = (HashMap<Book, Double>) in.readObject();
 			HashMap<String, Channel> listChannels = (HashMap<String, Channel>) in.readObject();
 			HashMap<String, Book> listPLPBooks = (HashMap<String, Book>) in.readObject();
 			HashMap<String, Person> listRoyaltyHolders = (HashMap<String, Person>) in.readObject();
 			List<Sale> salesHistory = (List<Sale>) in.readObject();
 			in.close();
-			this.cumulativeSalesPerBook = cumulativeSalesPerBook;
 			this.listChannels = listChannels;
 			this.listPLPBooks = listPLPBooks;
 			this.listRoyaltyHolders = listRoyaltyHolders;
@@ -186,7 +168,7 @@ public class SalesHistory implements java.io.Serializable {
 	 */
 	public void serialise() {
 		try {
-			FileOutputStream fileOut = new FileOutputStream("/tmp/data.ser");
+			FileOutputStream fileOut = new FileOutputStream("/tmp/data2.ser");
 			ObjectOutputStream out = new ObjectOutputStream(fileOut);
 			SalesHistory.get().writeObject(out);
 			fileOut.close();
@@ -199,7 +181,7 @@ public class SalesHistory implements java.io.Serializable {
 	 */
 	public void deSerialise() {
 		try {
-			FileInputStream fileIn = new FileInputStream("/tmp/data.ser");
+			FileInputStream fileIn = new FileInputStream("/tmp/data2.ser");
 			ObjectInputStream in = new ObjectInputStream(fileIn);
 			SalesHistory.get().readObject(in);
 			fileIn.close();

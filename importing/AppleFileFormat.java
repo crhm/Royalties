@@ -71,16 +71,17 @@ public class AppleFileFormat extends FileFormat implements java.io.Serializable 
 
 		String date = obtainDate(lineDivided[0]);
 
+		//Gets book
 		Book book = obtainBook(lineDivided[12], lineDivided[11], lineDivided[10]);
 
 		//Checks wether this sale is a sale or a return by checking the value of the 10th cell (Sale or Return),
 		//and correspondingly assigns a positive or a negative version of the value found in the 6th cell (Quantity)
 		//to the variable netUnitsSold.
-		int netUnitsSold = 0;
+		double netUnitsSold = 0;
 		if (lineDivided[9].equals("S")) {
-			netUnitsSold = Integer.parseInt(lineDivided[5]);
+			netUnitsSold = Double.parseDouble(lineDivided[5]);
 		} else {
-			netUnitsSold = - Integer.parseInt(lineDivided[5]);
+			netUnitsSold = - Double.parseDouble(lineDivided[5]);
 		}
 
 		//Divides value of seventh cell (Extended Partner Share, aka amount PLP got from this sale) by the value

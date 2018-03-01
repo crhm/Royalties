@@ -6,6 +6,7 @@ import java.util.List;
 /** Class representing books managed by PLP and sold via different channels.
  * <br> A book has a title, an author and an identifier which is unique but whose format
  * depends on the channel through which it was added (usually a variation on ISBN).
+ * <br>It also keeps track of how many units of the book have been sold so far.
  * @author crhm
  *
  */
@@ -15,8 +16,10 @@ public class Book implements java.io.Serializable{
 	private final String title;
 	private String author;
 	private final List<String> identifiers;
-
-	/** Book constructor. Initialises title, author and identifier to the corresponding arguments passed by the user.
+	private double totalUnitsSold;
+	
+	/**Book constructor. Initialises title, author, and identifier to the corresponding arguments passed by the user.
+	 * <br>Initialises totalUnitsSold to 0.
 	 * @param title String title of book
 	 * @param author String name of author
 	 * @param identifier String unique ID of book, e.g. ISBN, ISBN-13, e-ISBN or ASIN
@@ -26,6 +29,18 @@ public class Book implements java.io.Serializable{
 		this.author = author;
 		this.identifiers = new ArrayList<String>();
 		this.identifiers.add(identifier);
+		this.totalUnitsSold = 0;
+	}
+
+	public double getTotalUnitsSold() {
+		return totalUnitsSold;
+	}
+	
+	/**Adds the argument passed to the total of units sold for this book
+	 * @param unitsSold amount by which to increase the total of units sold
+	 */
+	public void addUnitsToTotalSold(double unitsSold) {
+		this.totalUnitsSold = this.totalUnitsSold + unitsSold;
 	}
 
 	public String getTitle() {
@@ -50,7 +65,7 @@ public class Book implements java.io.Serializable{
 
 	@Override
 	public String toString() {
-		return "Book [title=" + title + ", author=" + author + ", identifier=" + identifiers + "]";
+		return "Book [title=" + title + ", author=" + author + ", identifier=" + identifiers + "totalUnitsSold=" + totalUnitsSold +"]";
 	}
 
 	@Override
@@ -63,7 +78,7 @@ public class Book implements java.io.Serializable{
 	}
 
 	/** Returns true if and only if the object is also a Book, with the same title and the same author.
-	 * <br>Differences in the identifiers are disregarded.
+	 * <br>Differences in the identifiers and units sold are disregarded.
 	 */
 	@Override
 	public boolean equals(Object obj) {
