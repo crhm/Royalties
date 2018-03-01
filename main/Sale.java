@@ -13,8 +13,9 @@ import java.util.Currency;
  * @author crhm
  *
  */
-public class Sale {
+public class Sale implements java.io.Serializable {
 
+	private static final long serialVersionUID = -3585377913984089914L;
 	private final Channel channel;
 	private final String country;
 	private final String date;
@@ -26,7 +27,7 @@ public class Sale {
 	private final double revenuesPLP;
 	private final Currency currency;
 	private Boolean royaltyHasBeenCalculated = false;
-	
+
 	//TODO enforce these assumptions!
 	/**Sale constructor. Initialises all variables as the arguments passed by user.
 	 * @param channel Channel through which the sale was made.
@@ -58,7 +59,7 @@ public class Sale {
 		this.revenuesPLP = tempRevenuesPLP.doubleValue();
 		this.currency = currency;
 	}
-	
+
 	public Channel getChannel() {
 		return channel;
 	}
@@ -129,7 +130,7 @@ public class Sale {
 			} catch (NullPointerException e) {
 				System.out.println("There was a problem getting the exchange rate of this sale: " + this);
 			}
-			
+
 			//Calculate Royalty
 			try {
 				for (Person p : channel.getListRoyalties().get(book).keySet()) {
@@ -151,5 +152,5 @@ public class Sale {
 				+ ", price=" + price + ", deliveryCost=" + deliveryCost + ", revenuesPLP=" + revenuesPLP + ", currency=" + currency 
 				+ ", Royalties have been calculated=" + royaltyHasBeenCalculated + "]";
 	}
-	
+
 }

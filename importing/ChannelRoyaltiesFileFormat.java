@@ -10,10 +10,11 @@ import main.IRoyaltyType;
 import main.RoyaltyPercentage;
 import main.SalesHistory;
 
-public class ChannelRoyaltiesFileFormat extends FileFormat {
-	
+public class ChannelRoyaltiesFileFormat extends FileFormat implements java.io.Serializable {
+
+	private static final long serialVersionUID = 7189545679878555838L;
 	private Channel channel;
-	
+
 	@Override
 	public void importData(String filePath) {
 		try {
@@ -22,7 +23,7 @@ public class ChannelRoyaltiesFileFormat extends FileFormat {
 					this.channel = ch;
 				}
 			}
-			
+
 			//Reads the file
 			BufferedReader br = new BufferedReader(new FileReader(filePath));
 			StringBuilder lines = new StringBuilder();
@@ -32,11 +33,11 @@ public class ChannelRoyaltiesFileFormat extends FileFormat {
 				lines.append(line + "\n");
 			}
 			br.close();
-			
+
 			// Places each line as an element in an array of Strings
 			String temp = lines.toString();
 			String[] allLines = temp.split("\n");
-			
+
 			//Parses data for each currency and places it in class variable listForex by calling importRoyalties() on each currency line of csv
 			//Considers that the first line of currencies is the second line of csv.
 			//Stops if counter reaches the total number of lines of csv, or if the line is shorter than 5 characters,
@@ -50,9 +51,9 @@ public class ChannelRoyaltiesFileFormat extends FileFormat {
 			System.out.println("There was a problem importing this file.");
 			e.printStackTrace();
 		}
-		
+
 	}
-	
+
 	private void importRoyalties(String line) {
 		//Divides line into its individual cells by splitting on commas that are not within quotes
 		//And trims all leading and trailing whitespace from each value.

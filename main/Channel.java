@@ -18,14 +18,15 @@ import importing.FileFormat;
  * @author crhm
  *
  */
-public class Channel {
-	
+public class Channel implements java.io.Serializable {
+
+	private static final long serialVersionUID = 6186357366182288547L;
 	private FileFormat fileFormat;
 	private final String name;
 	private final HashMap<Book, HashMap<Person, IRoyaltyType>> listRoyalties = new HashMap<Book, HashMap<Person, IRoyaltyType>>();
 	private final HashMap<String, HashMap<String, Double>> historicalForex = new HashMap<String, HashMap<String, Double>>();
 	private final Boolean saleCurrencyIsAlwaysUSD;
-	
+
 	/**Channel constructor. Initialises channel names and fileFormat to the corresponding arguments passed by user.
 	 * <br>Initialises saleCurrencyIsAlwaysUSD to false by default. Use other constructor for channels that need it set to true.
 	 * @param name String name of channel
@@ -36,7 +37,7 @@ public class Channel {
 		this.fileFormat = fileFormat;
 		this.saleCurrencyIsAlwaysUSD = false;
 	}
-	
+
 	/**Channel constructor. Initialises channel names and fileFormat to the corresponding arguments passed by user.
 	 * <br>Allows one to set the value of saleCurrencyIsAlwaysUSD to true, which simplifies royalties calculations.
 	 * @param name String name of channel
@@ -68,7 +69,7 @@ public class Channel {
 	public String getName() {
 		return name;
 	}
-	
+
 	/** Returns the list of royalties of that channel, as a HashMap mapping books to Hashmaps 
 	 * which map Persons to the type of Royalty that they hold. Hence each book may have several 
 	 * royalty holders with each a different type of royalty.
@@ -116,7 +117,7 @@ public class Channel {
 	public HashMap<String, HashMap<String, Double>> getHistoricalForex() {
 		return historicalForex;
 	}
-	
+
 	/** Adds a list of Foreign Exchange rates for different currencies into US Dollars, associated with the month and year 
 	 *  that it corresponds to, to the app's list of historical FX rates.
 	 * @param monthAndYear String representing the month and year (following the format "Oct 2017")
@@ -125,7 +126,7 @@ public class Channel {
 	public void addHistoricalForex(String monthAndYear, HashMap<String, Double> listForex) {
 		this.historicalForex.put(monthAndYear, listForex);
 	}
-	
+
 	@Override
 	public String toString() {
 		return "Channel [name=" + name + "]";
@@ -161,7 +162,7 @@ public class Channel {
 			return false;
 		return true;
 	}
-	
-	
+
+
 
 }

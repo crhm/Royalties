@@ -19,19 +19,19 @@ import main.SalesHistory;
  *
  */
 public abstract class FileFormat {
-	
+
 	int firstLineOfData;
 	int minLengthOfLine;
 	SimpleDateFormat oldDateFormat;
-	
+
 	final SimpleDateFormat newDateFormat = new SimpleDateFormat("MMM yyyy");
-	
+
 	/**Imports the data found in the file, whose path (from src folder) + name + extension is the parameter filePath, into the 
 	 * app. Performs that action differently depending on the IFileFormat implementation it is called on.
 	 * @param filePath
 	 */
 	public abstract void importData(String filePath);
-	
+
 	/** Reads file whose name and path is passed as argument, and takes each line and puts it in an array of strings which it returns.
 	 * 
 	 * @param filePath name and path of file to be read 
@@ -49,7 +49,7 @@ public abstract class FileFormat {
 				lines.append(line + "\n");
 			}
 			br.close();
-			
+
 			// Places each line as an element in an array of Strings
 			String temp = lines.toString();
 			allLines = temp.split("\n");
@@ -59,7 +59,7 @@ public abstract class FileFormat {
 		}
 		return allLines;
 	}
-	
+
 	/**Checks the app to see if the list of books managed by PLP contains a book whose title contains the bookTitle string (or vice versa) 
 	 * (ignoring quotes and capitalisation), or which has this identifier. If it does, this is the book it returns.
 	 * <br>If that book has no author info, it sets it the author passed as argument. 
@@ -94,7 +94,7 @@ public abstract class FileFormat {
 		}
 		return book;
 	}
-	
+
 	/** Passed a string which it expects to be in oldDateFormat, it returns the correct date in newDateFormat.
 	 * Throws a ParseException if the string passed as argument is not of the oldDateFormat
 	 * @param oldDate String that contains the date to be parsed and modified
@@ -110,7 +110,7 @@ public abstract class FileFormat {
 		}
 		return newDateFormat.format(date);
 	}
-	
+
 	/**Checks if the app contains a channel of the name provided; returns it if it does.
 	 * If it does not, it creates one with that name and the fileFormat provided and adds it to the app.
 	 * 

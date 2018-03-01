@@ -18,8 +18,10 @@ import main.SalesHistory;
  * @author crhm
  *
  */
-public class AppleFileFormat extends FileFormat {
-	
+public class AppleFileFormat extends FileFormat implements java.io.Serializable {
+
+	private static final long serialVersionUID = -7516082584099681089L;
+
 	public AppleFileFormat() {
 		super();
 		super.firstLineOfData = 1;
@@ -35,7 +37,7 @@ public class AppleFileFormat extends FileFormat {
 	@Override
 	public void importData(String filePath) {
 		String[] allLines = readFile(filePath);
-			
+
 		//Parses data for each sale and imports it by calling importSale on each sales line of txt file
 		//Considers that the first line of sales is the second line of txt file.
 		//Stops if counter reaches the total number of lines of txt file, or if the line is shorter than 25 characters,
@@ -49,9 +51,9 @@ public class AppleFileFormat extends FileFormat {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		
+
 	}
-	
+
 	private void importSale(String line) throws IOException {
 		//Divides sales line into its individual cells by splitting on tabulations
 		//And trims all leading and trailing whitespace from each value.
@@ -61,16 +63,16 @@ public class AppleFileFormat extends FileFormat {
 			lineDivided[counter] = s.trim();
 			counter++;
 		}
-		
+
 		Channel channel = obtainChannel("Apple", new AppleFileFormat(), false);
-		
+
 		//Initialises the country as the value of the 18th cell (Country of Sale)
 		String country = lineDivided[17];
-		
+
 		String date = obtainDate(lineDivided[0]);
-		
+
 		Book book = obtainBook(lineDivided[12], lineDivided[11], lineDivided[10]);
-		
+
 		//Checks wether this sale is a sale or a return by checking the value of the 10th cell (Sale or Return),
 		//and correspondingly assigns a positive or a negative version of the value found in the 6th cell (Quantity)
 		//to the variable netUnitsSold.
@@ -80,21 +82,21 @@ public class AppleFileFormat extends FileFormat {
 		} else {
 			netUnitsSold = - Integer.parseInt(lineDivided[5]);
 		}
-		
+
 		//Divides value of seventh cell (Extended Partner Share, aka amount PLP got from this sale) by the value
 		//of the 21st cell (Customer Price, since there is no delivery cost to factor in) to obtain the percentage
 		//of the sale that PLP gets as royalty.
 		double royaltyTypePLP = Double.parseDouble(lineDivided[6]) / Double.parseDouble(lineDivided[20]);
-		
+
 		//Assigns the value of the 21st cell (Customer Price) as the price of the item.
 		double price = Double.parseDouble(lineDivided[20]);
-		
+
 		//Sets deliveryCost to 0.
 		double deliveryCost = 0;
-		
+
 		//Assigns the value of the 8th cell (Extended Partner Share) as the revenuesPLP
 		double revenuesPLP = Double.parseDouble(lineDivided[7]);
-		
+
 		//Initialises the Currency of the sale, using the value of the 22d cell (Customer Price Currency)  
 		// as the currency code needed to obtain the correct Currency instance.
 		// Assumes that value of the 9th cell (Extended Partner Share Currency) is the same.
@@ -104,10 +106,10 @@ public class AppleFileFormat extends FileFormat {
 					+ "(currency of PLP revenues for this sale)"
 					+ " was not the same as the Customer Price Currency (currency that the customer paid in.");
 		}
-		
+
 		//Creates the sale and adds its to the app
 		Sale sale = new Sale(channel, country, date, book, netUnitsSold, royaltyTypePLP, price, deliveryCost, revenuesPLP, currency);
 		SalesHistory.get().addSale(sale);
 	}
-	
+
 }

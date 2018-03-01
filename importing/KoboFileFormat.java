@@ -16,8 +16,10 @@ import main.SalesHistory;
  * @author crhm
  *
  */
-public class KoboFileFormat extends FileFormat {
-	
+public class KoboFileFormat extends FileFormat implements java.io.Serializable {
+
+	private static final long serialVersionUID = 126581817248928432L;
+
 	public KoboFileFormat() {
 		super();
 		super.firstLineOfData = 1;
@@ -44,7 +46,7 @@ public class KoboFileFormat extends FileFormat {
 			counter++;
 		}
 	}
-	
+
 	private void importSale(String line) {
 		//Divides sales line into its individual cells by splitting on commas that are not within quotes
 		//And trims all leading and trailing whitespace from each value.
@@ -54,37 +56,37 @@ public class KoboFileFormat extends FileFormat {
 			lineDivided[counter] = s.trim();
 			counter++;
 		}
-		
+
 		Channel channel = obtainChannel("Kobo", new KoboFileFormat(), true);
-		
+
 		//Assigns the value of the second cell (Country) to country
 		String country = lineDivided[1];
-		
+
 		String date = obtainDate(lineDivided[0]);
-		
+
 		Book book = obtainBook(lineDivided[12], lineDivided[11], lineDivided[10]);
-		
+
 		//Assigns the value found in the sixth cell (Total Qty) to netUnitsSold
 		double netUnitsSold = Double.parseDouble(lineDivided[5]);
-		
+
 		//Assigns the value found in the 16th cell (COGS %) to royaltyTypePLP
 		double royaltyTypePLP = Double.parseDouble(lineDivided[15]);
-		
+
 		//Assigns the value found in the 15th cell (COGS Based LP Excluding Tax) to price
 		double price = Double.parseDouble(lineDivided[21]);
-		
+
 		//Sets deliveryCost to 0.
 		double deliveryCost = 0;
-		
+
 		//Assigns the value found in the 25th cell (Net due (Payable Currency)) to revenuesPLP
 		double revenuesPLP = Double.parseDouble(lineDivided[24]);
-		
+
 		//Sets the Currency of the sale to US Dollars, since they do the conversion themselves in the file
 		Currency currency = Currency.getInstance("USD");
-		
+
 		//Creates the sale and adds its to the app
 		Sale sale = new Sale(channel, country, date, book, netUnitsSold, royaltyTypePLP, price, deliveryCost, revenuesPLP, currency);
 		SalesHistory.get().addSale(sale);
 	}
-	
+
 }

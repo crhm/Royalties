@@ -15,11 +15,12 @@ import main.Channel;
  * @author crhm
  *
  */
-public class AppleForexFileFormat extends FileFormat {
+public class AppleForexFileFormat extends FileFormat implements java.io.Serializable {
 
+	private static final long serialVersionUID = 407515394636942145L;
 	private String monthAndYear = "";
 	private HashMap<String, Double> listForex = new HashMap<String, Double>();
-	
+
 	/** Imports the FX data found in the Amazon raw FX data file designated by the argument passed.
 	 * <br>Expects to find a date of format 'October, 2017' in the first cell of the first line of the csv.
 	 * <br>Expects to find the first relevant line at the fifth line of the csv.
@@ -33,7 +34,7 @@ public class AppleForexFileFormat extends FileFormat {
 	@Override
 	public void importData(String filePath) {
 		String[] allLines = readFile(filePath);
-		
+
 		//Obtains the date to give to all sales from the cell in the first line and first column of the csv
 		//And formats it into the expected format.
 		String[] firstLine = allLines[0].split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)", -1);
@@ -49,7 +50,7 @@ public class AppleForexFileFormat extends FileFormat {
 			e.printStackTrace();
 		}
 		this.monthAndYear = newFormat.format(date);
-		
+
 		//Parses data for each currency and places it in class variable listForex by calling importForex() on each currency line of csv
 		//Considers that the first line of currencies is the fourth line of csv.
 		//Stops if counter reaches the total number of lines of csv, or if the line is shorter than 15 characters,
@@ -59,9 +60,9 @@ public class AppleForexFileFormat extends FileFormat {
 			importForex(allLines[counter]);
 			counter++;
 		}
-		
+
 		Channel apple = obtainChannel("Apple", new AppleFileFormat(), false);
-		
+
 		//Places the imported data in the app,
 		//making sure not to replace the existing list of FX rates for this month and year if there is one.
 		//It does however update the FX rate value for currencies that are already in the data for this month.
@@ -87,12 +88,12 @@ public class AppleForexFileFormat extends FileFormat {
 			lineDivided[counter] = s.trim();
 			counter++;
 		}
-		
+
 		//Uses the value in parenthesis in the first cell as the currency
 		String currency = "";
 		String[] temp = lineDivided[0].split("\\(");
 		currency = temp[1].replaceAll("[()]", "");
-		
+
 		//Sets the exchange rate as the division of amount paid to PLP in US dollars and the amount owed to PLP in the foreign currency,
 		//thus obtaining a more exact measure than their listed FX rate.
 		double exchangeRate = 0;
@@ -100,7 +101,7 @@ public class AppleForexFileFormat extends FileFormat {
 		BigDecimal amountOwed = new BigDecimal(lineDivided[7]);
 		BigDecimal rate = amountPaid.divide(amountOwed, 5, RoundingMode.HALF_UP);
 		exchangeRate = rate.doubleValue();
-		
+
 		this.listForex.put(currency, exchangeRate);
 	}
 }

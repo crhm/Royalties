@@ -20,17 +20,18 @@ import main.SalesHistory;
  * @author crhm
  *
  */
-public class AmazonFileFormat extends FileFormat{
+public class AmazonFileFormat extends FileFormat implements java.io.Serializable {
 
+	private static final long serialVersionUID = -5610610928541188327L;
 	private String date = "";
-	
+
 	public AmazonFileFormat() {
 		super();
 		super.firstLineOfData = 2;
 		super.minLengthOfLine = 15;
 		super.oldDateFormat = new SimpleDateFormat("MMMMM yyyy");
 	}
-	
+
 	/**Imports the sales data found in the raw monthly sales data file from Amazon channel into the app.
 	 * <br>Reads the file and then performs data processing for each sale.
 	 * <br>Expects prices to be in american number format (commas for thousands, full stop for decimals)
@@ -40,12 +41,12 @@ public class AmazonFileFormat extends FileFormat{
 	@Override
 	public void importData(String filePath) {
 		String[] allLines = readFile(filePath);
-		
+
 		//Obtains the date to give to all sales from the cell in the first line and second column of the csv
 		//And formats it into the expected format.
 		String[] firstLine = allLines[0].split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)", -1);
 		this.date = obtainDate(firstLine[1]);
-		
+
 		//Parses data for each sale and imports it by calling importSale on each sales line of csv
 		//Considers that the first line of sales is the third line of csv.
 		//Stops if counter reaches the total number of lines of csv, or if the line is shorter than 15 characters,
@@ -56,7 +57,7 @@ public class AmazonFileFormat extends FileFormat{
 			counter++;
 		}
 	}
-	
+
 	private void importSale(String line) {
 		//Divides sales line into its individual cells by splitting on commas that are not within quotes
 		//And trims all leading and trailing whitespace from each value.
@@ -66,9 +67,9 @@ public class AmazonFileFormat extends FileFormat{
 			lineDivided[counter] = s.trim();
 			counter++;
 		}
-		
+
 		Channel channel = obtainChannel("Amazon", new AmazonFileFormat(), false);
-		
+
 		//Checks the column called 'Marketplace' for the last two characters, which it converts to upper case and assigns to
 		//country, unless the value is '.com', in which case the country is "US".
 		String country = "";
@@ -78,16 +79,16 @@ public class AmazonFileFormat extends FileFormat{
 			int length = lineDivided[3].length();
 			country = lineDivided[3].substring(length - 2, length).toUpperCase();
 		}
-		
+
 		Book book = obtainBook(lineDivided[0], lineDivided[1], lineDivided[2]);
-		
+
 		//Assigns value of seventh column ('Net Units Sold') as the netUnitsSold
 		int netUnitsSold = Integer.parseInt(lineDivided[6]);
-		
+
 		//Assigns the value of the eigth column ('Royalty Type'), minus the '%' sign and converted into a value between 0 and 1,
 		//as the royalty percentage that PLP gets for this sale.
 		double royaltyTypePLP = Double.parseDouble(lineDivided[7].replace("%", "")) / 100;
-		
+
 		//Parses the value in 12th column (Average Offer Price Without Tax) as a number in american format 
 		//(comma for thousands, full stop for decimals), and assigns it to the price of the item sold.
 		//Because of the commma the value is surrounded with quotes, which need to be removed.
@@ -101,7 +102,7 @@ public class AmazonFileFormat extends FileFormat{
 			e.printStackTrace();
 		}
 		double price = number1.doubleValue();
-		
+
 		//Parses the value in 14th column (Average Delivery Cost) as a number in american format 
 		//(comma for thousands, full stop for decimals), and assigns it to the delivery Cost of the item sold.
 		//If the value is "N/A", delivery cost is assigned 0.
@@ -124,7 +125,7 @@ public class AmazonFileFormat extends FileFormat{
 		} else {
 			deliveryCost = number2.doubleValue();
 		}
-	   
+
 		//Parses the value in 15th column (Royalty) as a number in american format 
 		//(comma for thousands, full stop for decimals), and assigns it to amount PLP made off this sale.
 		//Because of the commma the value is surrounded with quotes, which need to be removed.
@@ -136,11 +137,11 @@ public class AmazonFileFormat extends FileFormat{
 			e.printStackTrace();
 		}
 		double revenuesPLP = number3.doubleValue();
-		
+
 		//Initialises the Currency of the sale, using the value of the 10th cell (Currency) as the currency code 
 		// needed to obtain the correct Currency instance.
 		Currency currency = Currency.getInstance(lineDivided[9]);
-		
+
 		//Creates the sale and adds its to the app
 		Sale sale = new Sale(channel, country, this.date, book, netUnitsSold, royaltyTypePLP, price, deliveryCost, revenuesPLP, currency);
 		SalesHistory.get().addSale(sale);

@@ -7,11 +7,13 @@ import java.util.HashMap;
  * @author crhm
  *
  */
-public class RoyaltyDependentOnUnitsSold implements IRoyaltyType {
+public class RoyaltyDependentOnUnitsSold implements IRoyaltyType, java.io.Serializable {
 
-//	key is the range of number of units sold for which the percentage (the value) should be applied
+	private static final long serialVersionUID = 3701040635256764410L;
+
+	//	key is the range of number of units sold for which the percentage (the value) should be applied
 	private HashMap<Integer[], Double> percentageForUnitsSold;
-	
+
 	/**RoyaltyDependentOnUnitsSold constructor. Argument determines what percentage to apply for what range of units sold.
 	 * @throws IllegalArgumentException if one of the HashMap's keys is not of length 2, 
 	 * or if its first element is not smaller or equal to its second element, or if the percentage is not given as a number between 0 and 1.
@@ -35,7 +37,7 @@ public class RoyaltyDependentOnUnitsSold implements IRoyaltyType {
 		}
 		this.percentageForUnitsSold = percentageForUnitsSold;
 	}
-	
+
 	/**Returns the amount to add to the balance of the royalty holder given the revenue PLP made on this sale of the item 
 	 * as well as the total number of units sold for this item so far, following the rules set when creating the instance.
 	 */
@@ -49,5 +51,5 @@ public class RoyaltyDependentOnUnitsSold implements IRoyaltyType {
 		}
 		return amount;
 	}
-	
+
 }

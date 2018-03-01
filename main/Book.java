@@ -9,12 +9,13 @@ import java.util.List;
  * @author crhm
  *
  */
-public class Book {
-	
+public class Book implements java.io.Serializable{
+
+	private static final long serialVersionUID = 9050853882885242193L;
 	private final String title;
 	private String author;
 	private final List<String> identifiers;
-	
+
 	/** Book constructor. Initialises title, author and identifier to the corresponding arguments passed by the user.
 	 * @param title String title of book
 	 * @param author String name of author
@@ -26,7 +27,7 @@ public class Book {
 		this.identifiers = new ArrayList<String>();
 		this.identifiers.add(identifier);
 	}
-	
+
 	public String getTitle() {
 		return title;
 	}
@@ -42,11 +43,11 @@ public class Book {
 	public List<String> getIdentifiers() {
 		return identifiers;
 	}
-	
+
 	public void addIdentifier(String identifier)	{
 		this.identifiers.add(identifier);
 	}
-	
+
 	@Override
 	public String toString() {
 		return "Book [title=" + title + ", author=" + author + ", identifier=" + identifiers + "]";

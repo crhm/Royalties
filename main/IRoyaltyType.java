@@ -6,7 +6,7 @@ package main;
  *
  */
 public interface IRoyaltyType {
-	
+
 	/**Returns the amount to add to the balance of the royalty holder, given the revenue PLP made for a sale.
 	 * <br>The total number of units sold for the given item is required in case the royalty type depends on it.
 	 * @param revenuesPLP revenue PLP made on a sale.

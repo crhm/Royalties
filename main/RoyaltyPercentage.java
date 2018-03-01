@@ -5,10 +5,11 @@ package main;
  * @author crhm
  *
  */
-public class RoyaltyPercentage implements IRoyaltyType {
+public class RoyaltyPercentage implements IRoyaltyType, java.io.Serializable {
 
+	private static final long serialVersionUID = 591464409407047796L;
 	private double percentage;
-	
+
 	/**RoyaltyPercentage constructor. Initialises the percentage of revenue to be given to royalty holder as the argument passed by user.
 	 * @param percentage Percentage to be set as royalty. Must be a number between 0 and 1.
 	 * @throws IllegalArgumentException if percentage is not a number between 0 and 1
@@ -32,7 +33,7 @@ public class RoyaltyPercentage implements IRoyaltyType {
 	public String toString() {
 		return "RoyaltyPercentage: " + percentage;
 	}
-	
-	
+
+
 
 }

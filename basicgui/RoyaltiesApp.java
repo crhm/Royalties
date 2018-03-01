@@ -1,9 +1,12 @@
 package basicgui;
 
+import java.io.File;
+
 import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
 
 import importing.ImportEverything;
+import main.SalesHistory;
 
 /**GUI for royalties app. Opens a full screen window with several panels displaying different information:
  * <br>Sales, Royalty Holders, PLP Books, Channels, Royalty Holders Per Channel, Data Verification.
@@ -16,10 +19,7 @@ public class RoyaltiesApp extends JFrame implements Runnable {
 
 	public static void main(String[] args) {
 		try {
-			//Import data first, and only when done start with the GUI
-			Thread importThread = new Thread(new ImportEverything(), "Importing data");
-			importThread.start();
-			importThread.join(); //wait for this thread to die before starting next one
+			obtainData();
 			RoyaltiesApp test = new RoyaltiesApp();
 			Thread guiThread = new Thread(test, "Swing GUI");
 			guiThread.start();
@@ -32,6 +32,15 @@ public class RoyaltiesApp extends JFrame implements Runnable {
 		this.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		this.setTitle("Royalties App");
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
+		//Saves data by serialising it on close.
+		this.addWindowListener(new java.awt.event.WindowAdapter() {
+			@Override
+			public void windowClosing(java.awt.event.WindowEvent windowEvent) {
+				SalesHistory.get().serialise();
+			}
+		});
+
 
 		JTabbedPane allTabs = new JTabbedPane();        
 		allTabs.add("Sales", new SalesPanel());
@@ -52,6 +61,20 @@ public class RoyaltiesApp extends JFrame implements Runnable {
 	@Override
 	public void run() {
 		initialize();
-
 	} 
+
+	/**Gets royalties data by deserialising SalesHistory if it finds the corresponding file, 
+	 * or by importing everything if it doesn't.
+	 * @throws InterruptedException if a thread interrupts the import thread.
+	 */
+	private static void obtainData() throws InterruptedException {
+		File f = new File("/tmp/data.ser");
+		if(f.exists() && !f.isDirectory()) { 
+			SalesHistory.get().deSerialise();
+		} else {
+			Thread importThread = new Thread(new ImportEverything(), "Importing data");
+			importThread.start();
+			importThread.join(); //wait for this thread to die before starting next one
+		}
+	}
 }

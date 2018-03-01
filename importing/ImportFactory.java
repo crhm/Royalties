@@ -1,7 +1,9 @@
 package importing;
 
-public class ImportFactory {
-	
+public class ImportFactory implements java.io.Serializable {
+
+	private static final long serialVersionUID = 8392393437563388498L;
+
 	public static void ImportData(String fileName) {
 		FileFormat temp = null;
 		if (fileName.toLowerCase().contains("kobo")) { //KOBO

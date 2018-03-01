@@ -15,8 +15,10 @@ import main.Channel;
  * @author crhm
  *
  */
-public class AmazonForexFileFormat extends FileFormat {
-	
+public class AmazonForexFileFormat extends FileFormat implements java.io.Serializable {
+
+	private static final long serialVersionUID = -1429898329388814973L;
+
 	public AmazonForexFileFormat() {
 		super();
 		super.firstLineOfData = 1;
@@ -26,7 +28,7 @@ public class AmazonForexFileFormat extends FileFormat {
 
 	private String monthAndYear = "";
 	private HashMap<String, Double> listForex = new HashMap<String, Double>();
-	
+
 	/** Imports the FX data found in the Amazon raw FX data file designated by the argument passed.
 	 * <br>Expects relevant lines to be only even numbered lines.
 	 * <br>Will rewrite FX rates for existing currencies also present in this file, 
@@ -38,12 +40,12 @@ public class AmazonForexFileFormat extends FileFormat {
 	@Override
 	public void importData(String filePath) {
 		String[] allLines = readFile(filePath);
-		
+
 		//Obtains the date to give to all sales from the cell in the second line and first column of the csv
 		//And formats it into the expected format.
 		String[] secondLine = allLines[1].split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)", -1);
 		this.monthAndYear = obtainDate(secondLine[0]);
-		
+
 		//Parses data for each currency and places it in class variable listForex by calling importForex() on each currency line of csv
 		//Considers that the first line of currencies is the second line of csv.
 		//Stops if counter reaches the total number of lines of csv, or if the line is shorter than 15 characters,
@@ -54,9 +56,9 @@ public class AmazonForexFileFormat extends FileFormat {
 			importForex(allLines[counter]);
 			counter = counter + 2;
 		}
-		
+
 		Channel amazon = obtainChannel("Amazon", new AmazonFileFormat(), false);
-		
+
 		//Places the imported data in the app,
 		//making sure not to replace the existing list of FX rates for this month and year if there is one.
 		//It does however update the FX rate value for currencies that are already in the data for this month.
@@ -82,10 +84,10 @@ public class AmazonForexFileFormat extends FileFormat {
 			lineDivided[counter] = s.trim();
 			counter++;
 		}
-		
+
 		//Uses the value of the 8th cell to find currency
 		String currency = lineDivided[7];
-		
+
 		//Sets the exchange rate as the division of amount paid to PLP in US dollars and the amount owed to PLP in the foreign currency,
 		//thus obtaining a more exact measure than their listed FX rate.
 		double exchangeRate = 0;
@@ -93,7 +95,7 @@ public class AmazonForexFileFormat extends FileFormat {
 		BigDecimal amountOwed = new BigDecimal(lineDivided[8]);
 		BigDecimal rate = amountPaid.divide(amountOwed, 5, RoundingMode.HALF_UP);
 		exchangeRate = rate.doubleValue();
-		
+
 		this.listForex.put(currency, exchangeRate);
 	}
 }

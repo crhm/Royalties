@@ -9,11 +9,12 @@ import java.math.RoundingMode;
  * @author crhm
  *
  */
-public class Person {
-	
+public class Person implements java.io.Serializable {
+
+	private static final long serialVersionUID = -6122237628268675623L;
 	private final String name;
 	private double balance;
-	
+
 	/**Person constructor. Initialises Person name to the String passed as argument by the user, and Person balance to 0.
 	 * @param name String name of Person.
 	 */
@@ -30,7 +31,7 @@ public class Person {
 		BigDecimal tempAmount = new BigDecimal(this.balance).setScale(2, RoundingMode.HALF_UP);
 		return tempAmount.doubleValue();
 	}
-	
+
 	/**Adds double passed as argument to the person's balance (rounded half up to 2 decimal places).
 	 * 
 	 * @param amount Amount to add to balance.
