@@ -68,7 +68,7 @@ public class DataVerification {
 		for (String channel : listBooksSoldPerChannel.keySet()) {
 			for (Book b : listBooksSoldPerChannel.get(channel)) {
 				if (!SalesHistory.get().getListChannels().get(channel).getListRoyalties().keySet().contains(b)) {
-					output = output.concat("No royalty information was found for \"" + b.getTitle().replace("\"", "") 
+					output = output.concat("No royalty information was found for \"" + b.getTitle() 
 							+ "\" at this channel: " + channel + "\n");
 				}
 			}

@@ -15,11 +15,12 @@ public class Person implements java.io.Serializable {
 	private final String name;
 	private double balance;
 
-	/**Person constructor. Initialises Person name to the String passed as argument by the user, and Person balance to 0.
+	/**Person constructor. Initialises Person name to the String passed as argument by the user (removing quote characters), 
+	 * and Person balance to 0.
 	 * @param name String name of Person.
 	 */
 	public Person(String name) {
-		this.name = name;
+		this.name = name.replace("\"", "");
 		this.balance = 0;
 	}
 

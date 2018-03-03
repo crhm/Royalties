@@ -72,7 +72,7 @@ public class RoyaltyHoldersPanel extends JPanel {
 		Object[][] data = new Object[SalesHistory.get().getListRoyaltyHolders().values().size()][2];
 		int count = 0;
 		for (Person p : SalesHistory.get().getListRoyaltyHolders().values()) {
-			data[count][0] = p.getName().replace("\"", "");
+			data[count][0] = p.getName();
 			data[count][1] = p.getBalance();
 			count++;
 		}

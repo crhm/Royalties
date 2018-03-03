@@ -119,7 +119,7 @@ public class SalesPanel extends JPanel {
 			data[rowCounter][0] = s.getChannel().getName();
 			data[rowCounter][1] = s.getCountry();
 			data[rowCounter][2] = s.getDate();
-			data[rowCounter][3] = s.getBook().getTitle().replace("\"", "") + ", " + s.getBook().getAuthor().replace("\"", "");
+			data[rowCounter][3] = s.getBook().getTitle() + ", " + s.getBook().getAuthor();
 			data[rowCounter][4] = s.getNetUnitsSold();
 			data[rowCounter][5] = s.getRoyaltyTypePLP();
 			data[rowCounter][6] = s.getPrice();

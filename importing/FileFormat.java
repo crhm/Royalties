@@ -75,9 +75,9 @@ public abstract class FileFormat {
 		Book book = null;
 		Boolean flag2 = true;
 		for (Book b : SalesHistory.get().getListPLPBooks().values()) {
-			String existingBookTitle = b.getTitle().replace("\"", "").toLowerCase();
+			String existingBookTitle = b.getTitle().toLowerCase();
 			String bookTitleFound = bookTitle.replace("\"", "").toLowerCase();
-			if (existingBookTitle.contains(bookTitleFound) || bookTitleFound.contains(existingBookTitle) || b.getIdentifiers().contains(identifier)) {
+			if (existingBookTitle.equals(bookTitleFound) || b.getIdentifiers().contains(identifier)) {
 				book = b;
 				flag2 = false;
 				if (!b.getIdentifiers().contains(identifier)) {

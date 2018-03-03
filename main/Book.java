@@ -18,15 +18,17 @@ public class Book implements java.io.Serializable{
 	private final List<String> identifiers;
 	private double totalUnitsSold;
 	
-	/**Book constructor. Initialises title, author, and identifier to the corresponding arguments passed by the user.
+	/**Book constructor.
+	 * <br>Removes quote characters from title and author arguments, and then initialises Book variables to them.
+	 * <br>Creates an ArrayList of Strings and places identifier in it.
 	 * <br>Initialises totalUnitsSold to 0.
 	 * @param title String title of book
 	 * @param author String name of author
 	 * @param identifier String unique ID of book, e.g. ISBN, ISBN-13, e-ISBN or ASIN
 	 */
 	public Book(String title, String author, String identifier) {
-		this.title = title;
-		this.author = author;
+		this.title = title.replace("\"", "");
+		this.author = author.replace("\"", "");
 		this.identifiers = new ArrayList<String>();
 		this.identifiers.add(identifier);
 		this.totalUnitsSold = 0;
