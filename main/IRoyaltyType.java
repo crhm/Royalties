@@ -15,5 +15,4 @@ public interface IRoyaltyType {
 	 */
 	public double getAmountDue(double revenuesPLP, double totalUnitsSold);
 
-	//TODO implement toString method
 }

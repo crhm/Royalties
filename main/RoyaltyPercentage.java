@@ -34,6 +34,8 @@ public class RoyaltyPercentage implements IRoyaltyType, java.io.Serializable {
 		return "RoyaltyPercentage: " + percentage;
 	}
 
-
+	public double getPercentage() {
+		return percentage;
+	}
 
 }
