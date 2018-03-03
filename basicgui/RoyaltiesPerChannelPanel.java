@@ -45,9 +45,7 @@ public class RoyaltiesPerChannelPanel extends JPanel implements ActionListener, 
 	//TODO add button should be dynamic; if only no particular royalty is selected, it should read 'add book to list of books with royalties...'
 	//and first add a book (from list of books - books already with a royalty for this channel, or create a new one) and then add a royalty to it. 
 	//If one is selected, it should read 'add royalty to this book' and perform that action only.
-	
-	//TODO Fix 'all authors are equal' and other book titles BUG...
-	
+		
 	private JPanel buttonPanel = new JPanel(new GridLayout(1, 5));
 	private JButton editButton = new JButton("Edit");
 	private JButton addButton = new JButton("Add");
@@ -193,12 +191,16 @@ public class RoyaltiesPerChannelPanel extends JPanel implements ActionListener, 
 	@Override
 	public void valueChanged(ListSelectionEvent e) {
 		if (e.getSource() == bookTitles.getSelectionModel()) {
-			//Need this if because sorting caused the selection to be void somehow and return an index of -1
-			// Instead, I clear the selection and set it at the same model index (which is now a different view index)
+			//Change in the selection of Book Title
 			if (bookTitles.getSelectedRow() < 0) { 
+				//Sorting caused the selection to be void somehow and return an index of -1
+				// So, I clear the selection and set it at the same model index (which is now a different view index)
 				bookTitles.clearSelection();
 				bookTitles.getSelectionModel().setSelectionInterval(0, bookTitles.convertRowIndexToView(selectionIndexBeforeSort));
 			} else {
+				//Genuine value change, another book title has been selected
+				editButton.setEnabled(false);
+				deleteButton.setEnabled(false);
 				int tableRow = bookTitles.getSelectedRow();
 				String bookTitle = bookTitles.getValueAt(tableRow, 0).toString();
 				Book book = SalesHistory.get().getListPLPBooks().get(bookTitle);
@@ -220,10 +222,7 @@ public class RoyaltiesPerChannelPanel extends JPanel implements ActionListener, 
 				royaltyDetails.revalidate();
 				royaltyDetails.repaint();
 
-				//For preserving the selection when sorting; save the model row so that you can give it the appropriate new view row 
-				int modelRow = bookTitles.convertRowIndexToModel(tableRow);
-				selectionIndexBeforeSort = modelRow;
-				currentBook = (String) bookTitles.getValueAt(modelRow, 0); 
+				currentBook = (String) bookTitles.getValueAt(tableRow, 0); 
 			}	
 		} else if (e.getSource() == royaltiesTable.getSelectionModel()) {
 			if (royaltiesTable.getSelectedRow() != -1) {
