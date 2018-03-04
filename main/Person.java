@@ -58,17 +58,20 @@ public class Person implements java.io.Serializable {
 		}
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
 	@Override
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		long temp;
-		temp = Double.doubleToLongBits(balance);
-		result = prime * result + (int) (temp ^ (temp >>> 32));
 		result = prime * result + ((name == null) ? 0 : name.hashCode());
 		return result;
 	}
 
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
 	@Override
 	public boolean equals(Object obj) {
 		if (this == obj)
@@ -78,8 +81,6 @@ public class Person implements java.io.Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		Person other = (Person) obj;
-		if (Double.doubleToLongBits(balance) != Double.doubleToLongBits(other.balance))
-			return false;
 		if (name == null) {
 			if (other.name != null)
 				return false;
