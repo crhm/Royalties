@@ -2,6 +2,8 @@ package main;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Currency;
 
 /**Class which represents a sale of a book managed by PLP through one of its channels. 
@@ -28,9 +30,8 @@ public class Sale implements java.io.Serializable {
 	private final Currency currency;
 	private Boolean royaltyHasBeenCalculated = false;
 
-	//TODO enforce these assumptions!
 	/**Sale constructor. Initialises all variables as the arguments passed by user.
-	 * @param channel Channel through which the sale was made.
+	 * @param channel Channel through which the sale was made. Must be one recognised by SalesHistory.
 	 * @param country Format is not fixed for this at this stage.
 	 * @param date String representing month and year following the format "Oct 2017"
 	 * @param book Item sold. Must be a book managed by PLP.
@@ -40,10 +41,16 @@ public class Sale implements java.io.Serializable {
 	 * (Will be rounded Half Up to two decimal places).
 	 * @param deliveryCost May be 0. (Will be rounded Half Up to two decimal places).
 	 * @param revenuesPLP Should be (Price - deliverCost) * netUnitsSold * royaltyPLP. (Will be rounded Half Up to two decimal places).
-	 * @param currency Need to calculate balances in USD if the sale was in a foreign currency
+	 * @param currency Because of need to calculate balances in USD if the sale was in a foreign currency
+	 * @throws IllegalArgumentException if arguments are null, or empty strings, or violate above stated rules.
 	 */
 	public Sale(Channel channel, String country, String date, Book book, double netUnitsSold, 
 			double royaltyTypePLP, double price, double deliveryCost, double revenuesPLP, Currency currency) {
+		validateChannel(channel);
+		validateCountry(country);
+		validateDate(date);
+		validateBook(book);
+		validateCurrency(currency);
 		book.addUnitsToTotalSold(netUnitsSold);
 		this.channel = channel;
 		this.country = country;
@@ -154,4 +161,61 @@ public class Sale implements java.io.Serializable {
 				+ ", Royalties have been calculated=" + royaltyHasBeenCalculated + "]";
 	}
 
+	/**Checks that channel is not null and belongs to SalesHistory's list of channels
+	 * @throws IllegalArgumentException if field takes unauthorised value
+	 */
+	private void validateChannel(Channel channel) {
+		if (channel == null) {
+			throw new IllegalArgumentException("Error: channel cannot be null");
+		}
+		if (!SalesHistory.get().getListChannels().containsKey(channel.getName())) {
+			throw new IllegalArgumentException("Error: channel should belong to the list of channels in SalesHistory");
+		}
+	}
+	
+	/**Checks that book is not null, and that it is on the list of books managed by PLP in SalesHistory
+	 * @throws IllegalArgumentException if field takes unauthorised value
+	 */
+	private void validateBook(Book book) {
+		if (book == null) {
+			throw new IllegalArgumentException("Error: book cannot be null");
+		}
+		if (!SalesHistory.get().getListPLPBooks().containsKey(book.getTitle())) {
+			throw new IllegalArgumentException("Error: book is not on the list of books managed by PLP in SalesHistory");
+		}
+	}
+
+	/**Checks that currency is not null
+	 * @throws IllegalArgumentException if field takes unauthorised value
+	 */
+	private void validateCurrency(Currency currency) {
+		if (currency == null) {
+			throw new IllegalArgumentException("Error: currency cannot be null");
+		}
+	}
+	
+	/**Checks that country is not null or empty
+	 * @throws IllegalArgumentException if field takes unauthorised value
+	 */
+	private void validateCountry(String country) {
+		if (country == null || country.isEmpty()){
+			throw new IllegalArgumentException("Error: country cannot be empty or null");
+		}
+	}
+
+	/**Checks date is not null or empty, and that it follows the "Oct 2018" format.
+	 * @throws IllegalArgumentException if field takes unauthorised value
+	 */
+	private void validateDate(String date) {
+		if (date == null || date.isEmpty()){
+			throw new IllegalArgumentException("Error: date cannot be empty or null");
+		}
+		
+		SimpleDateFormat format = new SimpleDateFormat("MMM yyyy");
+		try {
+			format.parse(date);
+		} catch (ParseException e) {
+			throw new IllegalArgumentException("Error: date must be of format Oct 2018");
+		}
+	}
 }

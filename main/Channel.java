@@ -1,5 +1,8 @@
 package main;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Currency;
 import java.util.HashMap;
 
 import importing.FileFormat;
@@ -31,8 +34,10 @@ public class Channel implements java.io.Serializable {
 	 * <br>Initialises saleCurrencyIsAlwaysUSD to false by default. Use other constructor for channels that need it set to true.
 	 * @param name String name of channel
 	 * @param fileFormat FileFormat implementation to be associated with the channel
+	 * @throws IllegalArgumentException if field takes an unpermitted value (name is null, empty, or already taken).
 	 */
 	public Channel(String name, FileFormat fileFormat) {
+		validateName(name);
 		this.name = name;
 		this.fileFormat = fileFormat;
 		this.saleCurrencyIsAlwaysUSD = false;
@@ -43,8 +48,10 @@ public class Channel implements java.io.Serializable {
 	 * @param name String name of channel
 	 * @param fileFormat FileFormat implementation to be associated with the channel
 	 * @param saleCurrencyIsAlwaysUSD
+	 * @throws IllegalArgumentException if field takes an unpermitted value (name is null, empty, or already taken).
 	 */
 	public Channel(String name, FileFormat fileFormat, Boolean saleCurrencyIsAlwaysUSD) {
+		validateName(name);
 		this.name = name;
 		this.fileFormat = fileFormat;
 		this.saleCurrencyIsAlwaysUSD = saleCurrencyIsAlwaysUSD;
@@ -81,17 +88,35 @@ public class Channel implements java.io.Serializable {
 	}
 
 	/**Adds a royalty to the list of royalties of this channel.
+	 * <br>If book is not in SalesHistory's list of books, it is added to it.
+	 * <br>If SalesHistory's list of royalty holders has no one by royaltyHolderName, it creates and adds one.
 	 * @param b Book for which the royalty is held
 	 * @param royaltyHolder Person which holds the royalty
 	 * @param royalty royalty type that is held by the person for this book
+	 * @throws IllegalArgumentException if book b is null or has an empty title, or royaltyHolderName is empty
 	 */
 	public void addRoyalty(Book b, String royaltyHolderName, IRoyaltyType royalty) {
+		//Argument validation
+		validateBook(b);
+		if (royaltyHolderName.isEmpty()) {
+			throw new IllegalArgumentException("Error: royaltyHolderName cannot be empty.");
+		}
+		
+		//Adds the book to SalesHistory if it does not already exist
+		if (!SalesHistory.get().getListPLPBooks().containsKey(b.getTitle())) {
+			SalesHistory.get().addBook(b);
+		}
+		
+		//Obtains the list of royalties for this book if one exists, or creates an empty one if not
 		HashMap<Person, IRoyaltyType> listHolder = null;
 		if (listRoyalties.containsKey(b)) {
 			listHolder = listRoyalties.get(b);
 		} else {
 			listHolder = new HashMap<Person, IRoyaltyType>();
 		}
+		
+		//Obtains the person with the name passed as argument from SalesHistory's list of royalty holders, 
+		//or creates one if one does not yet exist, and adds it to SalesHistory.
 		Person royaltyHolder2 = null;
 		Boolean flag = true;
 		for (Person p : SalesHistory.get().getListRoyaltyHolders().values()) {
@@ -104,6 +129,8 @@ public class Channel implements java.io.Serializable {
 			royaltyHolder2 = new Person(royaltyHolderName);
 			SalesHistory.get().addRoyaltyHolder(royaltyHolder2);
 		}
+		
+		//Adds the royalty holder + royalty combination to the list of royalties, and links the book to this list of royalties
 		listHolder.put(royaltyHolder2, royalty);
 		this.listRoyalties.put(b, listHolder);
 	}
@@ -122,14 +149,88 @@ public class Channel implements java.io.Serializable {
 	 *  that it corresponds to, to the app's list of historical FX rates.
 	 * @param monthAndYear String representing the month and year (following the format "Oct 2017")
 	 * @param listForex HashMap mapping currency codes (a String following the format "EUR") with the exchange rate into dollars (a double).
+	 * @throws IllegalArgumentException if monthAndYear is empty, null, or incorrect format, or listFX is empty, null or incorrect keys.
 	 */
 	public void addHistoricalForex(String monthAndYear, HashMap<String, Double> listForex) {
+		validateDate(monthAndYear);
+		validateListForex(listForex);
 		this.historicalForex.put(monthAndYear, listForex);
 	}
 
 	@Override
 	public String toString() {
 		return "Channel [name=" + name + "]";
+	}
+
+	/**Channel name must be non empty and non null, and another channel with the same name must not already exist in SalesHistory.
+	 * @throws IllegalArgumentException if field takes an unpermitted value.
+	 * @param name
+	 */
+	private void validateName(String name) {
+		if (SalesHistory.get().getListChannels().get(name) != null) {
+			throw new IllegalArgumentException("Error: another channel with that name already exists.");
+		}
+		
+		boolean nameHasContent = (name != null) && (!name.equals(""));
+		if (!nameHasContent){
+			throw new IllegalArgumentException("Names must be non-null and non-empty.");
+		}
+	}
+	
+	/**Checks that monthAndYear is a string representing a valid date of the format 'Oct 2018', and is 
+	 * neither null nor empty.
+	 * @param monthAndYear
+	 * @throws IllegalArgumentException if field takes an unpermitted value.
+	 */
+	private void validateDate(String monthAndYear) {
+		boolean dateHasContent = (monthAndYear != null) && (!monthAndYear.equals(""));
+		if (!dateHasContent){
+			throw new IllegalArgumentException("Dates (monthAndYear) must be non-null and non-empty.");
+		}
+
+		SimpleDateFormat format = new SimpleDateFormat("MMM yyyy");
+		try {
+			format.parse(monthAndYear);
+		} catch (ParseException e) {
+			throw new IllegalArgumentException("Error: Date (monthAndYear) must be of the following format: Oct 2018, Jan 2009, ...");
+		}
+	}
+	
+	/**Checks that the HashMap is not empty or null, that keys are valid currency codes, and that no exchange rate is 0.
+	 * 
+	 * @param listForex
+	 * @throws IllegalArgumentException if field takes an unpermitted value.
+	 */
+	private void validateListForex(HashMap<String, Double> listForex) {
+		if (listForex == null || listForex.isEmpty()) {
+			throw new IllegalArgumentException("Error: listForex cannot be empty or null.");
+		}
+		for (String s : listForex.keySet()) {
+			if (s.isEmpty() || s == null) {
+				throw new IllegalArgumentException("Error: Currency codes must not be empty or null.");
+			}
+			try {
+				Currency.getInstance(s);
+			} catch (IllegalArgumentException e) {
+				throw new IllegalArgumentException("Error: Currency codes must be a valid ISO 4217 three letter code such as USD or EUR");
+			}
+		}
+		for (Double d : listForex.values()) {
+			if (d == 0) {
+				throw new IllegalArgumentException("Error: no exchange rate can be 0");
+			}
+		}
+	}
+	
+	/**Checks that book is not null nor has an empty title
+	 * 
+	 * @param b
+	 * @throws IllegalArgumentException if field takes an unpermitted value.
+	 */
+	private void validateBook(Book b) {
+		if (b ==null || b.getTitle().isEmpty()) {
+			throw new IllegalArgumentException("Error: book cannot be null, or have an empty title");
+		}
 	}
 
 	@Override

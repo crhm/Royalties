@@ -22,15 +22,22 @@ public class Book implements java.io.Serializable{
 	 * <br>Removes quote characters from title and author arguments, and then initialises Book variables to them.
 	 * <br>Creates an ArrayList of Strings and places identifier in it.
 	 * <br>Initialises totalUnitsSold to 0.
-	 * @param title String title of book
-	 * @param author String name of author
-	 * @param identifier String unique ID of book, e.g. ISBN, ISBN-13, e-ISBN or ASIN
+	 * @param title String title of book (Cannot be empty, cannot be null)
+	 * @param author String name of author (Can be empty, cannot be null)
+	 * @param identifier String unique ID of book, e.g. ISBN, ISBN-13, e-ISBN or ASIN (Can be empty, cannot be null)
+	 * @throws IllegalArgumentException if title is empty or any of the arguments are null.
 	 */
 	public Book(String title, String author, String identifier) {
+		validateTitle(title);
+		if (author == null || identifier == null) {
+			throw new IllegalArgumentException("Error: arguments cannot be null.");
+		}
 		this.title = title.replace("\"", "");
 		this.author = author.replace("\"", "");
 		this.identifiers = new ArrayList<String>();
-		this.identifiers.add(identifier);
+		if (!identifier.isEmpty()) {
+			this.identifiers.add(identifier);
+		}
 		this.totalUnitsSold = 0;
 	}
 
@@ -49,7 +56,13 @@ public class Book implements java.io.Serializable{
 		return title;
 	}
 
+	/**Sets the book's author as the string passed as argument (can be empty but cannot be null)
+	 * @throws IllegalArgumentException if author is null 
+	 */
 	public void setAuthor(String author) {
+		if (author == null) {
+			throw new IllegalArgumentException("Error: author cannot be null.");
+		}
 		this.author = author;
 	}
 
@@ -61,8 +74,31 @@ public class Book implements java.io.Serializable{
 		return identifiers;
 	}
 
+	/**Adds identifier to Book's list of identifiers
+	 * @throws IllegalArgumentException if identifier is empty or null
+	 */
 	public void addIdentifier(String identifier)	{
+		validateIdentifier(identifier);
 		this.identifiers.add(identifier);
+	}
+	
+	/**Checks title is not empty or null.
+	 * @throws IllegalArgumentException if field takes an unpermitted value.
+	 */
+	private void validateTitle(String title) {
+		if (title == null || title.isEmpty()) {
+			throw new IllegalArgumentException("Error: title cannot be empty or null");
+		}
+	}
+	
+	/**Checks identifier is not empty or null.
+	 * @param identifier
+	 * @throws IllegalArgumentException if field takes an unpermitted value.
+	 */
+	private void validateIdentifier(String identifier) {
+		if (identifier == null || identifier.isEmpty()) {
+			throw new IllegalArgumentException("Error: identifier cannot be empty or null");
+		}
 	}
 
 	@Override

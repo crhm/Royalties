@@ -17,9 +17,11 @@ public class Person implements java.io.Serializable {
 
 	/**Person constructor. Initialises Person name to the String passed as argument by the user (removing quote characters), 
 	 * and Person balance to 0.
-	 * @param name String name of Person.
+	 * @param name String name of Person. Cannot be empty or null.
+	 * @throws IllegalArgumentException if person name is empty or null
 	 */
 	public Person(String name) {
+		validateName(name);
 		this.name = name.replace("\"", "");
 		this.balance = 0;
 	}
@@ -45,6 +47,15 @@ public class Person implements java.io.Serializable {
 	@Override
 	public String toString() {
 		return "Person [name=" + name + ", balance=" + balance + "]";
+	}
+	
+	/**Checks if name is empty or null
+	 * @throws IllegalArgumentException if field takes unauthorised value
+	 */
+	private void validateName(String name) {
+		if (name == null || name.isEmpty()) {
+			throw new IllegalArgumentException("Error: name cannot be empty or null.");
+		}
 	}
 
 	@Override
