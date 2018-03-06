@@ -94,6 +94,13 @@ public class SalesHistory implements java.io.Serializable {
 	public void addBook(Book book) {
 		this.listPLPBooks.put(book.getTitle(), book);
 	}
+	
+	/**Removes a book from the list of books managed by PLP
+	 * @param book the Book to remove from the list of Books managed by PLP
+	 */
+	public void removeBook(Book book) {
+		this.listPLPBooks.remove(book.getTitle());
+	}
 
 	/** Returns the list of channels through which PLP sells books,
 	 *  as a HashMap mapping Channel names to Channels.
@@ -168,7 +175,7 @@ public class SalesHistory implements java.io.Serializable {
 	 */
 	public void serialise() { //TODO make serialisation output be a filename with date and time? and then in deserialise choose filename with most recent date?
 		try {
-			FileOutputStream fileOut = new FileOutputStream("/tmp/data6.ser");
+			FileOutputStream fileOut = new FileOutputStream("/tmp/data7.ser");
 			ObjectOutputStream out = new ObjectOutputStream(fileOut);
 			SalesHistory.get().writeObject(out);
 			fileOut.close();
@@ -181,7 +188,7 @@ public class SalesHistory implements java.io.Serializable {
 	 */
 	public void deSerialise() {
 		try {
-			FileInputStream fileIn = new FileInputStream("/tmp/data6.ser");
+			FileInputStream fileIn = new FileInputStream("/tmp/data7.ser");
 			ObjectInputStream in = new ObjectInputStream(fileIn);
 			SalesHistory.get().readObject(in);
 			fileIn.close();

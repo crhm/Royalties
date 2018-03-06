@@ -12,6 +12,7 @@ import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -137,11 +138,17 @@ public class BookPanel extends JPanel implements ActionListener, ListSelectionLi
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == editButton) {
+				//TODO figure out how I manage consequences for other tables in other tabs that represent such info...?
 				int row = booksTable.convertRowIndexToModel(booksTable.getSelectedRow());
 				String title = (String) booksTable.getModel().getValueAt(row, 0);
 				Book book = SalesHistory.get().getListPLPBooks().get(title);
-				new EditBookDialog(book);
-		
+				EditBookDialog editBookDialog = new EditBookDialog(book);
+				editBookDialog.addWindowListener(new WindowAdapter() {
+				@Override
+				public void windowClosed(WindowEvent e) { //update and repaint table on close of editBookDialog
+					updateTable();
+				}				
+			});
 		} else if (e.getSource() == addButton) {
 			AddBookDialog addBookDialog = new AddBookDialog();
 			addBookDialog.addWindowListener(new WindowAdapter() {
@@ -152,7 +159,17 @@ public class BookPanel extends JPanel implements ActionListener, ListSelectionLi
 			});
 
 		} else if (e.getSource() == deleteButton) { 
-			//TODO
+			//TODO figure out stuff below
+			// What should the consequences be for existing sales of that book?
+			// What should the consequences be if it is in royalty lists?
+			int option = JOptionPane.showConfirmDialog(this, "Please confirm you want to delete this book.", "Warning!", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+			if (option == 0) { //If user clicks OK
+				int row = booksTable.convertRowIndexToModel(booksTable.getSelectedRow());
+				String title = (String) booksTable.getModel().getValueAt(row, 0);
+				Book book = SalesHistory.get().getListPLPBooks().get(title);
+				SalesHistory.get().removeBook(book);
+				updateTable();
+			}
 		}
 	}
 
@@ -160,7 +177,7 @@ public class BookPanel extends JPanel implements ActionListener, ListSelectionLi
 	 */
 	@Override
 	public void valueChanged(ListSelectionEvent e) {
-		if (booksTable.getSelectedRow() != 1) {
+		if (booksTable.getSelectedRow() != -1) {
 			deleteButton.setEnabled(true);
 			editButton.setEnabled(true);
 		} else {
@@ -198,6 +215,9 @@ public class BookPanel extends JPanel implements ActionListener, ListSelectionLi
 		//Re-add the listSelectionListener
 		booksTable.getSelectionModel().addListSelectionListener(this);				
 
+		//By redrawing the table, the selection has disappeared, so disable edit and delete buttons
+		editButton.setEnabled(false);
+		deleteButton.setEnabled(false);
 	}
 
 }

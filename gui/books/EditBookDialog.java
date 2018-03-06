@@ -79,7 +79,15 @@ public class EditBookDialog extends JFrame implements ActionListener {
 		if (e.getSource() == cancelButton) {
 			this.dispose();
 		} else if (e.getSource() == confirmButton) {
-		//TODO
+			//TODO make it so for title and units sold
+//			String title = titleTF.getText().trim();
+			String author = authorTF.getText().trim();
+//			String identifiers = identifiersTF.getText().trim();
+//			String unitsSold = unitsSoldTF.getText().trim();
+			
+			book.setAuthor(author);
+			
+			this.dispose();
 		}
 	}	
 	
