@@ -1,10 +1,16 @@
-package basicgui;
+package gui;
 
 import java.io.File;
 
 import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
 
+import gui.books.BookPanel;
+import gui.channels.ChannelPanel;
+import gui.dataverification.DataVerificationPanel;
+import gui.royalties.RoyaltiesPerChannelPanel;
+import gui.royaltyholders.RoyaltyHoldersPanel;
+import gui.sales.SalesPanel;
 import importing.ImportEverything;
 import main.SalesHistory;
 

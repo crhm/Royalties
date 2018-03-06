@@ -1,5 +1,13 @@
 package importing;
 
+import importing.forex.AmazonForexFileFormat;
+import importing.forex.AppleForexFileFormat;
+import importing.sales.AmazonFileFormat;
+import importing.sales.AppleFileFormat;
+import importing.sales.CreatespaceFileFormat;
+import importing.sales.KoboFileFormat;
+import importing.sales.NookFileFormat;
+
 public class ImportFactory implements java.io.Serializable {
 
 	private static final long serialVersionUID = 8392393437563388498L;

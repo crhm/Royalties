@@ -1,4 +1,4 @@
-package basicgui;
+package gui.sales;
 
 import java.awt.GridLayout;
 import java.util.ArrayList;

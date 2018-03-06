@@ -1,4 +1,4 @@
-package importing;
+package importing.sales;
 
 import java.text.NumberFormat;
 import java.text.ParseException;
@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.Currency;
 import java.util.Locale;
 
+import importing.FileFormat;
 import main.Book;
 import main.Channel;
 import main.Sale;

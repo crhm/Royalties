@@ -23,7 +23,7 @@ import java.util.List;
  */
 public class SalesHistory implements java.io.Serializable { 
 
-	private static final long serialVersionUID = 2532726647603526773L; //BUT CAREFUL IS SINGLETON 
+	private static final long serialVersionUID = 2532726647603526773L; //BUT careful: it's a singleton... 
 
 	private static final SalesHistory instance = new SalesHistory();
 
@@ -166,7 +166,7 @@ public class SalesHistory implements java.io.Serializable {
 	
 	/**Serialises SalesHistory by calling its custom writeObject() method, and outputs it to a file called "/tmp/data.ser"
 	 */
-	public void serialise() {
+	public void serialise() { //TODO make serialisation output be a filename with date and time? and then in deserialise choose filename with most recent date?
 		try {
 			FileOutputStream fileOut = new FileOutputStream("/tmp/data6.ser");
 			ObjectOutputStream out = new ObjectOutputStream(fileOut);

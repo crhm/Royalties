@@ -1,4 +1,4 @@
-package main;
+package main.royalties;
 
 /**Interface which all types of royalties must implement, to allow the polymorphic call to getAmountDue() on any
  * royalty type.

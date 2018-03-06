@@ -20,11 +20,11 @@ import main.SalesHistory;
  */
 public abstract class FileFormat {
 
-	int firstLineOfData;
-	int minLengthOfLine;
-	SimpleDateFormat oldDateFormat;
+	protected int firstLineOfData;
+	protected int minLengthOfLine;
+	protected SimpleDateFormat oldDateFormat;
 
-	final SimpleDateFormat newDateFormat = new SimpleDateFormat("MMM yyyy");
+	protected final SimpleDateFormat newDateFormat = new SimpleDateFormat("MMM yyyy");
 
 	/**Imports the data found in the file, whose path (from src folder) + name + extension is the parameter filePath, into the 
 	 * app. Performs that action differently depending on the IFileFormat implementation it is called on.

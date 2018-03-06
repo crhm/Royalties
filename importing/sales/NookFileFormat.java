@@ -1,4 +1,4 @@
-package importing;
+package importing.sales;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -8,6 +8,7 @@ import java.util.Calendar;
 import java.util.Currency;
 import java.util.Date;
 
+import importing.FileFormat;
 import main.Book;
 import main.Channel;
 import main.Sale;

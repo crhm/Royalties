@@ -1,4 +1,4 @@
-package main;
+package main.royalties;
 
 /**Royalty type that sets a fixed amount which is owed per sale regardless of sale revenue.
  * <br>For example: $0.05 per sale.

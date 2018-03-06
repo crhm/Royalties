@@ -6,6 +6,7 @@ import java.util.Currency;
 import java.util.HashMap;
 
 import importing.FileFormat;
+import main.royalties.IRoyaltyType;
 
 /**Class designed to represent the different channels through which PLP sells books, e.g. Apple, Amazon, Nook, Kobo, Createspace...
  * <br>A Channel has a name, an import File Format it is associated with, a list of royalties, since it can vary per channel for 

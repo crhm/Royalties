@@ -1,4 +1,4 @@
-package basicgui;
+package gui.books;
 
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;

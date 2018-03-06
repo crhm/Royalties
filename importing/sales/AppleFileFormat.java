@@ -1,9 +1,10 @@
-package importing;
+package importing.sales;
 
 import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Currency;
 
+import importing.FileFormat;
 import main.Book;
 import main.Channel;
 import main.Sale;

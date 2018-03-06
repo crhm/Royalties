@@ -1,4 +1,4 @@
-package basicgui;
+package gui.royalties;
 
 import java.awt.Component;
 

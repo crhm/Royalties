@@ -6,9 +6,9 @@ import java.io.IOException;
 
 import main.Book;
 import main.Channel;
-import main.IRoyaltyType;
-import main.RoyaltyPercentage;
 import main.SalesHistory;
+import main.royalties.IRoyaltyType;
+import main.royalties.RoyaltyPercentage;
 
 public class ChannelRoyaltiesFileFormat extends FileFormat implements java.io.Serializable {
 

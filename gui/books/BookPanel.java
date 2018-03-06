@@ -1,9 +1,11 @@
-package basicgui;
+package gui.books;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +43,9 @@ public class BookPanel extends JPanel implements ActionListener, ListSelectionLi
 	private JButton editButton = new JButton("Edit");
 	private JButton addButton = new JButton("Add");
 	private JButton deleteButton = new JButton("Delete");
+	
+	//TODO fix appearance of edit button to only happen when one book is selected, and think about delete behavior when more than one is selected
+	//TODO add "these are the same books" button for multiple selection?
 
 
 	public BookPanel() {
@@ -136,8 +141,16 @@ public class BookPanel extends JPanel implements ActionListener, ListSelectionLi
 				String title = (String) booksTable.getModel().getValueAt(row, 0);
 				Book book = SalesHistory.get().getListPLPBooks().get(title);
 				new EditBookDialog(book);
+		
 		} else if (e.getSource() == addButton) {
-			//TODO
+			AddBookDialog addBookDialog = new AddBookDialog();
+			addBookDialog.addWindowListener(new WindowAdapter() {
+				@Override
+				public void windowClosed(WindowEvent e) { //update and repaint table on close of addBookDialog
+					updateTable();
+				}				
+			});
+
 		} else if (e.getSource() == deleteButton) { 
 			//TODO
 		}
@@ -154,6 +167,37 @@ public class BookPanel extends JPanel implements ActionListener, ListSelectionLi
 			deleteButton.setEnabled(false);
 			editButton.setEnabled(false);
 		}	
+	}
+	
+	/**Method to be called when the data of the list of books in SalesHistory has changed, and thus the table needs 
+	 * to be repainted.
+	 */
+	private void updateTable() {
+		//To avoid crashes while it is being reworked
+		booksTable.getSelectionModel().removeListSelectionListener(this);
+		
+		//Update data by updating model
+		TableModel model = getTable().getModel();
+		booksTable.setModel(model);
+		TableColumnModel columnModel = booksTable.getColumnModel();
+		columnModel.getColumn(3).setMaxWidth(100);
+
+		//Sets up sorting by book title
+		TableRowSorter<TableModel> sorter = new TableRowSorter<>(booksTable.getModel());
+		booksTable.setRowSorter(sorter);
+		List<RowSorter.SortKey> sortKeys = new ArrayList<>();
+		int columnIndexToSort = 0;
+		sortKeys.add(new RowSorter.SortKey(columnIndexToSort, SortOrder.ASCENDING));
+		sorter.setSortKeys(sortKeys);
+		sorter.sort();
+
+		//Repaint with current data
+		booksTable.revalidate();
+		booksTable.repaint();
+
+		//Re-add the listSelectionListener
+		booksTable.getSelectionModel().addListSelectionListener(this);				
+
 	}
 
 }

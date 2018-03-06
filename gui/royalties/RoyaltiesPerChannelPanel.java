@@ -1,4 +1,4 @@
-package basicgui;
+package gui.royalties;
 
 import java.awt.BorderLayout;
 import java.awt.GridLayout;
@@ -24,9 +24,9 @@ import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
 import main.Book;
-import main.IRoyaltyType;
 import main.Person;
 import main.SalesHistory;
+import main.royalties.IRoyaltyType;
 
 /**A JPanel displaying royalties information.
  * <br>The user selects which channel he wishes to see the royalties for, then is shown the channel's list of books for which 

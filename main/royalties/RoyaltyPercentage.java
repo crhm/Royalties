@@ -1,4 +1,4 @@
-package main;
+package main.royalties;
 
 /**Standard royalty type; amount due is a straight percentage of the revenues PLP made on a sale of the item.
  * <br>Example: 20 % of PLP revenue on sales of the book

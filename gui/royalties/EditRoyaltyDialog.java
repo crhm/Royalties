@@ -1,4 +1,4 @@
-package basicgui;
+package gui.royalties;
 
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
@@ -13,12 +13,12 @@ import javax.swing.JPanel;
 import javax.swing.JTextField;
 
 import main.Book;
-import main.IRoyaltyType;
 import main.Person;
-import main.RoyaltyDependentOnUnitsSold;
-import main.RoyaltyFixedAmount;
-import main.RoyaltyPercentage;
 import main.SalesHistory;
+import main.royalties.IRoyaltyType;
+import main.royalties.RoyaltyDependentOnUnitsSold;
+import main.royalties.RoyaltyFixedAmount;
+import main.royalties.RoyaltyPercentage;
 
 public class EditRoyaltyDialog extends JFrame implements ActionListener {
 

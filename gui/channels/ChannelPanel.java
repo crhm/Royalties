@@ -1,4 +1,4 @@
-package basicgui;
+package gui.channels;
 
 import java.awt.GridLayout;
 
@@ -16,7 +16,7 @@ import main.SalesHistory;
  */
 @SuppressWarnings("serial")
 public class ChannelPanel extends JPanel{
-
+	
 	public ChannelPanel() {
 		super();
 		this.setLayout(new GridLayout());

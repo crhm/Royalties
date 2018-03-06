@@ -6,6 +6,8 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Currency;
 
+import main.royalties.IRoyaltyType;
+
 /**Class which represents a sale of a book managed by PLP through one of its channels. 
  * <br>A Sale has a channel of sale, a country of sale, a date of sale, a book sold, 
  * a net number of units sold, a royalty percentage to be applied to the price to obtain PLP revenues on sale,

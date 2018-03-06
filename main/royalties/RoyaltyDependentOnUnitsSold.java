@@ -1,4 +1,4 @@
-package main;
+package main.royalties;
 import java.util.HashMap;
 
 /**Type of royalty where the percentage of PLP revenue to be given to the royalty holder depends on the number of units sold

@@ -1,4 +1,4 @@
-package basicgui;
+package gui.dataverification;
 
 import java.awt.Color;
 import java.awt.GridLayout;
@@ -10,6 +10,8 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 
+import gui.royalties.MultilineCellEditor;
+import gui.royalties.MultilineCellRenderer;
 import main.DataVerification;
 
 /**Provides a JPanel containing a JTable representing information obtained through the DataVerification methods. 
