@@ -41,9 +41,9 @@ import main.SalesHistory;
 public class BookPanel extends JPanel implements ActionListener, ListSelectionListener{
 	
 	private JTable booksTable;
-	private JButton editButton = new JButton("Edit");
-	private JButton addButton = new JButton("Add");
-	private JButton deleteButton = new JButton("Delete");
+	private JButton editButton = new JButton("Edit Book");
+	private JButton addButton = new JButton("Add New Book");
+	private JButton deleteButton = new JButton("Delete Book");
 	
 	//TODO fix appearance of edit button to only happen when one book is selected, and think about delete behavior when more than one is selected
 	//TODO add "these are the same books" button for multiple selection?

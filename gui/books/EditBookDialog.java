@@ -8,6 +8,7 @@ import javax.swing.BorderFactory;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 
@@ -51,9 +52,23 @@ public class EditBookDialog extends JFrame implements ActionListener {
 		unitsSoldLabel = new JLabel("Total Units Sold:");
 		
 		titleTF = new JTextField(b.getTitle());
+		titleTF.setToolTipText("A title is required.");
 		authorTF = new JTextField(b.getAuthor());
-		identifiersTF = new JTextField(b.getIdentifiers().toString());
+		authorTF.setToolTipText("Note that changing the author does not entail changing the royalty holder for this book. "
+				+ "To do so, please go in the Royalty Details Section.");
+		String identifiers = "";
+		int counter = 0;
+		for (String s : b.getIdentifiers()) { //So that no brackets appear in edit box which could confuse user
+			if (counter != 0) {
+				identifiers = identifiers.concat(", ");
+			}
+			identifiers = identifiers.concat(s);
+			counter++;
+		}
+		identifiersTF = new JTextField(identifiers);
+		identifiersTF.setToolTipText("To define multiple identifiers, separate them by a comma (i.e. 123456789, 987654321)");
 		unitsSoldTF = new JTextField("" + b.getTotalUnitsSold());
+		unitsSoldTF.setToolTipText("Warning: changing the number of units sold manually will create a discrepancy with the sales history.");
 		
 		contentPanel.add(titleLabel);
 		contentPanel.add(titleTF);
@@ -79,8 +94,14 @@ public class EditBookDialog extends JFrame implements ActionListener {
 		if (e.getSource() == cancelButton) {
 			this.dispose();
 		} else if (e.getSource() == confirmButton) {
-			//TODO make it so for title and units sold
-//			String title = titleTF.getText().trim();
+			//TODO make it so for title, identifiers and units sold
+			String title = titleTF.getText().trim();
+			if (title == null || title.isEmpty()) { //Does not allow empty title, shows an error message
+				JOptionPane.showMessageDialog(this, "Error: A book title is required. Please input a title for this book.", 
+						"Error", JOptionPane.ERROR_MESSAGE);
+				return; //stop here and don't do anything below since there is no title
+			}
+
 			String author = authorTF.getText().trim();
 //			String identifiers = identifiersTF.getText().trim();
 //			String unitsSold = unitsSoldTF.getText().trim();
