@@ -256,6 +256,10 @@ public class RoyaltiesPerChannelPanel extends JPanel implements ActionListener, 
 			}
 		};
 		JTable table = new JTable(model);
+		
+		//Disables the user-reordering table columns
+		table.getTableHeader().setReorderingAllowed(false);
+
 		return table;
 	}
 
@@ -294,6 +298,10 @@ public class RoyaltiesPerChannelPanel extends JPanel implements ActionListener, 
 			}	
 		};
 		JTable table = new JTable(model);
+		
+		//Disables the user-reordering table columns
+		table.getTableHeader().setReorderingAllowed(false);
+
 		return table;
 	}
 

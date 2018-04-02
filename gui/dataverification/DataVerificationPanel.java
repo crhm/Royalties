@@ -77,6 +77,9 @@ public class DataVerificationPanel extends JPanel{
 		//of its cells is a JList (of potential errors) and can be scrolled.
 		columnModel.getColumn(2).setCellRenderer(new MultilineCellRenderer());
 		columnModel.getColumn(2).setCellEditor(new MultilineCellEditor());
+		
+		//Disables the user-reordering table columns
+		table.getTableHeader().setReorderingAllowed(false);
 
 		return table;
 	}

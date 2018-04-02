@@ -61,6 +61,9 @@ public class RoyaltyHoldersPanel extends JPanel {
 		sortKeys.add(new RowSorter.SortKey(columnIndexToSort, SortOrder.ASCENDING));
 		sorter.setSortKeys(sortKeys);
 		sorter.sort();
+		
+		//Disables the user-reordering table columns
+		table.getTableHeader().setReorderingAllowed(false);
 
 		return table;
 	}
