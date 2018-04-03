@@ -14,6 +14,7 @@ import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
+import gui.renderers.NumberRenderer;
 import main.Person;
 import main.SalesHistory;
 

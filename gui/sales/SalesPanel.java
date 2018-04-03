@@ -15,6 +15,7 @@ import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
+import gui.renderers.NumberRenderer;
 import main.Sale;
 import main.SalesHistory;
 
@@ -25,12 +26,11 @@ import main.SalesHistory;
  * <br>Date of sale (month and year in which it was sold). 
  * <br>Book sold (Title and Author).
  * <br>Net Units sold (can be negative due to returns).
- * <br>PLP's Royalty (what percentage of the sales revenue the sales channel gives to PLP)
- * <br>Price (per unit).
- * <br>Delivery costs (may be zero).
  * <br>PLP revenues (taken directly from raw data provided by sales channel, but should be equal to 
  * net units sold * (price - delivery costs) * PLP's Royalty.
  * <br>Currency the sale was carried out in.
+ * <br>Exchange rate into US Dollars for that date
+ * <br>PLP revenues in US Dollars
  * <br>Whether or not the royalties PLP owes for this sale have been calculated and added to the relevant persons' balances.
  * <br><br>The Table is not editable but is sortable by the user. 
  * It prioritises sorting by Date, then by Channel, then by Country, then by Book.
@@ -54,19 +54,17 @@ public class SalesPanel extends JPanel {
 	 */
 	private JTable getTable() {
 		//Sets up the model
-		Object[] columnNames = {"Channel", "Country", "Date", "Book", "Net Units Sold", "PLP's Royalty", 
-				"Price", "Delivery Costs", "PLP's Revenues", "Currency", "Royalties Have Been Calculated"};
+		Object[] columnNames = {"Channel", "Country", "Date", "Book", "Net Units Sold", "PLP Revenues", "Currency", "Exchange Rate", "PLP Revenues in USD", "Royalties Have Been Calculated"};
 		DefaultTableModel model = new DefaultTableModel(getData(), columnNames) {
 			@Override
 			public Class<?> getColumnClass(int column) {
 				switch (column) {
 				case 4 : return Double.class;
 				case 5 : return Double.class;
-				case 6 : return Double.class;
+				case 6 : return Currency.class;
 				case 7 : return Double.class;
 				case 8 : return Double.class;
-				case 9 : return Currency.class;
-				case 10 : return Boolean.class;
+				case 9 : return Boolean.class;
 				default : return String.class;
 				}
 			}
@@ -83,12 +81,13 @@ public class SalesPanel extends JPanel {
 		columnModel.getColumn(1).setMaxWidth(60);
 		columnModel.getColumn(2).setMaxWidth(65);
 		columnModel.getColumn(4).setMaxWidth(110);
-		columnModel.getColumn(5).setMaxWidth(90);
-		columnModel.getColumn(6).setMaxWidth(60);
+		columnModel.getColumn(5).setMaxWidth(110);
+		columnModel.getColumn(6).setMaxWidth(80);
 		columnModel.getColumn(7).setMaxWidth(110);
 		columnModel.getColumn(8).setMaxWidth(110);
-		columnModel.getColumn(9).setMaxWidth(60);
-		columnModel.getColumn(10).setMaxWidth(110);
+		columnModel.getColumn(9).setMaxWidth(110);
+		
+		columnModel.getColumn(8).setCellRenderer(NumberRenderer.getCurrencyRenderer());
 
 		//Sorts the table by Date, Channel, Country and Book (in that order)
 		TableRowSorter<TableModel> sorter = new TableRowSorter<>(table.getModel());
@@ -124,12 +123,16 @@ public class SalesPanel extends JPanel {
 			data[rowCounter][2] = s.getDate();
 			data[rowCounter][3] = s.getBook().getTitle() + ", " + s.getBook().getAuthor();
 			data[rowCounter][4] = s.getNetUnitsSold();
-			data[rowCounter][5] = s.getRoyaltyTypePLP();
-			data[rowCounter][6] = s.getPrice();
-			data[rowCounter][7] = s.getDeliveryCost();
-			data[rowCounter][8] = s.getRevenuesPLP();
-			data[rowCounter][9] = s.getCurrency();
-			data[rowCounter][10] = s.getRoyaltyHasBeenCalculated();
+			data[rowCounter][5] = s.getRevenuesPLP();;
+			data[rowCounter][6] = s.getCurrency();
+			if (s.getChannel().getName().equals("Amazon") || s.getChannel().getName().equals("Apple")) {
+				data[rowCounter][7] = s.getChannel().getHistoricalForex().get(s.getDate()).get(s.getCurrency().getCurrencyCode());
+				data[rowCounter][8] = s.getRevenuesPLP() * (Double) data[rowCounter][7];
+			} else {
+				data[rowCounter][7] = 1;
+				data[rowCounter][8] = s.getRevenuesPLP();
+			}
+			data[rowCounter][9] = s.getRoyaltyHasBeenCalculated();
 			rowCounter++;
 		}
 		return data;

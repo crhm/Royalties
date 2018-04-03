@@ -1,4 +1,4 @@
-package gui.royaltyholders;
+package gui.renderers;
 
 /*Taken from https://tips4java.wordpress.com/2008/10/11/table-format-renderers/
  * Used to render the royalty holder balance column as currency (with a dollar sign) and yet be able to sort it
