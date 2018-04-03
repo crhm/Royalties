@@ -125,7 +125,7 @@ public class AddBookDialog extends JDialog {
 							return; //stop here and don't do anything below since there is no title
 						}
 						
-						Book newBook = new Book(title, author, "");
+						Book newBook = new Book(title, null, ""); //TODO fix
 						
 						//Making sure that if several identifiers are inputted, they are all added separately
 						String[] identifiersSeparated = null;

@@ -8,6 +8,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.JButton;
@@ -16,6 +17,7 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
+import javax.swing.ListSelectionModel;
 import javax.swing.RowSorter;
 import javax.swing.SortOrder;
 import javax.swing.event.ListSelectionEvent;
@@ -24,8 +26,6 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
-
-import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
 
 import main.Book;
 import main.SalesHistory;
@@ -44,6 +44,7 @@ public class BookPanel extends JPanel implements ActionListener, ListSelectionLi
 	private JButton editButton = new JButton("Edit Book");
 	private JButton addButton = new JButton("Add New Book");
 	private JButton deleteButton = new JButton("Delete Book");
+	private JButton mergeButton = new JButton("Choose Two Books to Merge Together");
 	
 	//TODO fix appearance of edit button to only happen when one book is selected, and think about delete behavior when more than one is selected
 	//TODO add "these are the same books" button for multiple selection?
@@ -60,17 +61,18 @@ public class BookPanel extends JPanel implements ActionListener, ListSelectionLi
 		editButton.addActionListener(this);
 		addButton.addActionListener(this);
 		deleteButton.addActionListener(this);
+		mergeButton.addActionListener(this);
 		
 		//Setting up button Panel
 		JPanel buttonPanel = new JPanel(new GridLayout(1, 5));
-		buttonPanel.add(new JLabel());//Bad solution to problem of making buttons smaller - fix please? TODO
-		buttonPanel.add(new JLabel());
+		buttonPanel.add(mergeButton);//Bad solution to problem of making buttons smaller - fix please? TODO
 		buttonPanel.add(addButton);
 		buttonPanel.add(deleteButton);
 		buttonPanel.add(editButton);
 		
 		//Setting up JTable and selection behavior
 		this.booksTable = getTable();
+		this.booksTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		this.booksTable.getSelectionModel().addListSelectionListener(this);
 		
 		//Setting up container Panel
@@ -87,7 +89,7 @@ public class BookPanel extends JPanel implements ActionListener, ListSelectionLi
 			@Override
 			public Class<?> getColumnClass(int column) {
 				switch (column) {
-				case 2 : return Array.class;
+				case 2 : return Arrays.class;
 				case 3 : return Integer.class;
 				default : return String.class;
 				}
@@ -173,6 +175,18 @@ public class BookPanel extends JPanel implements ActionListener, ListSelectionLi
 				SalesHistory.get().removeBook(book);
 				updateTable();
 			}
+		} else if (e.getSource() == mergeButton) {
+			addButton.setEnabled(false);
+			editButton.setEnabled(false);
+			deleteButton.setEnabled(false);
+			MergeBooksDialog mergeDialog = new MergeBooksDialog();
+			mergeDialog.addWindowListener(new WindowAdapter() {
+				@Override
+				public void windowClosed(WindowEvent e) { //update and repaint table on close of addBookDialog
+					updateTable();
+				}				
+			});
+			addButton.setEnabled(true);
 		}
 	}
 

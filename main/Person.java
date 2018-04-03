@@ -2,6 +2,8 @@ package main;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.util.HashSet;
+import java.util.Set;
 
 /**Class that represents a person who has a balance, likely because they have a royalty on one of PLP's books.
  * <br>A Person has a name and a balance, to which an amount can be added (or substracted) via the addToBalance method.
@@ -12,8 +14,10 @@ import java.math.RoundingMode;
 public class Person implements java.io.Serializable {
 
 	private static final long serialVersionUID = -6122237628268675623L;
-	private final String name;
+	private String name;
+	private Set<String> listNames = new HashSet<String>();
 	private double balance;
+	private final long personNumber; 
 
 	/**Person constructor. Initialises Person name to the String passed as argument by the user (removing quote characters), 
 	 * and Person balance to 0.
@@ -21,13 +25,47 @@ public class Person implements java.io.Serializable {
 	 * @throws IllegalArgumentException if person name is empty or null
 	 */
 	public Person(String name) {
+		this.personNumber = SalesHistory.get().getNextPersonID();
 		validateName(name);
 		this.name = name.replace("\"", "");
+		listNames.add(name);
 		this.balance = 0;
 	}
 
 	public String getName() {
 		return name;
+	}
+
+	/**
+	 * @return the listNames
+	 */
+	public Set<String> getListNames() {
+		return listNames;
+	}
+
+	/**
+	 * @param listNames the listNames to set
+	 */
+	public void setListNames(Set<String> listNames) {
+		this.listNames = listNames;
+	}
+	
+	public void addName(String name) {
+		this.listNames.add(name);
+	}
+
+	/**
+	 * @return the personNumber
+	 */
+	public long getPersonNumber() {
+		return personNumber;
+	}
+
+	/**
+	 * @param name the name to set
+	 */
+	public void setName(String name) {
+		this.name = name;
 	}
 
 	public double getBalance() {
@@ -42,6 +80,14 @@ public class Person implements java.io.Serializable {
 	public void addToBalance(double amount) {
 		BigDecimal tempAmount = new BigDecimal(amount).setScale(2, RoundingMode.HALF_UP);
 		this.balance = this.balance + tempAmount.doubleValue();
+	}
+	
+	public void merge(Person p) {
+		this.listNames.add(p.getName());
+		for (String s : p.getListNames()) {
+			this.listNames.add(s);
+		}
+		this.addToBalance(p.getBalance());
 	}
 
 	@Override
@@ -65,7 +111,7 @@ public class Person implements java.io.Serializable {
 	public int hashCode() {
 		final int prime = 31;
 		int result = 1;
-		result = prime * result + ((name == null) ? 0 : name.hashCode());
+		result = prime * result + (int) (personNumber ^ (personNumber >>> 32));
 		return result;
 	}
 
@@ -81,10 +127,7 @@ public class Person implements java.io.Serializable {
 		if (getClass() != obj.getClass())
 			return false;
 		Person other = (Person) obj;
-		if (name == null) {
-			if (other.name != null)
-				return false;
-		} else if (!name.equals(other.name))
+		if (personNumber != other.personNumber)
 			return false;
 		return true;
 	}

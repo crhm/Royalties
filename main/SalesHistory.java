@@ -7,7 +7,10 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
+import java.util.concurrent.atomic.AtomicLong;
 
 /** Main class of this app; a singleton, since it should never be more than one. method get() returns singleton instance.
  * <br><br>This class acts as a container of data which holds:
@@ -39,10 +42,41 @@ public class SalesHistory implements java.io.Serializable {
 	private List<Sale> salesHistory = new ArrayList<Sale>();
 	private HashMap<String, Person> listRoyaltyHolders = new HashMap<String, Person>();
 	private HashMap<String, Book> listPLPBooks = new HashMap<String, Book>();
+	private HashMap<Long, Book> listBooksByNumber = new HashMap<Long, Book>();
+	private HashMap<Long, Person> listPersonsByNumber = new HashMap<Long, Person>();
 	private HashMap<String, Channel> listChannels = new HashMap<String, Channel>();
-	private List<String> listAuthors = new ArrayList<String>();
-	private List<String> listMonths = new ArrayList<String>();
+	private Set<Person> listAuthors = new HashSet<Person>();
+	private Set<Person> listPersons = new HashSet<Person>();
+	private Set<String> listMonths = new HashSet<String>();
+	
+	private AtomicLong nextBookID = new AtomicLong(1);
+	private AtomicLong nextPersonID = new AtomicLong(1);
+	
+	public long getNextBookID() {
+		return nextBookID.getAndIncrement();
+	}
+	
+	public long seeNumberOfBooks() {
+		return nextBookID.get() - 1;
+	}
+	
+	public long getNextPersonID() {
+		return nextPersonID.getAndIncrement();
+	}
+	
+	public long seeNumberOfPersons() {
+		return nextPersonID.get() - 1;
+	}
+	
+	public Book getBook(long bookNumber) {
+		return listBooksByNumber.get(bookNumber);
+	}
 
+	public Person getPerson(long personNumber) {
+		return listPersonsByNumber.get(personNumber);
+	}
+
+	
 	/** Calculates all royalties by calling Sale.calculateRoyalties() on each sale
 	 *  in the list of all sales.
 	 */
@@ -56,7 +90,7 @@ public class SalesHistory implements java.io.Serializable {
 	 * This list is compiled upon request, and not updated gradually as new sales are added.
 	 * @return A list of strings representing months and years
 	 */
-	public List<String> getListMonths(){
+	public Set<String> getListMonths(){
 		for (Sale s : salesHistory) {
 			if (!listMonths.contains(s.getDate())){
 				listMonths.add(s.getDate());
@@ -69,13 +103,27 @@ public class SalesHistory implements java.io.Serializable {
 	 * This list is compiled upon request, and not updated gradually as new books are added.
 	 * @return A list of string names of authors
 	 */
-	public List<String> getListAuthors(){
+	public Set<Person> getListAuthors(){
 		for (Book b : listPLPBooks.values()) {
-			if (!b.getAuthor().isEmpty() && !listAuthors.contains(b.getAuthor())) {
+			if (b.getAuthor() != null && !listAuthors.contains(b.getAuthor())) {
 				listAuthors.add(b.getAuthor());
 			}
 		}
 		return listAuthors;
+	}
+	
+	public Person getPerson(String personName) {
+		Person personFound = null;
+		for (Person p : listPersons) {
+			if (p.getListNames().contains(personName)) {
+				personFound = p;
+			}
+		}
+		return personFound;
+	}
+	
+	public void addPerson(Person person) {
+		this.listPersons.add(person);
 	}
 	
 	/**Returns the List of all sales that have been added to the app.
@@ -121,6 +169,7 @@ public class SalesHistory implements java.io.Serializable {
 	 */
 	public void addBook(Book book) {
 		this.listPLPBooks.put(book.getTitle(), book);
+		this.listBooksByNumber.put(book.getBookNumber(), book);
 	}
 	
 	/**Removes a book from the list of books managed by PLP
@@ -145,86 +194,86 @@ public class SalesHistory implements java.io.Serializable {
 		this.listChannels.put(channel.getName(), channel);
 	}
 
-	/**Writes SalesHistory state to the ObjectOutputStream.
-	 * <br>Writes by serialising the following SalesHistory variables (in this order, same as read by readObject()):
-	 * <br>HashMap<Book, Double> cumulativeSalesPerBook
-	 * <br>HashMap<String, Channel> listChannels
-	 * <br>HashMap<String, Book> listPLPBooks
-	 * <br>HashMap<String, Person> listRoyaltyHolders
-	 * <br>List of Sales salesHistory
-	 * @param out ObjectOutputStream to write to.
-	 * @throws IOException
-	 */
-	private void writeObject(java.io.ObjectOutputStream out) throws IOException {
-		try {
-			out.writeObject(listChannels);
-			out.writeObject(listPLPBooks);
-			out.writeObject(listRoyaltyHolders);
-			out.writeObject(salesHistory);
-			out.close();
-			System.out.println("Serialized data is saved.");
-		} catch (IOException i) {
-			i.printStackTrace();
-		}
-
-	}
+//	/**Writes SalesHistory state to the ObjectOutputStream.
+//	 * <br>Writes by serialising the following SalesHistory variables (in this order, same as read by readObject()):
+//	 * <br>HashMap<Book, Double> cumulativeSalesPerBook
+//	 * <br>HashMap<String, Channel> listChannels
+//	 * <br>HashMap<String, Book> listPLPBooks
+//	 * <br>HashMap<String, Person> listRoyaltyHolders
+//	 * <br>List of Sales salesHistory
+//	 * @param out ObjectOutputStream to write to.
+//	 * @throws IOException
+//	 */
+//	private void writeObject(java.io.ObjectOutputStream out) throws IOException {
+//		try {
+//			out.writeObject(listChannels);
+//			out.writeObject(listPLPBooks);
+//			out.writeObject(listRoyaltyHolders);
+//			out.writeObject(salesHistory);
+//			out.close();
+//			System.out.println("Serialized data is saved.");
+//		} catch (IOException i) {
+//			i.printStackTrace();
+//		}
+//
+//	}
+//	
+//	/**Reads SalesHistory state from the ObjectInputStream.
+//	 * <br>Expects to find (in same order as written by writeObject()):
+//	 * <br>HashMap<String, Channel> listChannels
+//	 * <br>HashMap<String, Book> listPLPBooks
+//	 * <br>HashMap<String, Person> listRoyaltyHolders
+//	 * <br>List of Sales salesHistory
+//	 * <br><br>It then assigns these to the corresponding class variables of the singleton instance of SalesHistory.
+//	 * @param in ObjectInputStream to read from.
+//	 * @throws IOException
+//	 * @throws ClassNotFoundException
+//	 */
+//	@SuppressWarnings("unchecked")
+//	private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
+//		try {
+//			HashMap<String, Channel> listChannels = (HashMap<String, Channel>) in.readObject();
+//			HashMap<String, Book> listPLPBooks = (HashMap<String, Book>) in.readObject();
+//			HashMap<String, Person> listRoyaltyHolders = (HashMap<String, Person>) in.readObject();
+//			List<Sale> salesHistory = (List<Sale>) in.readObject();
+//			in.close();
+//			this.listChannels = listChannels;
+//			this.listPLPBooks = listPLPBooks;
+//			this.listRoyaltyHolders = listRoyaltyHolders;
+//			this.salesHistory = salesHistory;
+//		} catch (IOException i) {
+//			i.printStackTrace();
+//		} catch (ClassNotFoundException c) {
+//			c.printStackTrace();
+//		}
+//	}
 	
-	/**Reads SalesHistory state from the ObjectInputStream.
-	 * <br>Expects to find (in same order as written by writeObject()):
-	 * <br>HashMap<String, Channel> listChannels
-	 * <br>HashMap<String, Book> listPLPBooks
-	 * <br>HashMap<String, Person> listRoyaltyHolders
-	 * <br>List of Sales salesHistory
-	 * <br><br>It then assigns these to the corresponding class variables of the singleton instance of SalesHistory.
-	 * @param in ObjectInputStream to read from.
-	 * @throws IOException
-	 * @throws ClassNotFoundException
-	 */
-	@SuppressWarnings("unchecked")
-	private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
-		try {
-			HashMap<String, Channel> listChannels = (HashMap<String, Channel>) in.readObject();
-			HashMap<String, Book> listPLPBooks = (HashMap<String, Book>) in.readObject();
-			HashMap<String, Person> listRoyaltyHolders = (HashMap<String, Person>) in.readObject();
-			List<Sale> salesHistory = (List<Sale>) in.readObject();
-			in.close();
-			this.listChannels = listChannels;
-			this.listPLPBooks = listPLPBooks;
-			this.listRoyaltyHolders = listRoyaltyHolders;
-			this.salesHistory = salesHistory;
-		} catch (IOException i) {
-			i.printStackTrace();
-		} catch (ClassNotFoundException c) {
-			c.printStackTrace();
-		}
-	}
-	
-	/**Serialises SalesHistory by calling its custom writeObject() method, and outputs it to a file called "/tmp/data.ser"
-	 */
-	public void serialise() { //TODO make serialisation output be a filename with date and time? and then in deserialise choose filename with most recent date?
-		try {
-			FileOutputStream fileOut = new FileOutputStream("/tmp/data10.ser");
-			ObjectOutputStream out = new ObjectOutputStream(fileOut);
-			SalesHistory.get().writeObject(out);
-			fileOut.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-
-	/**Deserialises SalesHistory from a file called "/tmp/data.ser" by calling its custom readObject() method.
-	 */
-	public void deSerialise() {
-		try {
-			FileInputStream fileIn = new FileInputStream("/tmp/data10.ser");
-			ObjectInputStream in = new ObjectInputStream(fileIn);
-			SalesHistory.get().readObject(in);
-			fileIn.close();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			e.printStackTrace();
-		}
-	}
+//	/**Serialises SalesHistory by calling its custom writeObject() method, and outputs it to a file called "/tmp/data.ser"
+//	 */
+//	public void serialise() { //TODO make serialisation output be a filename with date and time? and then in deserialise choose filename with most recent date?
+//		try {
+//			FileOutputStream fileOut = new FileOutputStream("/tmp/data10.ser");
+//			ObjectOutputStream out = new ObjectOutputStream(fileOut);
+//			SalesHistory.get().writeObject(out);
+//			fileOut.close();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+//	}
+//
+//	/**Deserialises SalesHistory from a file called "/tmp/data.ser" by calling its custom readObject() method.
+//	 */
+//	public void deSerialise() {
+//		try {
+//			FileInputStream fileIn = new FileInputStream("/tmp/data10.ser");
+//			ObjectInputStream in = new ObjectInputStream(fileIn);
+//			SalesHistory.get().readObject(in);
+//			fileIn.close();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		} catch (ClassNotFoundException e) {
+//			e.printStackTrace();
+//		}
+//	}
 
 }

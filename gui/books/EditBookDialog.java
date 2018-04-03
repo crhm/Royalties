@@ -53,7 +53,7 @@ public class EditBookDialog extends JFrame implements ActionListener {
 		
 		titleTF = new JTextField(b.getTitle());
 		titleTF.setToolTipText("A title is required.");
-		authorTF = new JTextField(b.getAuthor());
+		authorTF = new JTextField(b.getAuthor().getName());
 		authorTF.setToolTipText("Note that changing the author does not entail changing the royalty holder for this book. "
 				+ "To do so, please go in the Royalty Details Section.");
 		String identifiers = "";
@@ -106,7 +106,7 @@ public class EditBookDialog extends JFrame implements ActionListener {
 //			String identifiers = identifiersTF.getText().trim();
 //			String unitsSold = unitsSoldTF.getText().trim();
 			
-			book.setAuthor(author);
+			book.setAuthor(null); //TODO Fix
 			
 			this.dispose();
 		}

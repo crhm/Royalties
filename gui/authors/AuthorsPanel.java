@@ -5,6 +5,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
+import main.Person;
 import main.SalesHistory;
 
 import java.awt.BorderLayout;
@@ -81,8 +82,8 @@ public class AuthorsPanel extends JPanel {
 	private Object[][] getData(){
 		Object[][] data = new Object[SalesHistory.get().getListAuthors().size()][1];
 		int count = 0;
-		for (String s : SalesHistory.get().getListAuthors()) {
-			data[count][0] = s;
+		for (Person p : SalesHistory.get().getListAuthors()) {
+			data[count][0] = p.getName();
 			count++;
 		}
 		return data;

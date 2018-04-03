@@ -9,6 +9,7 @@ import java.util.Date;
 
 import main.Book;
 import main.Channel;
+import main.Person;
 import main.SalesHistory;
 
 //TODO Read https://stackoverflow.com/questions/21817816/java-reading-a-file-different-methods
@@ -71,26 +72,30 @@ public abstract class FileFormat {
 	 * @param identifier identifier found in raw data for this sale
 	 * @return the book to add to the sale to be imported
 	 */
-	protected Book obtainBook(String bookTitle, String author, String identifier) {
+	protected Book obtainBook(String bookTitle, String authorName, String identifier) {
 		Book book = null;
-		Boolean flag2 = true;
+		Boolean needToCreateNewBook = true;
 		for (Book b : SalesHistory.get().getListPLPBooks().values()) {
 			String existingBookTitle = b.getTitle().toLowerCase();
 			String bookTitleFound = bookTitle.replace("\"", "").toLowerCase();
 			if (existingBookTitle.equals(bookTitleFound) || b.getIdentifiers().contains(identifier)) {
 				book = b;
-				flag2 = false;
-				if (!b.getIdentifiers().contains(identifier)) {
+				needToCreateNewBook = false;
+				if (!identifier.isEmpty()) {
 					b.addIdentifier(identifier);
-				}
-				if (b.getAuthor().equals("")) {
-					b.setAuthor(author);
 				}
 			}
 		}
-		if (flag2) {
-			book = new Book(bookTitle, author, identifier);
+		if (needToCreateNewBook) {
+			book = new Book(bookTitle, null, identifier);
 			SalesHistory.get().addBook(book);			
+		}
+		if (SalesHistory.get().getPerson(authorName) != null) {
+			book.addAuthor(SalesHistory.get().getPerson(authorName));
+		} else if (!authorName.isEmpty()){
+			Person newPerson = new Person(authorName);
+			book.addAuthor(newPerson);
+			SalesHistory.get().addPerson(newPerson);
 		}
 		return book;
 	}
