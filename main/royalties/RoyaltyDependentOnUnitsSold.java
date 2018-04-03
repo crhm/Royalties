@@ -1,4 +1,5 @@
 package main.royalties;
+import java.text.NumberFormat;
 import java.util.HashMap;
 
 /**Type of royalty where the percentage of PLP revenue to be given to the royalty holder depends on the number of units sold
@@ -52,13 +53,16 @@ public class RoyaltyDependentOnUnitsSold implements IRoyaltyType, java.io.Serial
 	 */
 	@Override
 	public String toString() {
+		NumberFormat percentFormat = NumberFormat.getPercentInstance();
+		percentFormat.setMaximumFractionDigits(2);
+
 		String info = "";
 		info = info.concat("RoyaltyDependentOnUnitsSold:\n");
 		for (Integer[] range : percentagesForUnitsSold.keySet()) {
 			info = info.concat("If the number of units sold is between " + range[0] + " and " + range[1] + " (inclusive): " 
-					+ percentagesForUnitsSold.get(range) + "\n");
+					+ percentFormat.format(percentagesForUnitsSold.get(range)) + "\n");
 		}
-		info = info.concat("For all other numbers of units sold: " + defaultPercentage);
+		info = info.concat("For all other numbers of units sold: " + percentFormat.format(defaultPercentage));
 		return info;
 	}
 

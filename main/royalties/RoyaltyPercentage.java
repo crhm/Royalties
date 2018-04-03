@@ -1,5 +1,7 @@
 package main.royalties;
 
+import java.text.NumberFormat;
+
 /**Standard royalty type; amount due is a straight percentage of the revenues PLP made on a sale of the item.
  * <br>Example: 20 % of PLP revenue on sales of the book
  * @author crhm
@@ -31,7 +33,9 @@ public class RoyaltyPercentage implements IRoyaltyType, java.io.Serializable {
 
 	@Override
 	public String toString() {
-		return "RoyaltyPercentage: " + percentage;
+		NumberFormat percentFormat = NumberFormat.getPercentInstance();
+		percentFormat.setMaximumFractionDigits(2);
+		return "Royalty Percentage: " + percentFormat.format(percentage);
 	}
 
 	public double getPercentage() {

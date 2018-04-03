@@ -1,5 +1,8 @@
 package main.royalties;
 
+import java.text.NumberFormat;
+import java.util.Locale;
+
 /**Royalty type that sets a fixed amount which is owed per sale regardless of sale revenue.
  * <br>For example: $0.05 per sale.
  * @author crhm
@@ -34,7 +37,7 @@ public class RoyaltyFixedAmount implements IRoyaltyType, java.io.Serializable {
 
 	@Override
 	public String toString() {
-		return "RoyaltyFixedAmount: $" + fixedAmount;
+		return "Fixed Amount Royalty: " + NumberFormat.getCurrencyInstance(Locale.US).format(fixedAmount);
 	}
 
 }
