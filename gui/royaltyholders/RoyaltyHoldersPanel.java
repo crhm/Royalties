@@ -10,6 +10,7 @@ import javax.swing.JTable;
 import javax.swing.RowSorter;
 import javax.swing.SortOrder;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
@@ -50,8 +51,13 @@ public class RoyaltyHoldersPanel extends JPanel {
 				return false;
 			}
 		};
+
 		//Sets the table
 		JTable table = new JTable(model);
+		
+		//Renders last column as currency yet allows it to be sorted as a double
+		TableColumnModel columnModel = table.getColumnModel();
+		columnModel.getColumn(1).setCellRenderer(NumberRenderer.getCurrencyRenderer());
 
 		//Sorts the table by person name
 		TableRowSorter<TableModel> sorter = new TableRowSorter<>(table.getModel());
