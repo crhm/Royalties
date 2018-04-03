@@ -51,7 +51,7 @@ public class AddBookDialog extends JDialog {
 		contentPanel.setBorder(new EmptyBorder(5, 5, 5, 5));
 		getContentPane().add(contentPanel, BorderLayout.CENTER);
 		contentPanel.setLayout(null);
-		
+
 		//Setting up labels and text fields
 		{
 			JLabel lblTitle = new JLabel("Title:");
@@ -92,7 +92,7 @@ public class AddBookDialog extends JDialog {
 			contentPanel.add(tfIdentifiers);
 			tfIdentifiers.setColumns(10);
 		}
-		
+
 		//Setting up buttons and actions
 		{
 			JPanel buttonPane = new JPanel();
@@ -124,9 +124,9 @@ public class AddBookDialog extends JDialog {
 									"Error", JOptionPane.ERROR_MESSAGE);
 							return; //stop here and don't do anything below since there is no title
 						}
-						
-						Book newBook = new Book(title, null, ""); //TODO fix
-						
+
+						Book newBook = new Book(title, null, ""); //TODO fix - so far defaults to null author because needs to implement drop down
+
 						//Making sure that if several identifiers are inputted, they are all added separately
 						String[] identifiersSeparated = null;
 						if (identifiers.contains(",") ) {
@@ -139,7 +139,7 @@ public class AddBookDialog extends JDialog {
 						} else if (!identifiers.isEmpty()){
 							newBook.addIdentifier(identifiers.trim());
 						}
-						
+
 						SalesHistory.get().addBook(newBook);
 						window.dispose();
 					}
@@ -147,7 +147,7 @@ public class AddBookDialog extends JDialog {
 				addButton.setActionCommand("OK");
 				buttonPane.add(addButton);
 				getRootPane().setDefaultButton(addButton);
-				
+
 				this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 				this.setVisible(true);
 
