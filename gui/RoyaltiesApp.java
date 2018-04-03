@@ -8,7 +8,7 @@ import javax.swing.JTabbedPane;
 import gui.books.BookPanel;
 import gui.channels.ChannelPanel;
 import gui.dataverification.DataVerificationPanel;
-import gui.royalties.RoyaltiesPerChannelPanel;
+import gui.royalties.RoyaltiesRulesPanel;
 import gui.royaltyholders.RoyaltyHoldersPanel;
 import gui.sales.SalesPanel;
 import importing.ImportEverything;
@@ -38,7 +38,7 @@ public class RoyaltiesApp extends JFrame implements Runnable {
 		this.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		this.setTitle("Royalties App");
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
+		        
 		//Saves data by serialising it on close.
 		this.addWindowListener(new java.awt.event.WindowAdapter() {
 			@Override
@@ -49,11 +49,11 @@ public class RoyaltiesApp extends JFrame implements Runnable {
 
 
 		JTabbedPane allTabs = new JTabbedPane();        
-		allTabs.add("Sales", new SalesPanel());
-		allTabs.addTab("Royalty Holders", new RoyaltyHoldersPanel());
 		allTabs.addTab("PLP Books", new BookPanel());
+		allTabs.addTab("Royalty Holders", new RoyaltyHoldersPanel());
 		allTabs.addTab("Channels", new ChannelPanel());
-		allTabs.addTab("Royalty Holders Per Channel", new RoyaltiesPerChannelPanel());
+		allTabs.addTab("Royalty Rules", new RoyaltiesRulesPanel());
+		allTabs.add("Sales", new SalesPanel());
 		allTabs.addTab("Data Verification", new DataVerificationPanel());
 
 
@@ -74,7 +74,7 @@ public class RoyaltiesApp extends JFrame implements Runnable {
 	 * @throws InterruptedException if a thread interrupts the import thread.
 	 */
 	private static void obtainData() throws InterruptedException {
-		File f = new File("/tmp/data7.ser");
+		File f = new File("/tmp/data9.ser");
 		if(f.exists() && !f.isDirectory()) { 
 			SalesHistory.get().deSerialise();
 		} else {
