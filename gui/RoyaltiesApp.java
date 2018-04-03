@@ -9,6 +9,7 @@ import gui.authors.AuthorsPanel;
 import gui.books.BookPanel;
 import gui.channels.ChannelPanel;
 import gui.dataverification.DataVerificationPanel;
+import gui.dataverification.SalesImportSummaryPanel;
 import gui.royalties.RoyaltiesRulesPanel;
 import gui.royaltyholders.RoyaltyHoldersPanel;
 import gui.sales.SalesPanel;
@@ -56,8 +57,8 @@ public class RoyaltiesApp extends JFrame implements Runnable {
 		allTabs.addTab("Channels", new ChannelPanel());
 		allTabs.addTab("Royalty Rules", new RoyaltiesRulesPanel());
 		allTabs.add("Sales", new SalesPanel());
+		allTabs.addTab("Sales Import Summary", new SalesImportSummaryPanel());
 		allTabs.addTab("Data Verification", new DataVerificationPanel());
-
 
 		this.setContentPane(allTabs);
 		this.pack();

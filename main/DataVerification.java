@@ -6,6 +6,8 @@ import java.util.Set;
 import java.util.TreeSet;
 
 public class DataVerification {
+	
+	//TODO Comments
 
 	/**Checks whether all channels have sales data for all months found in data 
 	 * 
@@ -48,6 +50,28 @@ public class DataVerification {
 		return output;
 	}
 
+	/**Returns a mapping of which channels have been found to have sales for which dates.
+	 * 
+	 * @return A HashMap mapping strings representing dates (month and year) to a set of channel names
+	 */
+	public static HashMap<String, Set<String>> getListChannelsWithSalesForEachMonth() {
+
+		HashMap<String, Set<String>> channelsPerMonth = new HashMap<String, Set<String>>();
+		
+		for (Sale s : SalesHistory.get().getSalesHistory()) {
+			if (channelsPerMonth.containsKey(s.getDate())) {
+				Set<String> channelsAtDate = channelsPerMonth.get(s.getDate());
+				channelsAtDate.add(s.getChannel().getName());
+				channelsPerMonth.put(s.getDate(), channelsAtDate);
+			} else {
+				Set<String> channelsAtDate = new TreeSet<String>();
+				channelsAtDate.add(s.getChannel().getName());
+				channelsPerMonth.put(s.getDate(), channelsAtDate);
+			}
+		}
+		return channelsPerMonth;
+	}
+	
 	public static String checkRoyaltiesDataForAllChannels() {
 		String output = "";
 
@@ -138,5 +162,4 @@ public class DataVerification {
 
 		return output;
 	}
-
 }

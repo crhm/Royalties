@@ -93,7 +93,7 @@ public class DataVerificationPanel extends JPanel{
 	private Object[][] getData(){
 		Object[][] data = new Object[3][3];
 		//Sales
-		data[0][0] = "Sales have been imported for all channels each month?";
+		data[0][0] = "All channels have sales for every month imported so far?";
 		data[0][1] = null;
 		if (DataVerification.checkSalesDataForAllChannels().isEmpty()) {
 			data[0][1] = true;
