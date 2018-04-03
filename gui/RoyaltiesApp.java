@@ -5,6 +5,7 @@ import java.io.File;
 import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
 
+import gui.authors.AuthorsPanel;
 import gui.books.BookPanel;
 import gui.channels.ChannelPanel;
 import gui.dataverification.DataVerificationPanel;
@@ -50,6 +51,7 @@ public class RoyaltiesApp extends JFrame implements Runnable {
 
 		JTabbedPane allTabs = new JTabbedPane();        
 		allTabs.addTab("PLP Books", new BookPanel());
+		allTabs.addTab("Authors", new AuthorsPanel());
 		allTabs.addTab("Royalty Holders", new RoyaltyHoldersPanel());
 		allTabs.addTab("Channels", new ChannelPanel());
 		allTabs.addTab("Royalty Rules", new RoyaltiesRulesPanel());

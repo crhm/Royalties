@@ -40,6 +40,7 @@ public class SalesHistory implements java.io.Serializable {
 	private HashMap<String, Person> listRoyaltyHolders = new HashMap<String, Person>();
 	private HashMap<String, Book> listPLPBooks = new HashMap<String, Book>();
 	private HashMap<String, Channel> listChannels = new HashMap<String, Channel>();
+	private List<String> listAuthors = new ArrayList<String>();
 
 	/** Calculates all royalties by calling Sale.calculateRoyalties() on each sale
 	 *  in the list of all sales.
@@ -50,6 +51,19 @@ public class SalesHistory implements java.io.Serializable {
 		}
 	}
 
+	/**Returns a list of the unique authors found in the list of books.
+	 * 
+	 * @return A list of string names of authors
+	 */
+	public List<String> getListAuthors(){
+		for (Book b : listPLPBooks.values()) {
+			if (!b.getAuthor().isEmpty() && !listAuthors.contains(b.getAuthor())) {
+				listAuthors.add(b.getAuthor());
+			}
+		}
+		return listAuthors;
+	}
+	
 	/**Returns the List of all sales that have been added to the app.
 	 * @return the list of all sales that have been added to the app.
 	 */
