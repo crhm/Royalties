@@ -20,7 +20,7 @@ public class Book implements java.io.Serializable{
 	private Set<String> identifiers = new HashSet<String>();
 	private double totalUnitsSold;
 	private final long bookNumber;
-	
+
 	/**Book constructor.
 	 * <br>Removes quote characters from title and author arguments, and then initialises Book variables to them.
 	 * <br>Creates an ArrayList of Strings and places identifier in it.
@@ -33,9 +33,9 @@ public class Book implements java.io.Serializable{
 	public Book(String title, Person author, String identifier) {
 		this.bookNumber = SalesHistory.get().getNextBookID();
 		validateTitle(title);
-//		if (author == null || identifier == null) {
-//			throw new IllegalArgumentException("Error: arguments cannot be null.");
-//		} //TODO fix
+		//		if (author == null || identifier == null) {
+		//			throw new IllegalArgumentException("Error: arguments cannot be null.");
+		//		} //TODO fix
 		this.title = title.replace("\"", "");
 		this.listTitles.add(title);
 		this.author = author;
@@ -49,89 +49,9 @@ public class Book implements java.io.Serializable{
 		this.totalUnitsSold = 0;
 	}
 
-	/**
-	 * @return the listTitles
-	 */
-	public Set<String> getListTitles() {
-		return listTitles;
-	}
-	
-	public void addTitle(String s) {
-		listTitles.add(s);
-	}
-	
-	public void addAuthor(Person p) {
-		if (author == null) {
-			author = p;
-		}
-		listAuthors.add(p);
-	}
-
-	/**
-	 * @param listTitles the listTitles to set
-	 */
-	public void setListTitles(Set<String> listTitles) {
-		this.listTitles = listTitles;
-	}
-
-	/**
-	 * @return the listAuthors
-	 */
-	public Set<Person> getListAuthors() {
-		return listAuthors;
-	}
-
-	/**
-	 * @param listAuthors the listAuthors to set
-	 */
-	public void setListAuthors(Set<Person> listAuthors) {
-		this.listAuthors = listAuthors;
-	}
-
-	/**
-	 * @return the bookNumber
-	 */
-	public long getBookNumber() {
-		return bookNumber;
-	}
-
-	/**
-	 * @param title the title to set
-	 */
-	public void setTitle(String title) {
-		this.title = title;
-	}
-
-	/**
-	 * @param identifiers the identifiers to set
-	 */
-	public void setIdentifiers(Set<String> identifiers) {
-		this.identifiers = identifiers;
-	}
-
-	public double getTotalUnitsSold() {
-		return totalUnitsSold;
-	}
-	
-	/**Adds the argument passed to the total of units sold for this book
-	 * @param unitsSold amount by which to increase the total of units sold
-	 */
-	public void addUnitsToTotalSold(double unitsSold) {
-		this.totalUnitsSold = this.totalUnitsSold + unitsSold;
-	}
-
+	//Get methods
 	public String getTitle() {
 		return title;
-	}
-
-	/**Sets the book's author as the person passed as argument (can be empty but cannot be null)
-	 * @throws IllegalArgumentException if author is null 
-	 */
-	public void setAuthor(Person author) {
-//		if (author == null) {
-//			throw new IllegalArgumentException("Error: author cannot be null.");
-//		} //TODO fix
-		this.author = author;
 	}
 
 	public Person getAuthor() {
@@ -142,6 +62,32 @@ public class Book implements java.io.Serializable{
 		return identifiers;
 	}
 
+	/**
+	 * @return the bookNumber unique to this book
+	 */
+	public long getBookNumber() {
+		return bookNumber;
+	}
+
+	/**
+	 * @return the Set of all acceptable titles for this book
+	 */
+	public Set<String> getListTitles() {
+		return listTitles;
+	}
+
+	public double getTotalUnitsSold() {
+		return totalUnitsSold;
+	}
+
+	/**
+	 * @return the set of all authors for this book
+	 */
+	public Set<Person> getListAuthors() {
+		return listAuthors;
+	}
+
+	//Add methods
 	/**Adds identifier to Book's list of identifiers
 	 * @throws IllegalArgumentException if identifier is empty or null
 	 */
@@ -149,29 +95,79 @@ public class Book implements java.io.Serializable{
 		validateIdentifier(identifier);
 		this.identifiers.add(identifier);
 	}
-	
-	/**Checks title is not empty or null.
-	 * @throws IllegalArgumentException if field takes an unpermitted value.
+
+	/**Adds the argument passed to the total of units sold for this book
+	 * @param unitsSold amount by which to increase the total of units sold
 	 */
-	private void validateTitle(String title) {
-		if (title == null || title.isEmpty()) {
-			throw new IllegalArgumentException("Error: title cannot be empty or null");
-		}
+	public void addUnitsToTotalSold(double unitsSold) {
+		this.totalUnitsSold = this.totalUnitsSold + unitsSold;
 	}
-	
-	/**Checks identifier is not empty or null.
-	 * @param identifier
-	 * @throws IllegalArgumentException if field takes an unpermitted value.
+
+	public void addTitle(String s) {
+		validateTitle(s);
+		//If somehow, there is no main title yet
+		if (title.isEmpty()) {
+			title = s;
+		}
+		listTitles.add(s);
+	}
+
+	/**Will throw an exception is person p is null.
+	 * Will make p the main author if there is none.
+	 * @param p the author to add to the list of authors
 	 */
-	private void validateIdentifier(String identifier) {
-		if (identifier == null || identifier.isEmpty()) {
-			throw new IllegalArgumentException("Error: identifier cannot be empty or null");
+	public void addAuthor(Person p) {
+		//If somehow, there is no main author yet
+		if (author == null) {
+			author = p;
 		}
+		listAuthors.add(p);
 	}
-	
+
+	//Set methods (needed for editing)
+	/**
+	 * @param listTitles the listTitles to set
+	 */
+	public void setListTitles(Set<String> listTitles) {
+		this.listTitles = listTitles;
+		//TODO should i make one of those the main title here?
+	}
+
+	/**
+	 * @param listAuthors the listAuthors to set
+	 */
+	public void setListAuthors(Set<Person> listAuthors) {
+		this.listAuthors = listAuthors;
+		//TODO should i make one of those the main author here?
+	}
+
+	/**
+	 * @param title the title to set
+	 */
+	public void setTitle(String title) {
+		this.title = title;
+		this.listTitles.add(title);
+	}
+
+	/**Sets the book's author as the person passed as argument
+	 * @param author
+	 */
+	public void setAuthor(Person author) {
+		this.author = author;
+		this.listAuthors.add(author);
+	}
+
+	/**
+	 * @param identifiers the identifiers to set
+	 */
+	public void setIdentifiers(Set<String> identifiers) {
+		this.identifiers = identifiers;
+	}
+
+	//Merge method
 	/**To merge two books into one //TODO fix problem of left over book number?
-	 * 
-	 * @param b
+	 * <br>Adds all of b's titles, authors and identifiers to this book.
+	 * @param b Book which will merged into this one.
 	 */
 	public void merge(Book b) {
 		for (String s : b.getListTitles()) {
@@ -186,6 +182,27 @@ public class Book implements java.io.Serializable{
 		this.addUnitsToTotalSold(b.getTotalUnitsSold());
 	}
 
+	//Validate methods
+	/**Checks title is not empty or null.
+	 * @throws IllegalArgumentException if field takes an unpermitted value.
+	 */
+	private void validateTitle(String title) {
+		if (title == null || title.isEmpty()) {
+			throw new IllegalArgumentException("Error: title cannot be empty or null");
+		}
+	}
+
+	/**Checks identifier is not empty or null.
+	 * @param identifier
+	 * @throws IllegalArgumentException if field takes an unpermitted value.
+	 */
+	private void validateIdentifier(String identifier) {
+		if (identifier == null || identifier.isEmpty()) {
+			throw new IllegalArgumentException("Error: identifier cannot be empty or null");
+		}
+	}
+
+	//Generated methods
 	@Override
 	public String toString() {
 		return "Book [title=" + title + ", author=" + author + ", identifier=" + identifiers + ", totalUnitsSold=" + totalUnitsSold +"]";
@@ -219,6 +236,6 @@ public class Book implements java.io.Serializable{
 		return true;
 	}
 
-	
+
 
 }
