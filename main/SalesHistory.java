@@ -48,30 +48,54 @@ public class SalesHistory implements java.io.Serializable {
 	private Set<Person> listAuthors = new HashSet<Person>();
 	private Set<Person> listPersons = new HashSet<Person>();
 	private Set<String> listMonths = new HashSet<String>();
+	//TODO figure out if I need to keep a list of deleted books to avoid passing through books that do not exist when
+	//iterating through list of books PLP.
+	//TODO figure out how it's going to work for two books with the same title
 	
 	private AtomicLong nextBookID = new AtomicLong(1);
 	private AtomicLong nextPersonID = new AtomicLong(1);
 	
+	/** 
+	 * @return the ID number to be assigned to the next book being created.
+	 */
 	public long getNextBookID() {
 		return nextBookID.getAndIncrement();
 	}
 	
+	/**
+	 * @return the number of books that have been created so far
+	 */
 	public long seeNumberOfBooks() {
 		return nextBookID.get() - 1;
 	}
 	
+	/**
+	 * 
+	 * @return the ID number to be assigned to the next person being created
+	 */
 	public long getNextPersonID() {
 		return nextPersonID.getAndIncrement();
 	}
 	
+	/**
+	 * @return the number of persons that have been created so far
+	 */
 	public long seeNumberOfPersons() {
 		return nextPersonID.get() - 1;
 	}
 	
+	/**Returns a book managed by PLP
+	 * @param bookNumber number of book to be retrieved
+	 * @return book with the bookNumber passed as argument, or null if there is no such book
+	 */
 	public Book getBook(long bookNumber) {
 		return listBooksByNumber.get(bookNumber);
 	}
-
+	
+	/**Returns a person
+	 * @param personNumber the identifying number of the person to be retrieved
+	 * @return person with the personNumber passed as argument, or null if there is no such person
+	 */
 	public Person getPerson(long personNumber) {
 		return listPersonsByNumber.get(personNumber);
 	}
@@ -122,6 +146,10 @@ public class SalesHistory implements java.io.Serializable {
 		return personFound;
 	}
 	
+	/**Adds someone to the list of persons created. 
+	 * 
+	 * @param person
+	 */
 	public void addPerson(Person person) {
 		this.listPersons.add(person);
 	}

@@ -9,6 +9,7 @@ import java.util.Date;
 
 import main.Book;
 import main.Channel;
+import main.ObjectFactory;
 import main.Person;
 import main.SalesHistory;
 
@@ -84,18 +85,14 @@ public abstract class FileFormat {
 				if (!identifier.isEmpty()) {
 					b.addIdentifier(identifier);
 				}
+				if (book.getAuthor() == null && book.getListAuthors().isEmpty() && !authorName.isEmpty()) {
+					Person author = ObjectFactory.createPerson(authorName);
+					book.addAuthor(author);
+				}
 			}
 		}
 		if (needToCreateNewBook) {
-			book = new Book(bookTitle, null, identifier);
-			SalesHistory.get().addBook(book);			
-		}
-		if (SalesHistory.get().getPerson(authorName) != null) {
-			book.addAuthor(SalesHistory.get().getPerson(authorName));
-		} else if (!authorName.isEmpty()){
-			Person newPerson = new Person(authorName);
-			book.addAuthor(newPerson);
-			SalesHistory.get().addPerson(newPerson);
+			book = ObjectFactory.createBook(bookTitle, authorName, identifier);
 		}
 		return book;
 	}
@@ -127,16 +124,15 @@ public abstract class FileFormat {
 	protected Channel obtainChannel(String channelName, FileFormat fileFormat, boolean isCurrencyAlwaysUSD) {
 		//Checks if the Createspace channel already exists in app; if not, creates it.
 		Channel channel = null;
-		Boolean flag1 = true;
+		Boolean needToCreateNewChannel = true;
 		for (Channel ch : SalesHistory.get().getListChannels().values()) {
 			if (ch.getName().equals(channelName)) {
 				channel = ch;
-				flag1 = false;
+				needToCreateNewChannel = false;
 			}
 		}
-		if (flag1) {
-			channel = new Channel(channelName, fileFormat, isCurrencyAlwaysUSD);
-			SalesHistory.get().addChannel(channel);
+		if (needToCreateNewChannel) {
+			channel = ObjectFactory.createChannel(channelName, fileFormat, isCurrencyAlwaysUSD);
 		}		
 		return channel;
 	}

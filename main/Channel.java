@@ -102,12 +102,7 @@ public class Channel implements java.io.Serializable {
 		if (royaltyHolderName.isEmpty()) {
 			throw new IllegalArgumentException("Error: royaltyHolderName cannot be empty.");
 		}
-		
-		//Adds the book to SalesHistory if it does not already exist
-		if (!SalesHistory.get().getListPLPBooks().containsKey(b.getTitle())) {
-			SalesHistory.get().addBook(b);
-		}
-		
+				
 		//Obtains the list of royalties for this book if one exists, or creates an empty one if not
 		HashMap<Person, IRoyaltyType> listHolder = null;
 		if (listRoyalties.containsKey(b)) {
@@ -127,7 +122,7 @@ public class Channel implements java.io.Serializable {
 			}
 		}
 		if (flag) {
-			royaltyHolder2 = new Person(royaltyHolderName);
+			royaltyHolder2 = ObjectFactory.createPerson(royaltyHolderName);
 			SalesHistory.get().addRoyaltyHolder(royaltyHolder2);
 		}
 		

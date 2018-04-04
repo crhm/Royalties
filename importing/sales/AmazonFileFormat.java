@@ -9,8 +9,7 @@ import java.util.Locale;
 import importing.FileFormat;
 import main.Book;
 import main.Channel;
-import main.Sale;
-import main.SalesHistory;
+import main.ObjectFactory;
 
 /**Class that represents the new (?) format for raw monthly sales data files from Amazon channel and performs the import of the data found
  *  in such files, through method importData(). It is an implementation of the IFileFormat interface.
@@ -145,8 +144,7 @@ public class AmazonFileFormat extends FileFormat implements java.io.Serializable
 		Currency currency = Currency.getInstance(lineDivided[9]);
 
 		//Creates the sale and adds its to the app
-		Sale sale = new Sale(channel, country, this.date, book, netUnitsSold, royaltyTypePLP, price, deliveryCost, revenuesPLP, currency);
-		SalesHistory.get().addSale(sale);
+		ObjectFactory.createSale(channel, country, this.date, book, netUnitsSold, royaltyTypePLP, price, deliveryCost, revenuesPLP, currency);
 	}
 
 }

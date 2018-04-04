@@ -9,6 +9,7 @@ import javax.swing.JPanel;
 import javax.swing.border.EmptyBorder;
 
 import main.Book;
+import main.ObjectFactory;
 import main.SalesHistory;
 
 import javax.swing.JLabel;
@@ -125,7 +126,7 @@ public class AddBookDialog extends JDialog {
 							return; //stop here and don't do anything below since there is no title
 						}
 
-						Book newBook = new Book(title, null, ""); //TODO fix - so far defaults to null author because needs to implement drop down
+						Book newBook = ObjectFactory.createBook(title, "", ""); //TODO fix - so far defaults to null author because needs to implement drop down
 
 						//Making sure that if several identifiers are inputted, they are all added separately
 						String[] identifiersSeparated = null;
@@ -140,7 +141,6 @@ public class AddBookDialog extends JDialog {
 							newBook.addIdentifier(identifiers.trim());
 						}
 
-						SalesHistory.get().addBook(newBook);
 						window.dispose();
 					}
 				});

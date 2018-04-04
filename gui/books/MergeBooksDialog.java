@@ -12,9 +12,7 @@ import main.SalesHistory;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.List;
 
 import javax.swing.DefaultComboBoxModel;
 import javax.swing.JButton;
@@ -26,7 +24,8 @@ public class MergeBooksDialog extends JDialog {
 		setTitle("Choose Two Books To Merge Together");
 		setBounds(100, 100, 450, 300);
 		getContentPane().setLayout(new BorderLayout(0, 0));
-
+		
+		//Setting up the buttons
 		JPanel panelButtons = new JPanel();
 		getContentPane().add(panelButtons, BorderLayout.SOUTH);
 		panelButtons.setLayout(new GridLayout(1, 0, 0, 0));
@@ -37,10 +36,11 @@ public class MergeBooksDialog extends JDialog {
 		JButton btnMerge = new JButton("Merge");
 		panelButtons.add(btnMerge);
 
+		//Setting up the combo boxes
 		JPanel panelBookChoices = new JPanel();
 		getContentPane().add(panelBookChoices, BorderLayout.CENTER);
 		panelBookChoices.setLayout(new GridLayout(2, 1, 0, 0));
-
+		//Making an array of book titles
 		String[] listBooks = new String[SalesHistory.get().getListPLPBooks().values().size()];
 		int count = 0;
 		for (Book b : SalesHistory.get().getListPLPBooks().values()) {
@@ -59,6 +59,7 @@ public class MergeBooksDialog extends JDialog {
 		comboBoxBook2.setModel(model2);
 		panelBookChoices.add(comboBoxBook2);
 
+		//Setting up button actions
 		MergeBooksDialog window = this;
 
 		btnCancel.addActionListener(new ActionListener() { //Window closes if cancel button is pressed
@@ -67,14 +68,13 @@ public class MergeBooksDialog extends JDialog {
 			}
 		});
 
-		btnMerge.addActionListener(new ActionListener() { //Merge is performed, window closes
+		btnMerge.addActionListener(new ActionListener() { //Merge is performed if merge button is pressed, window closes
 			public void actionPerformed(ActionEvent e) {
 				Book book1 = SalesHistory.get().getListPLPBooks().get(comboBoxBook1.getSelectedItem());
 				Book book2 = SalesHistory.get().getListPLPBooks().get(comboBoxBook2.getSelectedItem());
 				if (book1.getBookNumber() == book2.getBookNumber()) { //If user attempts to merge the same two books
 					JOptionPane.showMessageDialog(window, "You cannot merge a book with itself. "
 									+ "Please select two separate books.", "Error!", JOptionPane.ERROR_MESSAGE);
-					
 				} else {
 					book1.merge(book2);
 					SalesHistory.get().removeBook(book2);

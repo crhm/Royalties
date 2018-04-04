@@ -56,8 +56,8 @@ public class RoyaltiesApp extends JFrame implements Runnable {
 		allTabs.addTab("Royalty Holders", new RoyaltyHoldersPanel());
 		allTabs.addTab("Channels", new ChannelPanel());
 		allTabs.addTab("Royalty Rules", new RoyaltiesRulesPanel());
-		allTabs.add("Sales", new SalesPanel());
 		allTabs.addTab("Sales Import Summary", new SalesImportSummaryPanel());
+		allTabs.add("Sales", new SalesPanel());
 		allTabs.addTab("Data Verification", new DataVerificationPanel());
 
 		this.setContentPane(allTabs);

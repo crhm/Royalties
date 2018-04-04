@@ -6,6 +6,7 @@ import java.io.IOException;
 
 import main.Book;
 import main.Channel;
+import main.ObjectFactory;
 import main.SalesHistory;
 import main.royalties.IRoyaltyType;
 import main.royalties.RoyaltyPercentage;
@@ -101,8 +102,7 @@ public class ChannelRoyaltiesFileFormat extends FileFormat implements java.io.Se
 				}
 			}
 			if (newBook) {
-				book = new Book(bookTitle, null, identifier);
-				SalesHistory.get().addBook(book);
+				book = ObjectFactory.createBook(bookTitle, "", identifier);
 			}
 		}
 		return book;
