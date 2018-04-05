@@ -13,7 +13,7 @@ import gui.dataverification.SalesImportSummaryPanel;
 import gui.royalties.RoyaltiesRulesPanel;
 import gui.royaltyholders.RoyaltyHoldersPanel;
 import gui.sales.SalesPanel;
-import importing.ImportEverything;
+import importing.test.ImportEverything;
 import main.SalesHistory;
 
 /**GUI for royalties app. Opens a full screen window with several panels displaying different information:
