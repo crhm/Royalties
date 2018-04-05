@@ -205,24 +205,22 @@ public class AddBookDialog extends JFrame implements ActionListener {
 			this.dispose();
 		} else if (e.getSource() == bttnConfirm) {
 			String title = this.tfTitle.getText();
-			String author = "";
-			if (this.cBAuthor1.getSelectedItem() != null) {
-				author = (String) this.cBAuthor1.getSelectedItem();
-			}						
+			String author1 = (String) this.cBAuthor1.getSelectedItem();
+			String author2 = (String) this.cBAuthor2.getSelectedItem();
+			String translator = (String) this.cBTranslator.getSelectedItem();
+			String prefaceAuthor = (String) this.cBPrefaceAuthor.getSelectedItem();
+			String afterwordAuthor = (String) this.cBAfterwordAuthor.getSelectedItem();
+			
 			String identifiers = this.tfIdentifiers.getText();
 			String otherTitles = this.tfOtherTitles.getText();
 
-			String otherAuthor = "";
-			if (this.cBAuthor2.getSelectedItem() != null) {
-				otherAuthor = (String) this.cBAuthor2.getSelectedItem();
-			}
 			if (title == null || title.isEmpty()) { //Does not allow empty title, shows an error message
 				JOptionPane.showMessageDialog(this, "Error: A book title is required to create a book. Please input a title.", 
 						"Error", JOptionPane.ERROR_MESSAGE);
 				return; //stop here and don't do anything below since there is no title
 			}
 
-			Book newBook = ObjectFactory.createBook(title, author, "");
+			Book newBook = ObjectFactory.createBook(title, author1, author2, translator, prefaceAuthor, afterwordAuthor, "");
 
 			//Making sure that if several identifiers are inputted, they are all added separately
 			String[] identifiersSeparated = null;

@@ -32,6 +32,55 @@ public class ObjectFactory {
 		return book;
 	}
 	
+	/**Constructs a book and then adds them to SalesHistory.
+	 * <br>If a person with the name author1Name exists in SalesHistory, that person is given as author1 of the book. 
+	 * <br>If a person with the name author2Name exists in SalesHistory, that person is given as author2 of the book. 
+	 * <br>If a person with the name translatorName exists in SalesHistory, that person is given as translator of the book. 
+	 * <br>If a person with the name prefaceAuthorName exists in SalesHistory, that person is given as prefaceAuthor of the book. 
+	 * <br>If a person with the name afterwordAuthorName exists in SalesHistory, that person is given as afterwordAuthor of the book. 
+	 * <br>Note: this assumes that it will never enter here with a name that does not correspond to a person in SalesHistory, due 
+	 * to the fact it should only enter here following the addBookDialog which has comboboxes rather than free text entry. Hence, no 
+	 * new person is created if one of those names is not recognised. It will just leave that parameter as null.
+	 * <br><br>Book constructor removes quote characters from title.
+	 * <br>Creates an ArrayList of Strings and places identifier in it.
+	 * <br>Initialises totalUnitsSold to 0.
+	 * @param title may not be empty or null
+	 * @param author1Name Maybe be empty or null
+	 * @param author2Name Maybe be empty or null
+	 * @param translatorName Maybe be empty or null
+	 * @param prefaceAuthorName Maybe be empty or null
+	 * @param afterwordAuthorName Maybe be empty or null
+	 * @param identifier Maybe be empty but not null
+	 * @return the created book
+	 * @throws IllegalArgumentException if the above rules are not followed
+	 */
+	public static Book createBook(String title, String author1Name, String author2Name, String translatorName, 
+			String prefaceAuthorName, String afterwordAuthorName, String identifier) {
+		Person author1 = null;
+		Person author2 = null;
+		Person translator = null;
+		Person prefaceAuthor = null;
+		Person afterwordAuthor = null;
+		if (author1Name != null && SalesHistory.get().getPerson(author1Name) != null) {
+			author1 = SalesHistory.get().getPerson(author1Name);
+		}
+		if (author2Name != null && SalesHistory.get().getPerson(author2Name) != null) {
+			author2 = SalesHistory.get().getPerson(author2Name);
+		}
+		if (translatorName != null && SalesHistory.get().getPerson(translatorName) != null) {
+			translator = SalesHistory.get().getPerson(translatorName);
+		}
+		if (prefaceAuthorName != null && SalesHistory.get().getPerson(prefaceAuthorName) != null) {
+			prefaceAuthor = SalesHistory.get().getPerson(prefaceAuthorName);
+		}
+		if (afterwordAuthorName != null && SalesHistory.get().getPerson(afterwordAuthorName) != null) {
+			afterwordAuthor = SalesHistory.get().getPerson(afterwordAuthorName);
+		}
+		Book book = new Book(title, author1, author2, translator, prefaceAuthor, afterwordAuthor, identifier);
+		SalesHistory.get().addBook(book);
+		return book;
+	}
+	
 	/**Constructs a person and adds them to SalesHistory.
 	 * Person constructor initialises Person name to the String passed as argument by the user (removing quote characters), 
 	 * and Person balance to 0.
