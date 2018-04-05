@@ -255,7 +255,8 @@ public class Book implements java.io.Serializable{
 
 	//MERGE METHOD
 	/**To merge two books into one
-	 * <br>Adds all of b's titles, authors and identifiers to this book.
+	 * <br>Adds all of b's titles and identifiers to this book.
+	 * <br>For authors, authors from book b are added to this book if this book doesn't have them.
 	 * <br>Removes b from list of PLP books
 	 * @param b Book which will merged into this one.
 	 */
@@ -266,7 +267,23 @@ public class Book implements java.io.Serializable{
 		for (String s : b.getIdentifiers()) {
 			this.identifiers.add(s);
 		}
-		//TODO for authors
+
+		if (this.author1 == null) {
+			this.author1 = b.getAuthor1();
+		}
+		if (this.author2 == null) {
+			this.author2 = b.getAuthor2();
+		}
+		if (this.translator == null) {
+			this.translator = b.getTranslator();
+		}
+		if (this.prefaceAuthor == null) {
+			this.prefaceAuthor = b.getPrefaceAuthor();
+		}
+		if (this.afterwordAuthor == null) {
+			this.afterwordAuthor = b.getAfterwordAuthor();
+		}
+
 		this.addUnitsToTotalSold(b.getTotalUnitsSold());
 		SalesHistory.get().removeBook(b);
 	}
