@@ -87,7 +87,7 @@ public class ChannelRoyaltiesFileFormat extends FileFormat implements java.io.Se
 			}
 		} else {
 			Boolean newBook = true;
-			for (Book b : SalesHistory.get().getListPLPBooks().values()) {
+			for (Book b : SalesHistory.get().getListPLPBooks()) {
 				if (b.getIdentifiers().contains(identifier)) {
 					book = b;
 					book.addTitle(bookTitle);

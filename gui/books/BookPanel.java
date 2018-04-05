@@ -119,9 +119,9 @@ public class BookPanel extends JPanel implements ActionListener, ListSelectionLi
 	 * Titles and Authors are stripped of potential quotation marks for cleanliness of presentation.
 	 */
 	private Object[][] getData(){
-		Object[][] data = new Object[SalesHistory.get().getListPLPBooks().values().size()][4];
+		Object[][] data = new Object[SalesHistory.get().getListPLPBooks().size()][4];
 		int count = 0;
-		for (Book b : SalesHistory.get().getListPLPBooks().values()) {
+		for (Book b : SalesHistory.get().getListPLPBooks()) {
 			data[count][0] = b.getTitle();
 			if (b.getAuthor1() != null) {
 				data[count][1] = b.getAuthor1().getName();

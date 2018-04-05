@@ -76,7 +76,7 @@ public abstract class FileFormat {
 	protected Book obtainBook(String bookTitle, String authorName, String identifier) {
 		Book book = null;
 		Boolean needToCreateNewBook = true;
-		for (Book b : SalesHistory.get().getListPLPBooks().values()) {
+		for (Book b : SalesHistory.get().getListPLPBooks()) {
 			String existingBookTitle = b.getTitle().toLowerCase();
 			String bookTitleFound = bookTitle.replace("\"", "").toLowerCase();
 			if (existingBookTitle.equals(bookTitleFound) || b.getIdentifiers().contains(identifier)) {

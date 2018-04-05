@@ -41,9 +41,9 @@ public class MergeBooksDialog extends JDialog {
 		getContentPane().add(panelBookChoices, BorderLayout.CENTER);
 		panelBookChoices.setLayout(new GridLayout(2, 1, 0, 0));
 		//Making an array of book titles
-		String[] listBooks = new String[SalesHistory.get().getListPLPBooks().values().size()];
+		String[] listBooks = new String[SalesHistory.get().getListPLPBooks().size()];
 		int count = 0;
-		for (Book b : SalesHistory.get().getListPLPBooks().values()) {
+		for (Book b : SalesHistory.get().getListPLPBooks()) {
 			listBooks[count] = b.getTitle();
 			count++;
 		}

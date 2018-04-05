@@ -41,12 +41,12 @@ public class SalesHistory implements java.io.Serializable {
 
 	private List<Sale> salesHistory = new ArrayList<Sale>();
 	private HashMap<String, Person> listRoyaltyHolders = new HashMap<String, Person>();
-	private HashMap<String, Book> listPLPBooks = new HashMap<String, Book>();
 	private HashMap<String, Channel> listChannels = new HashMap<String, Channel>();
+	private Set<Book> listPLPBooks = new HashSet<Book>();
 	private Set<Person> listAuthors = new HashSet<Person>();
 	private Set<Person> listPersons = new HashSet<Person>();
 	private Set<String> listMonths = new HashSet<String>();
-	//TODO figure out how it's going to work for two books with the same title, or two persons with the same name
+	//TODO think of getting rid of all Hashmaps for sets instead?
 	
 	private AtomicLong nextBookID = new AtomicLong(1);
 	private AtomicLong nextPersonID = new AtomicLong(1);
@@ -87,7 +87,7 @@ public class SalesHistory implements java.io.Serializable {
 	 */
 	public Book getBook(String title) {
 		Book bookFound = null;
-		for (Book b : listPLPBooks.values()) {
+		for (Book b : listPLPBooks) {
 			if (b.getListTitles().contains(title)) {
 				bookFound = b;
 			}
@@ -125,7 +125,7 @@ public class SalesHistory implements java.io.Serializable {
 	 * @return A list of string names of authors
 	 */
 	public Set<Person> getListAuthors(){
-		for (Book b : listPLPBooks.values()) {
+		for (Book b : listPLPBooks) {
 			if (b.getAuthor1() != null && !listAuthors.contains(b.getAuthor1())) {
 				listAuthors.add(b.getAuthor1());
 			}
@@ -161,10 +161,10 @@ public class SalesHistory implements java.io.Serializable {
 	}
 	
 	/** Returns the complete list of books managed by PLP, 
-	 * as a HashMap mapping Book titles to Books.
+	 * as a Set of Books.
 	 * @return the complete list of books managed by PLP.
 	 */
-	public HashMap<String, Book> getListPLPBooks() {
+	public Set<Book> getListPLPBooks() {
 		return listPLPBooks;
 	}
 	
@@ -204,7 +204,7 @@ public class SalesHistory implements java.io.Serializable {
 	 * @param book the Book to add to the list of Books managed by PLP.
 	 */
 	public void addBook(Book book) {
-		this.listPLPBooks.put(book.getTitle(), book);
+		this.listPLPBooks.add(book);
 	}
 
 	/** Adds a Channel to the list of channels through which PLP sells books
@@ -216,11 +216,10 @@ public class SalesHistory implements java.io.Serializable {
 	
 	//Remove methods
 	/**Removes a book from the list of books managed by PLP
-	 * and adds its bookNumber to the list of deleted books
 	 * @param book the Book to remove from the list of Books managed by PLP
 	 */
 	public void removeBook(Book book) {
-		this.listPLPBooks.remove(book.getTitle());
+		this.listPLPBooks.remove(book);
 	}
 	
 	/**Removes a person from the list of persons

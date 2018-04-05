@@ -182,7 +182,7 @@ public class Sale implements java.io.Serializable {
 		if (book == null) {
 			throw new IllegalArgumentException("Error: book cannot be null");
 		}
-		if (!SalesHistory.get().getListPLPBooks().containsKey(book.getTitle())) {
+		if (!SalesHistory.get().getListPLPBooks().contains(book)) {
 			throw new IllegalArgumentException("Error: book is not on the list of books managed by PLP in SalesHistory");
 		}
 	}

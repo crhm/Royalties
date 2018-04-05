@@ -273,6 +273,7 @@ public class EditBookDialog extends JFrame implements ActionListener {
 			book.setAfterwordAuthor(SalesHistory.get().getPerson(afterwordAuthorName));
 			book.setIdentifiers(new HashSet<String>());
 			book.setListTitles(new HashSet<String>());
+			book.addTitle(title); //VERY IMPORTANT!
 	
 			//Making sure that if several identifiers are inputted, they are all added separately
 			String[] identifiersSeparated = null;
@@ -299,8 +300,6 @@ public class EditBookDialog extends JFrame implements ActionListener {
 			} else if (!otherTitles.isEmpty()){
 				book.addTitle(otherTitles.trim());
 			}
-			System.out.println(book);
-			SalesHistory.get().addBook(book);
 			
 			this.dispose();
 		}

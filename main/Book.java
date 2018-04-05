@@ -194,9 +194,6 @@ public class Book implements java.io.Serializable{
 			validateTitle(s);
 		}
 		this.listTitles = listTitles;
-		//TODO should i make one of those the main title here?
-		//No, enforce having the main title box filled in the editing window before it accepts the entries
-		//and then add the main title entry to the set before passing the set as argument
 	}
 
 	/**
