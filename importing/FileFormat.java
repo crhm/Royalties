@@ -85,9 +85,14 @@ public abstract class FileFormat {
 				if (!identifier.isEmpty()) {
 					b.addIdentifier(identifier);
 				}
-				if (book.getAuthor() == null && book.getListAuthors().isEmpty() && !authorName.isEmpty()) {
-					Person author = ObjectFactory.createPerson(authorName);
-					book.addAuthor(author);
+				if (book.getAuthor1() == null && !authorName.isEmpty()) {
+					Person author = null;
+					if (SalesHistory.get().getPerson(authorName) != null) {
+						author = SalesHistory.get().getPerson(authorName);
+					} else {
+						author = ObjectFactory.createPerson(authorName);
+					}
+					book.setAuthor1(author);
 				}
 			}
 		}

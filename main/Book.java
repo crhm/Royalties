@@ -20,19 +20,23 @@ public class Book implements java.io.Serializable{
 	private static final long serialVersionUID = 9050853882885242193L;
 	private String title;
 	private Set<String> listTitles = new HashSet<String>();
-	private Person author;
-	private Set<Person> listAuthors = new HashSet<Person>();
+	private Person author1;
+	private Person author2;
+	private Person translator;
+	private Person prefaceAuthor;
+	private Person afterwordAuthor;
 	private Set<String> identifiers = new HashSet<String>();
 	private double totalUnitsSold;
 	private final long bookNumber;
 
 	/**Book constructor.
 	 * <br>Removes quote characters from title, and makes it the main title as well as adding it to the list of titles.
-	 * <br>Author becomes the book's author (it may be null) and is added to the list of authors (if not null).
+	 * <br>Author becomes the book's author1 (it may be null).
+	 * <br>Author2, prefaceAuthor, afterwordAuthor and translator are initialised as null (see other constructor for options).
 	 * <br>Creates an ArrayList of Strings and places identifier in it.
 	 * <br>Initialises totalUnitsSold to 0.
 	 * @param title String title of book (Cannot be empty, cannot be null)
-	 * @param author Person to be the author (can be null)
+	 * @param author Person to be the author1 (can be null)
 	 * @param identifier String unique ID of book, e.g. ISBN, ISBN-13, e-ISBN or ASIN (Can be empty, cannot be null)
 	 * @throws IllegalArgumentException if title is empty or null or if identifier is null.
 	 */
@@ -44,10 +48,45 @@ public class Book implements java.io.Serializable{
 		}
 		this.title = title.replace("\"", "");
 		this.listTitles.add(title);
-		this.author = author;
-		if (author != null) {
-			this.listAuthors.add(author);
+		this.author1 = author;
+		this.author2 = null;
+		this.afterwordAuthor = null;
+		this.prefaceAuthor = null;
+		this.translator = null;
+		if (!identifier.isEmpty()) {
+			this.identifiers.add(identifier);
 		}
+		this.totalUnitsSold = 0;
+	}
+	
+	/**Book constructor for detailed input of various authors.
+	* <br>Removes quote characters from title, and makes it the main title as well as adding it to the list of titles.
+	 * <br>Author1, author2, prefaceAuthor, afterwordAuthor and translator may be null.
+	 * <br>Creates an ArrayList of Strings and places identifier in it.
+	 * <br>Initialises totalUnitsSold to 0.
+	 * @param title String title of book (Cannot be empty, cannot be null)
+	 * @param author1 Main author (Person or null)
+	 * @param author2 Secondary author  (Person or null)
+	 * @param translator  (Person or null)
+	 * @param prefaceAuthor  (Person or null)
+	 * @param afterwordAuthor  (Person or null)
+	 * @param identifier String unique ID of book, e.g. ISBN, ISBN-13, e-ISBN or ASIN (Can be empty, cannot be null)
+	 * @throws IllegalArgumentException if title is empty or null or if identifier is null.
+	 */
+	public Book(String title, Person author1, Person author2, Person translator, Person prefaceAuthor, Person afterwordAuthor, String identifier) {
+		this.bookNumber = SalesHistory.get().getNextBookID();
+		validateTitle(title);
+		if (identifier == null) {
+			throw new IllegalArgumentException("Error: identifier may be empty but may not be null.");
+		}
+		this.title = title.replace("\"", "");
+		this.listTitles.add(title);
+		this.author1 = author1;
+		this.author2 = author2;
+		this.afterwordAuthor = afterwordAuthor;
+		this.prefaceAuthor = prefaceAuthor;
+		this.translator = translator;
+
 		if (!identifier.isEmpty()) {
 			this.identifiers.add(identifier);
 		}
@@ -63,10 +102,38 @@ public class Book implements java.io.Serializable{
 	}
 
 	/**
-	 * @return main author only
+	 * @return the author1
 	 */
-	public Person getAuthor() {
-		return author;
+	public Person getAuthor1() {
+		return author1;
+	}
+	
+	/**
+	 * @return the author2
+	 */
+	public Person getAuthor2() {
+		return author2;
+	}
+	
+	/**
+	 * @return the translator
+	 */
+	public Person getTranslator() {
+		return translator;
+	}
+
+	/**
+	 * @return the prefaceAuthor
+	 */
+	public Person getPrefaceAuthor() {
+		return prefaceAuthor;
+	}
+
+	/**
+	 * @return the afterwordAuthor
+	 */
+	public Person getAfterwordAuthor() {
+		return afterwordAuthor;
 	}
 
 	public Set<String> getIdentifiers() {
@@ -89,13 +156,6 @@ public class Book implements java.io.Serializable{
 
 	public double getTotalUnitsSold() {
 		return totalUnitsSold;
-	}
-
-	/**
-	 * @return the set of all authors for this book
-	 */
-	public Set<Person> getListAuthors() {
-		return listAuthors;
 	}
 
 	//ADD METHODS
@@ -123,21 +183,6 @@ public class Book implements java.io.Serializable{
 		listTitles.add(title);
 	}
 
-	/**Will throw an exception is person p is null.
-	 * Will make p the main author if there is none yet.
-	 * @param p the author to add to the list of authors
-	 * @throws IllegalArgumentException if p is null
-	 */
-	public void addAuthor(Person p) {
-		if (p == null) {
-			throw new IllegalArgumentException("Error: you cannot add null as an author.");
-		}
-		//If somehow, there is no main author yet
-		if (author == null) {
-			author = p;
-		}
-		listAuthors.add(p);
-	}
 
 	//SET METHODS (NEEDED FOR EDITING)
 	/**
@@ -155,16 +200,6 @@ public class Book implements java.io.Serializable{
 	}
 
 	/**
-	 * @param listAuthors the listAuthors to set
-	 */
-	public void setListAuthors(Set<Person> listAuthors) {
-		this.listAuthors = listAuthors;
-		//TODO should i make one of those the main author here?
-		//No, enforce having the main author box filled in the editing window before it accepts the entries
-		//and then add the main author entry to the set before passing the set as argument
-	}
-
-	/**
 	 * @param title the title to set
 	 * @throws IllegalArgumentException if title is empty or null
 	 */
@@ -175,15 +210,40 @@ public class Book implements java.io.Serializable{
 	}
 
 	/**Sets the book's author as the person passed as argument
-	 * @param author
+	 * @param author1
 	 */
-	public void setAuthor(Person author) {
-		this.author = author;
-		if (author != null) {
-			this.listAuthors.add(author);
-		}
+	public void setAuthor1(Person author) {
+		this.author1 = author;
+	}
+	
+	/**
+	 * @param author2 the author2 to set
+	 */
+	public void setAuthor2(Person author2) {
+		this.author2 = author2;
 	}
 
+	/**
+	 * @param prefaceAuthor the prefaceAuthor to set
+	 */
+	public void setPrefaceAuthor(Person prefaceAuthor) {
+		this.prefaceAuthor = prefaceAuthor;
+	}
+	
+	/**
+	 * @param afterwordAuthor the afterwordAuthor to set
+	 */
+	public void setAfterwordAuthor(Person afterwordAuthor) {
+		this.afterwordAuthor = afterwordAuthor;
+	}
+	
+	/**
+	 * @param translator the translator to set
+	 */
+	public void setTranslator(Person translator) {
+		this.translator = translator;
+	}
+	
 	/** Will remove empty strings from the set before setting it.
 	 * @param identifiers the identifiers to set
 	 */
@@ -209,9 +269,7 @@ public class Book implements java.io.Serializable{
 		for (String s : b.getIdentifiers()) {
 			this.identifiers.add(s);
 		}
-		for (Person p : b.getListAuthors()) {
-			this.addAuthor(p);
-		}
+		//TODO for authors
 		this.addUnitsToTotalSold(b.getTotalUnitsSold());
 		SalesHistory.get().removeBook(b);
 	}
@@ -239,7 +297,7 @@ public class Book implements java.io.Serializable{
 	//GENERATED METHODS
 	@Override
 	public String toString() {
-		return "Book [title=" + title + ", author=" + author + ", identifier=" + identifiers + ", totalUnitsSold=" + totalUnitsSold +"]";
+		return "Book [title=" + title + ", author=" + author1 + ", identifier=" + identifiers + ", totalUnitsSold=" + totalUnitsSold +"]";
 	}
 
 	/* (non-Javadoc)

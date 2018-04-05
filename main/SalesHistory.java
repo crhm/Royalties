@@ -121,13 +121,26 @@ public class SalesHistory implements java.io.Serializable {
 
 	/**Returns a list of the unique authors found in the list of books.
 	 * This list is compiled upon request, and not updated gradually as new books are added.
+	 * Included are main authors, secondary authors, translators, preface authors and afterword authors.
 	 * @return A list of string names of authors
 	 */
 	public Set<Person> getListAuthors(){
 		for (Book b : listPLPBooks.values()) {
-			if (b.getAuthor() != null && !listAuthors.contains(b.getAuthor())) {
-				listAuthors.add(b.getAuthor());
+			if (b.getAuthor1() != null && !listAuthors.contains(b.getAuthor1())) {
+				listAuthors.add(b.getAuthor1());
 			}
+			if (b.getAuthor2() != null && !listAuthors.contains(b.getAuthor2())) {
+				listAuthors.add(b.getAuthor2());
+			}
+			if (b.getTranslator() != null && !listAuthors.contains(b.getTranslator())) {
+				listAuthors.add(b.getTranslator());
+			}
+			if (b.getPrefaceAuthor() != null && !listAuthors.contains(b.getPrefaceAuthor())) {
+				listAuthors.add(b.getPrefaceAuthor());
+			}
+			if (b.getAfterwordAuthor() != null && !listAuthors.contains(b.getAfterwordAuthor())) {
+				listAuthors.add(b.getAfterwordAuthor());
+			}	
 		}
 		return listAuthors;
 	}

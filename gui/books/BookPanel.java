@@ -79,7 +79,7 @@ public class BookPanel extends JPanel implements ActionListener, ListSelectionLi
 	 */
 	private JTable getTable() {
 		//Prepares table model
-		Object[] columnNames = {"Title", "Author", "Identifiers", "Total Sold"};
+		Object[] columnNames = {"Title", "Main Author", "Identifiers", "Total Sold"};
 		DefaultTableModel model = new DefaultTableModel(getData(), columnNames) {
 			@Override
 			public Class<?> getColumnClass(int column) {
@@ -123,8 +123,8 @@ public class BookPanel extends JPanel implements ActionListener, ListSelectionLi
 		int count = 0;
 		for (Book b : SalesHistory.get().getListPLPBooks().values()) {
 			data[count][0] = b.getTitle();
-			if (b.getAuthor() != null) {
-				data[count][1] = b.getAuthor().getName();
+			if (b.getAuthor1() != null) {
+				data[count][1] = b.getAuthor1().getName();
 			} else {
 				data[count][1] = "";
 			}

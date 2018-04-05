@@ -16,7 +16,6 @@ import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
 import gui.renderers.NumberRenderer;
-import main.Person;
 import main.Sale;
 import main.SalesHistory;
 
@@ -55,7 +54,7 @@ public class SalesPanel extends JPanel {
 	 */
 	private JTable getTable() {
 		//Sets up the model
-		Object[] columnNames = {"Channel", "Country", "Date", "Book", "Authors", "Net Units Sold", 
+		Object[] columnNames = {"Channel", "Country", "Date", "Book", "Main Author", "Net Units Sold", 
 				"PLP Revenues", "Currency", "Exchange Rate", "PLP Revenues in USD", "Royalties Have Been Calculated"};
 		DefaultTableModel model = new DefaultTableModel(getData(), columnNames) {
 			@Override
@@ -126,18 +125,11 @@ public class SalesPanel extends JPanel {
 			data[rowCounter][1] = s.getCountry();
 			data[rowCounter][2] = s.getDate();
 			data[rowCounter][3] = s.getBook().getTitle();
-			String authors = "";
-			int count = 0;
-			if (!s.getBook().getListAuthors().isEmpty()) {
-				for (Person author : s.getBook().getListAuthors()) {
-					if (count > 0) {
-						authors = authors.concat(", ");
-					}
-					authors = authors.concat(author.getName());
-					count++;
-				}
+			String author = "";
+			if (s.getBook().getAuthor1() != null) {
+				author = s.getBook().getAuthor1().getName();
 			}
-			data[rowCounter][4] = authors;
+			data[rowCounter][4] = author;
 			data[rowCounter][5] = s.getNetUnitsSold();
 			data[rowCounter][6] = s.getRevenuesPLP();;
 			data[rowCounter][7] = s.getCurrency();
