@@ -6,6 +6,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
+import java.util.HashSet;
 
 import javax.swing.BorderFactory;
 import javax.swing.DefaultComboBoxModel;
@@ -247,14 +248,59 @@ public class EditBookDialog extends JFrame implements ActionListener {
 		if (e.getSource() == bttnCancel) {
 			this.dispose();
 		} else if (e.getSource() == bttnConfirm) {
-			//TODO 
-			String title = tfTitle.getText().trim();
+			String title = this.tfTitle.getText();
+			String author1Name = (String) this.cBAuthor1.getSelectedItem();
+			String author2Name = (String) this.cBAuthor2.getSelectedItem();
+			String translatorName = (String) this.cBTranslator.getSelectedItem();
+			String prefaceAuthorName = (String) this.cBPrefaceAuthor.getSelectedItem();
+			String afterwordAuthorName = (String) this.cBAfterwordAuthor.getSelectedItem();
+			
+			String identifiers = this.tfIdentifiers.getText();
+			String otherTitles = this.tfOtherTitles.getText();
+
 			if (title == null || title.isEmpty()) { //Does not allow empty title, shows an error message
-				JOptionPane.showMessageDialog(this, "Error: A book title is required. Please input a title for this book.", 
+				JOptionPane.showMessageDialog(this, "Error: A book title is required to create a book. Please input a title.", 
 						"Error", JOptionPane.ERROR_MESSAGE);
 				return; //stop here and don't do anything below since there is no title
 			}
 			
+			//Setting the new details
+			book.setTitle(title);
+			book.setAuthor1(SalesHistory.get().getPerson(author1Name));
+			book.setAuthor2(SalesHistory.get().getPerson(author2Name));
+			book.setTranslator(SalesHistory.get().getPerson(translatorName));
+			book.setPrefaceAuthor(SalesHistory.get().getPerson(prefaceAuthorName));
+			book.setAfterwordAuthor(SalesHistory.get().getPerson(afterwordAuthorName));
+			book.setIdentifiers(new HashSet<String>());
+			book.setListTitles(new HashSet<String>());
+	
+			//Making sure that if several identifiers are inputted, they are all added separately
+			String[] identifiersSeparated = null;
+			if (identifiers.contains(",") ) {
+				identifiersSeparated = identifiers.split(",");
+			}
+			if (identifiersSeparated != null) {
+				for (String s : identifiersSeparated) {
+					book.addIdentifier(s.trim());
+				}
+			} else if (!identifiers.isEmpty()){
+				book.addIdentifier(identifiers.trim());
+			}
+
+			//Adding other titles if any
+			String[] otherTitlesSeparated = null;
+			if (otherTitles.contains(",") ) {
+				otherTitlesSeparated = otherTitles.split(",");
+			}
+			if (otherTitlesSeparated != null) {
+				for (String s : otherTitlesSeparated) {
+					book.addTitle(s.trim());
+				}
+			} else if (!otherTitles.isEmpty()){
+				book.addTitle(otherTitles.trim());
+			}
+			System.out.println(book);
+			SalesHistory.get().addBook(book);
 			
 			this.dispose();
 		}
