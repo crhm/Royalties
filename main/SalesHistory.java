@@ -67,7 +67,7 @@ public class SalesHistory implements java.io.Serializable {
 	}
 		
 	//GET A SPECIFIC OBJECT	
-	/**Returns a person
+	/**Returns a person from listPersons
 	 * @param personName the name of the person to be retrieved
 	 * @return person with the name passed as argument, or null if there is no such person
 	 */
@@ -79,6 +79,20 @@ public class SalesHistory implements java.io.Serializable {
 			}
 		}
 		return personFound;
+	}
+	
+	/**Returns a book from listPLPBooks
+	 * @param title the title of the book to be retrieved
+	 * @return the book with a title as the one passed as argument, or null if there is no such book
+	 */
+	public Book getBook(String title) {
+		Book bookFound = null;
+		for (Book b : listPLPBooks.values()) {
+			if (b.getListTitles().contains(title)) {
+				bookFound = b;
+			}
+		}
+		return bookFound;
 	}
 	
 	//CALCULATE ROYALTIES

@@ -70,8 +70,8 @@ public class MergeBooksDialog extends JDialog {
 
 		btnMerge.addActionListener(new ActionListener() { //Merge is performed if merge button is pressed, window closes
 			public void actionPerformed(ActionEvent e) {
-				Book book1 = SalesHistory.get().getListPLPBooks().get(comboBoxBook1.getSelectedItem());
-				Book book2 = SalesHistory.get().getListPLPBooks().get(comboBoxBook2.getSelectedItem());
+				Book book1 = SalesHistory.get().getBook((String) comboBoxBook1.getSelectedItem());
+				Book book2 = SalesHistory.get().getBook((String) comboBoxBook2.getSelectedItem());
 				if (book1.getBookNumber() == book2.getBookNumber()) { //If user attempts to merge the same two books
 					JOptionPane.showMessageDialog(window, "You cannot merge a book with itself. "
 									+ "Please select two separate books.", "Error!", JOptionPane.ERROR_MESSAGE);

@@ -43,7 +43,7 @@ public class EditRoyaltyDialog extends JFrame implements ActionListener {
 		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		
 		person = SalesHistory.get().getListRoyaltyHolders().get(personName);
-		book = SalesHistory.get().getListPLPBooks().get(bookTitle);
+		book = SalesHistory.get().getBook(bookTitle);
 		royaltyType = SalesHistory.get().getListChannels().get(channelName).getListRoyalties().get(book).get(person);
 		
 		contentPanel = new JPanel(new GridLayout(4, 2));

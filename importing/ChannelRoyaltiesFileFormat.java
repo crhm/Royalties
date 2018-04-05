@@ -80,8 +80,8 @@ public class ChannelRoyaltiesFileFormat extends FileFormat implements java.io.Se
 	
 	private Book obtainBook(String bookTitle, String identifier) {
 		Book book = null; 
-		if (SalesHistory.get().getListPLPBooks().get(bookTitle)!=null) {
-			book = SalesHistory.get().getListPLPBooks().get(bookTitle);
+		if (SalesHistory.get().getBook(bookTitle)!=null) {
+			book = SalesHistory.get().getBook(bookTitle);
 			if (!identifier.isEmpty()) {
 				book.addIdentifier(identifier);
 			}

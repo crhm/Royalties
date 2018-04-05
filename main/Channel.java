@@ -23,7 +23,7 @@ import main.royalties.IRoyaltyType;
  *
  */
 public class Channel implements java.io.Serializable {
-
+	
 	private static final long serialVersionUID = 6186357366182288547L;
 	private FileFormat fileFormat;
 	private final String name;

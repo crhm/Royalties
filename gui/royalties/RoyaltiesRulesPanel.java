@@ -203,7 +203,7 @@ public class RoyaltiesRulesPanel extends JPanel implements ActionListener, ListS
 				deleteButton.setEnabled(false);
 				int tableRow = bookTitles.getSelectedRow();
 				String bookTitle = bookTitles.getValueAt(tableRow, 0).toString();
-				Book book = SalesHistory.get().getListPLPBooks().get(bookTitle);
+				Book book = SalesHistory.get().getBook(bookTitle);
 				if (royaltiesTable != null && royaltiesTable.isShowing()) {
 					royaltiesTable.getSelectionModel().removeListSelectionListener(this);
 				}

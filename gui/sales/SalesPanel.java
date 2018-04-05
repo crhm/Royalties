@@ -16,6 +16,7 @@ import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
 import gui.renderers.NumberRenderer;
+import main.Person;
 import main.Sale;
 import main.SalesHistory;
 
@@ -54,17 +55,18 @@ public class SalesPanel extends JPanel {
 	 */
 	private JTable getTable() {
 		//Sets up the model
-		Object[] columnNames = {"Channel", "Country", "Date", "Book", "Net Units Sold", "PLP Revenues", "Currency", "Exchange Rate", "PLP Revenues in USD", "Royalties Have Been Calculated"};
+		Object[] columnNames = {"Channel", "Country", "Date", "Book", "Authors", "Net Units Sold", 
+				"PLP Revenues", "Currency", "Exchange Rate", "PLP Revenues in USD", "Royalties Have Been Calculated"};
 		DefaultTableModel model = new DefaultTableModel(getData(), columnNames) {
 			@Override
 			public Class<?> getColumnClass(int column) {
 				switch (column) {
-				case 4 : return Double.class;
 				case 5 : return Double.class;
-				case 6 : return Currency.class;
-				case 7 : return Double.class;
+				case 6 : return Double.class;
+				case 7 : return Currency.class;
 				case 8 : return Double.class;
-				case 9 : return Boolean.class;
+				case 9 : return Double.class;
+				case 10 : return Boolean.class;
 				default : return String.class;
 				}
 			}
@@ -80,14 +82,16 @@ public class SalesPanel extends JPanel {
 		columnModel.getColumn(0).setMaxWidth(100);
 		columnModel.getColumn(1).setMaxWidth(60);
 		columnModel.getColumn(2).setMaxWidth(65);
-		columnModel.getColumn(4).setMaxWidth(110);
+		columnModel.getColumn(3).setMaxWidth(400);
+		columnModel.getColumn(4).setMaxWidth(150);
 		columnModel.getColumn(5).setMaxWidth(110);
-		columnModel.getColumn(6).setMaxWidth(80);
-		columnModel.getColumn(7).setMaxWidth(110);
+		columnModel.getColumn(6).setMaxWidth(110);
+		columnModel.getColumn(7).setMaxWidth(80);
 		columnModel.getColumn(8).setMaxWidth(110);
 		columnModel.getColumn(9).setMaxWidth(110);
+		columnModel.getColumn(10).setMaxWidth(110);
 		
-		columnModel.getColumn(8).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+		columnModel.getColumn(9).setCellRenderer(NumberRenderer.getCurrencyRenderer());
 
 		//Sorts the table by Date, Channel, Country and Book (in that order)
 		TableRowSorter<TableModel> sorter = new TableRowSorter<>(table.getModel());
@@ -121,18 +125,30 @@ public class SalesPanel extends JPanel {
 			data[rowCounter][0] = s.getChannel().getName();
 			data[rowCounter][1] = s.getCountry();
 			data[rowCounter][2] = s.getDate();
-			data[rowCounter][3] = s.getBook().getTitle() + ", " + s.getBook().getAuthor();
-			data[rowCounter][4] = s.getNetUnitsSold();
-			data[rowCounter][5] = s.getRevenuesPLP();;
-			data[rowCounter][6] = s.getCurrency();
-			if (s.getChannel().getName().equals("Amazon") || s.getChannel().getName().equals("Apple")) {
-				data[rowCounter][7] = s.getChannel().getHistoricalForex().get(s.getDate()).get(s.getCurrency().getCurrencyCode());
-				data[rowCounter][8] = s.getRevenuesPLP() * (Double) data[rowCounter][7];
-			} else {
-				data[rowCounter][7] = 1;
-				data[rowCounter][8] = s.getRevenuesPLP();
+			data[rowCounter][3] = s.getBook().getTitle();
+			String authors = "";
+			int count = 0;
+			if (!s.getBook().getListAuthors().isEmpty()) {
+				for (Person author : s.getBook().getListAuthors()) {
+					if (count > 0) {
+						authors = authors.concat(", ");
+					}
+					authors = authors.concat(author.getName());
+					count++;
+				}
 			}
-			data[rowCounter][9] = s.getRoyaltyHasBeenCalculated();
+			data[rowCounter][4] = authors;
+			data[rowCounter][5] = s.getNetUnitsSold();
+			data[rowCounter][6] = s.getRevenuesPLP();;
+			data[rowCounter][7] = s.getCurrency();
+			if (s.getChannel().getName().equals("Amazon") || s.getChannel().getName().equals("Apple")) {
+				data[rowCounter][8] = s.getChannel().getHistoricalForex().get(s.getDate()).get(s.getCurrency().getCurrencyCode());
+				data[rowCounter][9] = s.getRevenuesPLP() * (Double) data[rowCounter][8];
+			} else {
+				data[rowCounter][8] = 1;
+				data[rowCounter][9] = s.getRevenuesPLP();
+			}
+			data[rowCounter][10] = s.getRoyaltyHasBeenCalculated();
 			rowCounter++;
 		}
 		return data;

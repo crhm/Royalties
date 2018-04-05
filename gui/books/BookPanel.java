@@ -44,10 +44,6 @@ public class BookPanel extends JPanel implements ActionListener, ListSelectionLi
 	private JButton addButton = new JButton("Add New Book");
 	private JButton deleteButton = new JButton("Delete Book");
 	private JButton mergeButton = new JButton("Choose Two Books to Merge Together");
-	
-	//TODO fix appearance of edit button to only happen when one book is selected, and think about delete behavior when more than one is selected
-	//TODO add "these are the same books" button for multiple selection?
-
 
 	public BookPanel() {
 		super();
@@ -64,7 +60,7 @@ public class BookPanel extends JPanel implements ActionListener, ListSelectionLi
 		
 		//Setting up button Panel
 		JPanel buttonPanel = new JPanel(new GridLayout(1, 5));
-		buttonPanel.add(mergeButton);//Bad solution to problem of making buttons smaller - fix please? TODO
+		buttonPanel.add(mergeButton);
 		buttonPanel.add(addButton);
 		buttonPanel.add(deleteButton);
 		buttonPanel.add(editButton);
@@ -127,7 +123,11 @@ public class BookPanel extends JPanel implements ActionListener, ListSelectionLi
 		int count = 0;
 		for (Book b : SalesHistory.get().getListPLPBooks().values()) {
 			data[count][0] = b.getTitle();
-			data[count][1] = b.getAuthor();
+			if (b.getAuthor() != null) {
+				data[count][1] = b.getAuthor().getName();
+			} else {
+				data[count][1] = "";
+			}
 			data[count][2] = b.getIdentifiers();
 			BigDecimal totalSold = new BigDecimal(b.getTotalUnitsSold());
 			data[count][3] = totalSold.setScale(0);
@@ -145,7 +145,7 @@ public class BookPanel extends JPanel implements ActionListener, ListSelectionLi
 				//TODO figure out how I manage consequences for other tables in other tabs that represent such info...?
 				int row = booksTable.convertRowIndexToModel(booksTable.getSelectedRow());
 				String title = (String) booksTable.getModel().getValueAt(row, 0);
-				Book book = SalesHistory.get().getListPLPBooks().get(title);
+				Book book = SalesHistory.get().getBook(title);
 				EditBookDialog editBookDialog = new EditBookDialog(book);
 				editBookDialog.addWindowListener(new WindowAdapter() {
 				@Override
@@ -170,7 +170,7 @@ public class BookPanel extends JPanel implements ActionListener, ListSelectionLi
 			if (option == 0) { //If user clicks OK
 				int row = booksTable.convertRowIndexToModel(booksTable.getSelectedRow());
 				String title = (String) booksTable.getModel().getValueAt(row, 0);
-				Book book = SalesHistory.get().getListPLPBooks().get(title);
+				Book book = SalesHistory.get().getBook(title);
 				SalesHistory.get().removeBook(book);
 				updateTable();
 			}
