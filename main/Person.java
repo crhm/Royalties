@@ -6,8 +6,11 @@ import java.util.HashSet;
 import java.util.Set;
 
 /**Class that represents a person who has a balance, likely because they have a royalty on one of PLP's books.
- * <br>A Person has a name and a balance, to which an amount can be added (or substracted) via the addToBalance method.
+ * <br>A Person has a main name and a list of names (for alternative spellings or order). Neither may be empty or null. 
+ * The list of names will always at least contain the main name.
+ * <br>A person has a balance, to which an amount can be added (or substracted) via the addToBalance method.
  * <br>A balanace may be negative, and is always in USD.
+ * <br>A Person has a unique identifying personNumber, set by SalesHistory upon creation.
  * @author crhm
  *
  */
@@ -21,6 +24,7 @@ public class Person implements java.io.Serializable {
 
 	/**Person constructor. Initialises Person name to the String passed as argument by the user (removing quote characters), 
 	 * and Person balance to 0.
+	 * <br>personNumber is obtained from SalesHistory.
 	 * @param name String name of Person. Cannot be empty or null.
 	 * @throws IllegalArgumentException if person name is empty or null
 	 */
@@ -32,47 +36,58 @@ public class Person implements java.io.Serializable {
 		this.balance = 0;
 	}
 
+	//GET METHODS
 	public String getName() {
 		return name;
 	}
 
-	/**
-	 * @return the listNames
-	 */
 	public Set<String> getListNames() {
 		return listNames;
 	}
-
-	/**
-	 * @param listNames the listNames to set
-	 */
-	public void setListNames(Set<String> listNames) {
-		this.listNames = listNames;
-	}
 	
-	public void addName(String name) {
-		this.listNames.add(name);
-	}
-
-	/**
-	 * @return the personNumber
-	 */
 	public long getPersonNumber() {
 		return personNumber;
 	}
 
-	/**
-	 * @param name the name to set
+	/** 
+	 * @return the person's balance, rounded to two decimal places.
 	 */
-	public void setName(String name) {
-		this.name = name;
-	}
-
 	public double getBalance() {
 		BigDecimal tempAmount = new BigDecimal(this.balance).setScale(2, RoundingMode.HALF_UP);
 		return tempAmount.doubleValue();
 	}
+	
+	//SET METHODS
+	/**
+	 * @param name the name to set
+	 * @throws IllegalArgumentException if name empty or null
+	 */
+	public void setName(String name) {
+		validateName(name);
+		this.name = name;
+	}
+	
+	/**
+	 * @param listNames the listNames to set
+	 * @throws IllegalArgumentException if any strings in listNames are empty or null
+	 */
+	public void setListNames(Set<String> listNames) {
+		for (String s : listNames) {
+			validateName(s);
+		}
+		this.listNames = listNames;
+	}
 
+	//ADD METHODS
+	/**
+	 * @param name
+	 * @throws IllegalArgumentException if name empty or null
+	 */
+	public void addName(String name) {
+		validateName(name);
+		this.listNames.add(name);
+	}
+	
 	/**Adds double passed as argument to the person's balance (rounded half up to 2 decimal places).
 	 * 
 	 * @param amount Amount to add to balance.
@@ -82,19 +97,22 @@ public class Person implements java.io.Serializable {
 		this.balance = this.balance + tempAmount.doubleValue();
 	}
 	
+	//MERGE METHOD
+	/**To merge two persons into one
+	 * <br>Adds all of p's names to this one's. Adds its balance to this one's.
+	 * <br>Removes p from list of persons
+	 * @param p Person which will merged into this one.
+	 */
 	public void merge(Person p) {
 		this.listNames.add(p.getName());
 		for (String s : p.getListNames()) {
 			this.listNames.add(s);
 		}
 		this.addToBalance(p.getBalance());
-	}
-
-	@Override
-	public String toString() {
-		return "Person [name=" + name + ", balance=" + balance + "]";
+		SalesHistory.get().removePerson(p);
 	}
 	
+	//VALIDATION METHODS
 	/**Checks if name is empty or null
 	 * @throws IllegalArgumentException if field takes unauthorised value
 	 */
@@ -104,6 +122,12 @@ public class Person implements java.io.Serializable {
 		}
 	}
 
+	//GENERATED METHODS
+	@Override
+	public String toString() {
+		return "Person [name=" + name + ", balance=" + balance + "]";
+	}
+	
 	/* (non-Javadoc)
 	 * @see java.lang.Object#hashCode()
 	 */

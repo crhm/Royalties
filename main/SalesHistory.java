@@ -42,21 +42,16 @@ public class SalesHistory implements java.io.Serializable {
 	private List<Sale> salesHistory = new ArrayList<Sale>();
 	private HashMap<String, Person> listRoyaltyHolders = new HashMap<String, Person>();
 	private HashMap<String, Book> listPLPBooks = new HashMap<String, Book>();
-	private HashMap<Long, Book> listBooksByNumber = new HashMap<Long, Book>();
-	private HashMap<Long, Person> listPersonsByNumber = new HashMap<Long, Person>();
 	private HashMap<String, Channel> listChannels = new HashMap<String, Channel>();
 	private Set<Person> listAuthors = new HashSet<Person>();
 	private Set<Person> listPersons = new HashSet<Person>();
 	private Set<String> listMonths = new HashSet<String>();
-	//TODO figure out if I need to keep a list of deleted books to avoid passing through books that do not exist when
-	//iterating through list of books PLP.
 	//TODO figure out how it's going to work for two books with the same title, or two persons with the same name
 	
 	private AtomicLong nextBookID = new AtomicLong(1);
 	private AtomicLong nextPersonID = new AtomicLong(1);
-	
-	
-	//Get IDs for object creation
+		
+	//GET IDS FOR OBJECT CREATION
 	/** 
 	 * @return the ID number to be assigned to the next book being created.
 	 */
@@ -70,39 +65,8 @@ public class SalesHistory implements java.io.Serializable {
 	public long getNextPersonID() {
 		return nextPersonID.getAndIncrement();
 	}
-	
-	//See number of objects created
-	/**
-	 * @return the number of persons that have been created so far
-	 */
-	public long seeNumberOfPersons() {
-		return nextPersonID.get() - 1;
-	}
-	
-	/**
-	 * @return the number of books that have been created so far
-	 */
-	public long seeNumberOfBooks() {
-		return nextBookID.get() - 1;
-	}
-	
-	//Get a specific object
-	/**Returns a book managed by PLP
-	 * @param bookNumber number of book to be retrieved
-	 * @return book with the bookNumber passed as argument, or null if there is no such book
-	 */
-	public Book getBook(long bookNumber) {
-		return listBooksByNumber.get(bookNumber);
-	}
-	
-	/**Returns a person
-	 * @param personNumber the identifying number of the person to be retrieved
-	 * @return person with the personNumber passed as argument, or null if there is no such person
-	 */
-	public Person getPerson(long personNumber) {
-		return listPersonsByNumber.get(personNumber);
-	}
-	
+		
+	//GET A SPECIFIC OBJECT	
 	/**Returns a person
 	 * @param personName the name of the person to be retrieved
 	 * @return person with the name passed as argument, or null if there is no such person
@@ -117,7 +81,7 @@ public class SalesHistory implements java.io.Serializable {
 		return personFound;
 	}
 	
-	//Calculate royalties
+	//CALCULATE ROYALTIES
 	/** Calculates all royalties by calling Sale.calculateRoyalties() on each sale
 	 *  in the list of all sales.
 	 */
@@ -127,7 +91,7 @@ public class SalesHistory implements java.io.Serializable {
 		}
 	}
 	
-	//Get a list
+	//GET A LIST
 	/**Returns a list of the months for which there are sales.
 	 * This list is compiled upon request, and not updated gradually as new sales are added.
 	 * @return A list of strings representing months and years
@@ -185,7 +149,7 @@ public class SalesHistory implements java.io.Serializable {
 		return listChannels;
 	}
 	
-	//Add an object to a list. Should be called only from ObjectFactory (except for royaltyHolder)
+	//ADD AN OBJECT TO A LIST. SHOULD BE CALLED ONLY FROM OBJECTFACTORY (EXCEPT FOR ROYALTYHOLDER)
 	/**Adds someone to the list of persons created. 
 	 * 
 	 * @param person
@@ -214,7 +178,6 @@ public class SalesHistory implements java.io.Serializable {
 	 */
 	public void addBook(Book book) {
 		this.listPLPBooks.put(book.getTitle(), book);
-		this.listBooksByNumber.put(book.getBookNumber(), book);
 	}
 
 	/** Adds a Channel to the list of channels through which PLP sells books
@@ -226,12 +189,22 @@ public class SalesHistory implements java.io.Serializable {
 	
 	//Remove methods
 	/**Removes a book from the list of books managed by PLP
+	 * and adds its bookNumber to the list of deleted books
 	 * @param book the Book to remove from the list of Books managed by PLP
 	 */
 	public void removeBook(Book book) {
 		this.listPLPBooks.remove(book.getTitle());
 	}
+	
+	/**Removes a person from the list of persons
+	 * and adds its personNumber to the list of deleted persons
+	 * @param person the Person to remove from the list of persons
+	 */
+	public void removePerson(Person person) {
+		this.listPersons.remove(person);
+	}
 
+	//SERIALISATION METHODS //TODO fix so that it is updated for current state of things
 //	/**Writes SalesHistory state to the ObjectOutputStream.
 //	 * <br>Writes by serialising the following SalesHistory variables (in this order, same as read by readObject()):
 //	 * <br>HashMap<Book, Double> cumulativeSalesPerBook

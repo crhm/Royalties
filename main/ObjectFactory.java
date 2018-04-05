@@ -19,6 +19,9 @@ public class ObjectFactory {
 	 */
 	public static Book createBook(String title, String personName, String identifier) {
 		Person author = null;
+		if (personName == null) {
+			throw new IllegalArgumentException("Error: personName can be empty but cannot be null.");
+		}
 		if (SalesHistory.get().getPerson(personName) != null) {
 			author = SalesHistory.get().getPerson(personName);
 		} else if (!personName.isEmpty()){
