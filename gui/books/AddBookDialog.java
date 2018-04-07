@@ -30,7 +30,7 @@ import javax.swing.JComboBox;
  */
 @SuppressWarnings("serial")
 public class AddBookDialog extends JFrame implements ActionListener {
-
+	
 	private JPanel panelButtons;
 	private JPanel panelLabels;
 	private JPanel panelEntries;
@@ -97,26 +97,26 @@ public class AddBookDialog extends JFrame implements ActionListener {
 		panelLabels.add(lblIdentifiers);
 
 		lblAuthor1 = new JLabel("Main Author:");
-		lblAuthor1.setToolTipText("To create a new author, please go to the Author Pane.");
+		lblAuthor1.setToolTipText("To create a new author, write their name instead of selecting one from the list.");
 		lblAuthor1.setHorizontalAlignment(SwingConstants.RIGHT);
 		panelLabels.add(lblAuthor1);
 
 		lblAuthor2 = new JLabel("Secondary Author");
-		lblAuthor2.setToolTipText("To create a new author, please go to the Author Pane.");
+		lblAuthor2.setToolTipText("To create a new author, write their name instead of selecting one from the list.");
 		panelLabels.add(lblAuthor2);
 
 		lblTranslator = new JLabel("Translator:");
-		lblTranslator.setToolTipText("To create a new author, please go to the Author Pane.");
+		lblTranslator.setToolTipText("To create a new author, write their name instead of selecting one from the list.");
 		lblTranslator.setHorizontalAlignment(SwingConstants.RIGHT);
 		panelLabels.add(lblTranslator);
 
 		lblPrefaceAuthor = new JLabel("Preface Author:");
-		lblPrefaceAuthor.setToolTipText("To create a new author, please go to the Author Pane.");
+		lblPrefaceAuthor.setToolTipText("To create a new author, write their name instead of selecting one from the list.");
 		lblPrefaceAuthor.setHorizontalAlignment(SwingConstants.RIGHT);
 		panelLabels.add(lblPrefaceAuthor);
 
 		lblAfterwordAuthor = new JLabel("Afterword Author:");
-		lblAfterwordAuthor.setToolTipText("To create a new author, please go to the Author Pane.");
+		lblAfterwordAuthor.setToolTipText("To create a new author, write their name instead of selecting one from the list.");
 		lblAfterwordAuthor.setHorizontalAlignment(SwingConstants.RIGHT);
 		panelLabels.add(lblAfterwordAuthor);
 
@@ -173,30 +173,35 @@ public class AddBookDialog extends JFrame implements ActionListener {
 
 		cBAuthor1.insertItemAt("", 0);
 		cBAuthor1.setSelectedIndex(0);
+		cBAuthor1.setEditable(true);
 
 		//AUTHOR 2
 		cBAuthor2 = new JComboBox<String>();
 		cBAuthor2.setModel(model2);
 		cBAuthor2.insertItemAt("", 0);
 		cBAuthor2.setSelectedIndex(0);
+		cBAuthor2.setEditable(true);
 
 		//TRANSLATOR
 		cBTranslator = new JComboBox<String>();
 		cBTranslator.setModel(model3);
 		cBTranslator.insertItemAt("", 0);
 		cBTranslator.setSelectedIndex(0);
+		cBTranslator.setEditable(true);
 
 		//PREFACE AUTHOR
 		cBPrefaceAuthor = new JComboBox<String>();
 		cBPrefaceAuthor.setModel(model4);
 		cBPrefaceAuthor.insertItemAt("", 0);
 		cBPrefaceAuthor.setSelectedIndex(0);
+		cBPrefaceAuthor.setEditable(true);
 
 		//AFTERWORD AUTHOR
 		cBAfterwordAuthor = new JComboBox<String>();
 		cBAfterwordAuthor.setModel(model5);
 		cBAfterwordAuthor.insertItemAt("", 0);
 		cBAfterwordAuthor.setSelectedIndex(0);
+		cBAfterwordAuthor.setEditable(true);
 	}
 
 	@Override

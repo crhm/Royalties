@@ -5,7 +5,7 @@ import java.util.Currency;
 import importing.FileFormat;
 
 public class ObjectFactory {
-	
+
 	/**Constructs a book and then adds them to SalesHistory.
 	 * <br>If a person with the name personName exists in SalesHistory, that person is given as author of the book. 
 	 * Otherwise, if personName isn't an empty string, a new person is created (by calling ObjectFactory.createPerson).
@@ -31,16 +31,10 @@ public class ObjectFactory {
 		SalesHistory.get().addBook(book);
 		return book;
 	}
-	
+
 	/**Constructs a book and then adds them to SalesHistory.
-	 * <br>If a person with the name author1Name exists in SalesHistory, that person is given as author1 of the book. 
-	 * <br>If a person with the name author2Name exists in SalesHistory, that person is given as author2 of the book. 
-	 * <br>If a person with the name translatorName exists in SalesHistory, that person is given as translator of the book. 
-	 * <br>If a person with the name prefaceAuthorName exists in SalesHistory, that person is given as prefaceAuthor of the book. 
-	 * <br>If a person with the name afterwordAuthorName exists in SalesHistory, that person is given as afterwordAuthor of the book. 
-	 * <br>Note: this assumes that it will never enter here with a name that does not correspond to a person in SalesHistory, due 
-	 * to the fact it should only enter here following the addBookDialog which has comboboxes rather than free text entry. Hence, no 
-	 * new person is created if one of those names is not recognised. It will just leave that parameter as null.
+	 * <br>For the five authors, they will be null if their corresponding argument is null or empty. They will be an existing 
+	 * Person if one is found with that name in SalesHistory, or they will be a new person if not (and added to SalesHistory).
 	 * <br><br>Book constructor removes quote characters from title.
 	 * <br>Creates an ArrayList of Strings and places identifier in it.
 	 * <br>Initialises totalUnitsSold to 0.
@@ -61,26 +55,46 @@ public class ObjectFactory {
 		Person translator = null;
 		Person prefaceAuthor = null;
 		Person afterwordAuthor = null;
-		if (author1Name != null && SalesHistory.get().getPerson(author1Name) != null) {
-			author1 = SalesHistory.get().getPerson(author1Name);
+		if (author1Name != null && !author1Name.isEmpty()) {
+			if (SalesHistory.get().getPerson(author1Name) != null) {
+				author1 = SalesHistory.get().getPerson(author1Name);
+			} else {
+				author1 = ObjectFactory.createPerson(author1Name);
+			}
 		}
-		if (author2Name != null && SalesHistory.get().getPerson(author2Name) != null) {
-			author2 = SalesHistory.get().getPerson(author2Name);
+		if (author2Name != null && !author2Name.isEmpty()) {
+			if (SalesHistory.get().getPerson(author2Name) != null) {
+				author2 = SalesHistory.get().getPerson(author2Name);
+			} else {
+				author2 = ObjectFactory.createPerson(author2Name);
+			}
 		}
-		if (translatorName != null && SalesHistory.get().getPerson(translatorName) != null) {
-			translator = SalesHistory.get().getPerson(translatorName);
+		if (translatorName != null && !translatorName.isEmpty()) {
+			if (SalesHistory.get().getPerson(translatorName) != null) {
+				translator = SalesHistory.get().getPerson(translatorName);
+			} else {
+				translator = ObjectFactory.createPerson(translatorName);
+			}
 		}
-		if (prefaceAuthorName != null && SalesHistory.get().getPerson(prefaceAuthorName) != null) {
-			prefaceAuthor = SalesHistory.get().getPerson(prefaceAuthorName);
+		if (prefaceAuthorName != null && !prefaceAuthorName.isEmpty()) {
+			if (SalesHistory.get().getPerson(prefaceAuthorName) != null) {
+				prefaceAuthor = SalesHistory.get().getPerson(prefaceAuthorName);	
+			} else {
+				prefaceAuthor = ObjectFactory.createPerson(prefaceAuthorName);
+			}
 		}
-		if (afterwordAuthorName != null && SalesHistory.get().getPerson(afterwordAuthorName) != null) {
-			afterwordAuthor = SalesHistory.get().getPerson(afterwordAuthorName);
+		if (afterwordAuthorName != null && !afterwordAuthorName.isEmpty()) {
+			if (SalesHistory.get().getPerson(afterwordAuthorName) != null) {
+				afterwordAuthor = SalesHistory.get().getPerson(afterwordAuthorName);
+			} else {
+				afterwordAuthor = ObjectFactory.createPerson(afterwordAuthorName);
+			}
 		}
 		Book book = new Book(title, author1, author2, translator, prefaceAuthor, afterwordAuthor, identifier);
 		SalesHistory.get().addBook(book);
 		return book;
 	}
-	
+
 	/**Constructs a person and adds them to SalesHistory.
 	 * Person constructor initialises Person name to the String passed as argument by the user (removing quote characters), 
 	 * and Person balance to 0.
@@ -92,11 +106,11 @@ public class ObjectFactory {
 		SalesHistory.get().addPerson(person);
 		return person;
 	}
-	
+
 	/**Constructs a channel and then adds it to SalesHistory.
 	 * Channel constructor initialises channel names and fileFormat to the corresponding arguments passed by user.
 	 * <br>Initialises saleCurrencyIsAlwaysUSD to false by default. Use other constructor for channels that need it set to true.
-	 * @param name String name of channel
+	 * @param channelName String name of channel
 	 * @param fileFormat FileFormat implementation to be associated with the channel
 	 * @throws IllegalArgumentException if field takes an unpermitted value (name is null, empty, or already taken).
 	 */
@@ -105,12 +119,12 @@ public class ObjectFactory {
 		SalesHistory.get().addChannel(channel);
 		return channel;
 	}
-	
+
 	/**Constructs a channel and then adds it to SalesHistory.
 	 * Channel constructor initialises channel names and fileFormat to the corresponding arguments passed by user.
 	 * <br>Initialises saleCurrencyIsAlwaysUSD to false by default. Use other constructor for channels that need it set to true.
-	 * @param name String name of channel
-	 * @param fileFormat FileFormat implementation to be associated with the channel
+	 * @param channelName String name of channel
+	 * @param channelFormat FileFormat implementation to be associated with the channel
 	 * @param isCurrencyAlwaysUSD determines whether there'll be need to look for exchange rates or not
 	 * @throws IllegalArgumentException if field takes an unpermitted value (name is null, empty, or already taken).
 	 */
@@ -119,7 +133,7 @@ public class ObjectFactory {
 		SalesHistory.get().addChannel(channel);
 		return channel;
 	}
-	
+
 	/**Constructs a sale and adds it to SalesHistory.
 	 * Sale constructor initialises all variables as the arguments passed by user.
 	 * @param channel Channel through which the sale was made. Must be one recognised by SalesHistory.

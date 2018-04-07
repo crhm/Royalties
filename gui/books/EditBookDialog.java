@@ -19,6 +19,7 @@ import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 import main.Book;
+import main.ObjectFactory;
 import main.Person;
 import main.SalesHistory;
 
@@ -100,21 +101,26 @@ public class EditBookDialog extends JFrame implements ActionListener {
 		panelLabels.add(lblUnitsSold);
 		
 		lblAuthor1 = new JLabel("Main Author:");
+		lblAuthor1.setToolTipText("To create a new author, write their name instead of selecting one from the list.");
 		lblAuthor1.setHorizontalAlignment(SwingConstants.RIGHT);
 		panelLabels.add(lblAuthor1);
 		
 		lblAuthor2 = new JLabel("Secondary Author");
+		lblAuthor2.setToolTipText("To create a new author, write their name instead of selecting one from the list.");
 		panelLabels.add(lblAuthor2);
 		
 		lblTranslator = new JLabel("Translator:");
+		lblTranslator.setToolTipText("To create a new author, write their name instead of selecting one from the list.");
 		lblTranslator.setHorizontalAlignment(SwingConstants.RIGHT);
 		panelLabels.add(lblTranslator);
 		
 		lblPrefaceAuthor = new JLabel("Preface Author:");
+		lblPrefaceAuthor.setToolTipText("To create a new author, write their name instead of selecting one from the list.");
 		lblPrefaceAuthor.setHorizontalAlignment(SwingConstants.RIGHT);
 		panelLabels.add(lblPrefaceAuthor);
 		
 		lblAfterwordAuthor = new JLabel("Afterword Author:");
+		lblAfterwordAuthor.setToolTipText("To create a new author, write their name instead of selecting one from the list.");
 		lblAfterwordAuthor.setHorizontalAlignment(SwingConstants.RIGHT);
 		panelLabels.add(lblAfterwordAuthor);
 		
@@ -190,6 +196,7 @@ public class EditBookDialog extends JFrame implements ActionListener {
 		//AUTHOR 1
 		cBAuthor1 = new JComboBox<String>();
 		cBAuthor1.setModel(model1);
+		cBAuthor1.setEditable(true);
 		if (book.getAuthor1() != null) {
 			int index1 = model1.getIndexOf(book.getAuthor1().getName());
 			cBAuthor1.setSelectedIndex(index1);
@@ -201,6 +208,7 @@ public class EditBookDialog extends JFrame implements ActionListener {
 		//AUTHOR 2
 		cBAuthor2 = new JComboBox<String>();
 		cBAuthor2.setModel(model2);
+		cBAuthor2.setEditable(true);
 		if (book.getAuthor2() != null) {
 			int index2 = model2.getIndexOf(book.getAuthor2().getName());
 			cBAuthor2.setSelectedIndex(index2);
@@ -212,6 +220,7 @@ public class EditBookDialog extends JFrame implements ActionListener {
 		//TRANSLATOR
 		cBTranslator = new JComboBox<String>();
 		cBTranslator.setModel(model3);
+		cBTranslator.setEditable(true);
 		if (book.getTranslator() != null) {
 			int index3 = model3.getIndexOf(book.getTranslator().getName());
 			cBTranslator.setSelectedIndex(index3);
@@ -223,6 +232,7 @@ public class EditBookDialog extends JFrame implements ActionListener {
 		//PREFACE AUTHOR
 		cBPrefaceAuthor = new JComboBox<String>();
 		cBPrefaceAuthor.setModel(model4);
+		cBPrefaceAuthor.setEditable(true);
 		if (book.getPrefaceAuthor() != null) {
 			int index4 = model4.getIndexOf(book.getPrefaceAuthor().getName());
 			cBPrefaceAuthor.setSelectedIndex(index4);
@@ -234,6 +244,7 @@ public class EditBookDialog extends JFrame implements ActionListener {
 		//AFTERWORD AUTHOR
 		cBAfterwordAuthor = new JComboBox<String>();
 		cBAfterwordAuthor.setModel(model5);
+		cBAfterwordAuthor.setEditable(true);
 		if (book.getAfterwordAuthor() != null) {
 			int index5 = model5.getIndexOf(book.getAfterwordAuthor().getName());
 			cBAfterwordAuthor.setSelectedIndex(index5);
@@ -266,15 +277,42 @@ public class EditBookDialog extends JFrame implements ActionListener {
 			
 			//Setting the new details
 			book.setTitle(title);
-			book.setAuthor1(SalesHistory.get().getPerson(author1Name));
-			book.setAuthor2(SalesHistory.get().getPerson(author2Name));
-			book.setTranslator(SalesHistory.get().getPerson(translatorName));
-			book.setPrefaceAuthor(SalesHistory.get().getPerson(prefaceAuthorName));
-			book.setAfterwordAuthor(SalesHistory.get().getPerson(afterwordAuthorName));
-			book.setIdentifiers(new HashSet<String>());
-			book.setListTitles(new HashSet<String>());
-			book.addTitle(title); //VERY IMPORTANT!
+			if (SalesHistory.get().getPerson(author1Name) != null) {
+				book.setAuthor1(SalesHistory.get().getPerson(author1Name));
+			} else if (!author1Name.isEmpty()) {
+				Person author1 = ObjectFactory.createPerson(author1Name);
+				book.setAuthor1(author1);
+			}
+			
+			if (SalesHistory.get().getPerson(author2Name) != null) {
+				book.setAuthor2(SalesHistory.get().getPerson(author2Name));
+			} else if (!author2Name.isEmpty()) {
+				Person author2 = ObjectFactory.createPerson(author2Name);
+				book.setAuthor2(author2);
+			}			
+			
+			if (SalesHistory.get().getPerson(translatorName) != null) {
+				book.setTranslator(SalesHistory.get().getPerson(translatorName));
+			} else if (!translatorName.isEmpty()) {
+				Person translator = ObjectFactory.createPerson(translatorName);
+				book.setTranslator(translator);
+			}
+			
+			if (SalesHistory.get().getPerson(prefaceAuthorName) != null) {
+				book.setPrefaceAuthor(SalesHistory.get().getPerson(prefaceAuthorName));
+			} else if (!prefaceAuthorName.isEmpty()) {
+				Person prefaceAuthor = ObjectFactory.createPerson(prefaceAuthorName);
+				book.setPrefaceAuthor(prefaceAuthor);
+			}	
+			
+			if (SalesHistory.get().getPerson(afterwordAuthorName) != null) {
+				book.setAfterwordAuthor(SalesHistory.get().getPerson(afterwordAuthorName));
+			} else if (!afterwordAuthorName.isEmpty()) {
+				Person afterwordAuthor = ObjectFactory.createPerson(afterwordAuthorName);
+				book.setAfterwordAuthor(afterwordAuthor);
+			}
 	
+			book.setIdentifiers(new HashSet<String>());
 			//Making sure that if several identifiers are inputted, they are all added separately
 			String[] identifiersSeparated = null;
 			if (identifiers.contains(",") ) {
@@ -288,6 +326,8 @@ public class EditBookDialog extends JFrame implements ActionListener {
 				book.addIdentifier(identifiers.trim());
 			}
 
+			book.setListTitles(new HashSet<String>());
+			book.addTitle(title); //VERY IMPORTANT!
 			//Adding other titles if any
 			String[] otherTitlesSeparated = null;
 			if (otherTitles.contains(",") ) {
