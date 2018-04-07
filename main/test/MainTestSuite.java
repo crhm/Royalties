@@ -17,7 +17,8 @@ import main.royalties.test.RoyaltyDependentOnUnitsSoldTest;
 	RoyaltyDependentOnUnitsSoldTest.class,
 	RoyaltyFixedAmount.class,
 	DataVerificationTest.class,
-	SalesHistoryTest.class})
+	SalesHistoryTest.class,
+	ObjectFactoryTest.class})
 
 public class MainTestSuite {
 
