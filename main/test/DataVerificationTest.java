@@ -2,6 +2,9 @@ package main.test;
 
 import static org.junit.jupiter.api.Assertions.*;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
@@ -51,6 +54,16 @@ class DataVerificationTest {
 	@Test
 	void testCheckForexDataForRelevantChannels() {
 		assertEquals("", DataVerification.checkForexDataForRelevantChannels());
+	}
+	
+	@Test
+	void testGetListChannelsWithSalesForEachMonth() {
+		Set<String> channels = new HashSet<String>();
+		String[] channelNames = {"Amazon", "Kobo", "Nook", "Createspace", "Apple"};
+		for (String s : channelNames) {
+			channels.add(s);
+		}
+		assertEquals(channels, DataVerification.getListChannelsWithSalesForEachMonth().get("Oct 2017"));
 	}
 
 }

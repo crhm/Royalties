@@ -16,12 +16,14 @@ import main.*;
 
 class SaleTest {
 	static Sale instance1;
+	static Book book;
+	static Channel channel;
 
 	@BeforeAll
 	static void setUpBeforeClass() throws Exception {
-		Channel channel = new Channel("Channel", new AmazonFileFormat(), true);
+		channel = new Channel("Channel", new AmazonFileFormat(), true);
 		SalesHistory.get().addChannel(channel);
-		Book book = new Book("Title", null, "");
+		book = new Book("Title", null, "");
 		SalesHistory.get().addBook(book);
 		instance1 = new Sale(channel, "US", "Jan 2009", book, 8, 0.7, 10, 0.5, 53.2, Currency.getInstance("USD"));
 		SalesHistory.get().addRoyaltyHolder(new Person("Name"));
@@ -43,12 +45,24 @@ class SaleTest {
 	@Test
 	void testSale() {
 		assertNotNull(instance1);
+		assertEquals(channel, instance1.getChannel());
+		assertEquals(book, instance1.getBook());
+		assertEquals("US", instance1.getCountry());
+		assertEquals("Jan 2009", instance1.getDate());
+		assertEquals(Currency.getInstance("USD"), instance1.getCurrency());
+		assertEquals(8, instance1.getNetUnitsSold());
+		assertEquals(0.7, instance1.getRoyaltyTypePLP());
+		assertEquals(10, instance1.getPrice());
+		assertEquals(0.5, instance1.getDeliveryCost());
+		assertEquals(53.2, instance1.getRevenuesPLP());
 	}
 
 	@Test
 	void testCalculateRoyalties() {
+		assertFalse(instance1.getRoyaltyHasBeenCalculated());
 		instance1.calculateRoyalties();
 		assertEquals(26.6, SalesHistory.get().getListRoyaltyHolders().get("Name").getBalance());
+		assertTrue(instance1.getRoyaltyHasBeenCalculated());
 	}
 
 	@Test

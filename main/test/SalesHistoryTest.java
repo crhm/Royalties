@@ -23,16 +23,17 @@ class SalesHistoryTest {
 	@BeforeAll
 	static void setUpBeforeClass() throws Exception {
 		channel = new Channel("Channel", new AmazonFileFormat(), true);
+		SalesHistory.get().addChannel(channel);
 		book = new Book("Title", null, "");
-		sale = new Sale(channel, "US", "Jan 2009", book, 8, 0.7, 10, 0.5, 53.2, Currency.getInstance("USD"));
-		person = new Person("Name");
-
 		SalesHistory.get().addBook(book);
+		sale = new Sale(channel, "US", "Jan 2009", book, 8, 0.7, 10, 0.5, 53.2, Currency.getInstance("USD"));
 		SalesHistory.get().addSale(sale);
+		person = new Person("Name");
+		SalesHistory.get().addPerson(person);
 		SalesHistory.get().addRoyaltyHolder(person);
+		
 		channel.addRoyalty(book, "Name", new RoyaltyPercentage(0.5)); 
 		//The above has to be after adding the royaltyholder to SalesHistory otherwise it didn't work
-		SalesHistory.get().addChannel(channel);
 	}
 
 	@AfterAll
@@ -77,6 +78,33 @@ class SalesHistoryTest {
 	void testAddChannel() {
 		assertEquals(channel, SalesHistory.get().getListChannels().get("Channel"));
 	}
+	
+	@Test
+	void testGetBook() {
+		book.addTitle("TESTTITLE");
+		assertEquals(book, SalesHistory.get().getBook("TESTTITLE"));
+		assertNull(SalesHistory.get().getBook("NONEXISTENT"));
+	}
+	
+	@Test
+	void testGetPerson() {
+		person.addName("TESTNAME");
+		assertEquals(person, SalesHistory.get().getPerson("TESTNAME"));
+		assertNull(SalesHistory.get().getPerson("NONEXISTENT"));
+
+	}
+	
+	@Test
+	void testGetListMonths() {
+		assertEquals(1, SalesHistory.get().getListMonths().size());
+	}
+	
+	@Test
+	void testGetListAuthors() {
+		book.setTranslator(person);
+		assertEquals(1, SalesHistory.get().getListAuthors().size());
+	}
+	
 
 //	@Test
 //	void testSerialise() {

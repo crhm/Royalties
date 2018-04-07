@@ -43,17 +43,17 @@ class ChannelTest {
 	@Test
 	void testChannelStringFileFormat() {
 		assertNotNull(instance1);
+		assertEquals("Name", instance1.getName());
+		assertFalse(instance1.getSaleCurrencyIsAlwaysUSD());
+		assertNotNull(instance1.getfileFormat());
 	}
 
 	@Test
 	void testChannelStringFileFormatBoolean() {
 		assertNotNull(instance2);
-	}
-
-	@Test
-	void testGetSaleCurrencyIsAlwaysUSD() {
+		assertEquals("Name", instance2.getName());
 		assertTrue(instance2.getSaleCurrencyIsAlwaysUSD());
-		assertFalse(instance1.getSaleCurrencyIsAlwaysUSD());
+		assertNotNull(instance2.getfileFormat());
 	}
 
 	@Test
