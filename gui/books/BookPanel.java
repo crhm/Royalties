@@ -97,20 +97,7 @@ public class BookPanel extends JPanel implements ActionListener, ListSelectionLi
 
 		//Sets up table
 		JTable table = new JTable(model);
-		TableColumnModel columnModel = table.getColumnModel();
-		columnModel.getColumn(3).setMaxWidth(100);
-
-		//Sets up sorting by book title
-		TableRowSorter<TableModel> sorter = new TableRowSorter<>(table.getModel());
-		table.setRowSorter(sorter);
-		List<RowSorter.SortKey> sortKeys = new ArrayList<>();
-		int columnIndexToSort = 0;
-		sortKeys.add(new RowSorter.SortKey(columnIndexToSort, SortOrder.ASCENDING));
-		sorter.setSortKeys(sortKeys);
-		sorter.sort();
-		
-		//Disables the user-reordering table columns
-		table.getTableHeader().setReorderingAllowed(false);
+		setTableSettings(table);
 
 		return table;
 	}
@@ -150,7 +137,7 @@ public class BookPanel extends JPanel implements ActionListener, ListSelectionLi
 				editBookDialog.addWindowListener(new WindowAdapter() {
 				@Override
 				public void windowClosed(WindowEvent e) { //update and repaint table on close of editBookDialog
-					updateTable();
+					updateData();
 				}				
 			});
 		} else if (e.getSource() == addButton) {
@@ -158,7 +145,7 @@ public class BookPanel extends JPanel implements ActionListener, ListSelectionLi
 			addBookDialog.addWindowListener(new WindowAdapter() {
 				@Override
 				public void windowClosed(WindowEvent e) { //update and repaint table on close of addBookDialog
-					updateTable();
+					updateData();
 				}				
 			});
 
@@ -172,7 +159,7 @@ public class BookPanel extends JPanel implements ActionListener, ListSelectionLi
 				String title = (String) booksTable.getModel().getValueAt(row, 0);
 				Book book = SalesHistory.get().getBook(title);
 				SalesHistory.get().removeBook(book);
-				updateTable();
+				updateData();
 			}
 		} else if (e.getSource() == mergeButton) {
 			addButton.setEnabled(false);
@@ -182,7 +169,7 @@ public class BookPanel extends JPanel implements ActionListener, ListSelectionLi
 			mergeDialog.addWindowListener(new WindowAdapter() {
 				@Override
 				public void windowClosed(WindowEvent e) { //update and repaint table on close of addBookDialog
-					updateTable();
+					updateData();
 				}				
 			});
 			addButton.setEnabled(true);
@@ -202,31 +189,38 @@ public class BookPanel extends JPanel implements ActionListener, ListSelectionLi
 		}	
 	}
 	
-	/**Method to be called when the data of the list of books in SalesHistory has changed, and thus the table needs 
-	 * to be repainted.
+	/**Ensures the table has a max width for its fourth column, that it is sorted by its first, and 
+	 * that the reordering of columns by the user is disabled.
+	 * @param table
 	 */
-	private void updateTable() {
+	private void setTableSettings(JTable table) {
+		TableColumnModel columnModel = table.getColumnModel();
+		columnModel.getColumn(3).setMaxWidth(100);
+
+		//Sets up sorting by book title
+		TableRowSorter<TableModel> sorter = new TableRowSorter<>(table.getModel());
+		table.setRowSorter(sorter);
+		List<RowSorter.SortKey> sortKeys = new ArrayList<>();
+		int columnIndexToSort = 0;
+		sortKeys.add(new RowSorter.SortKey(columnIndexToSort, SortOrder.ASCENDING));
+		sorter.setSortKeys(sortKeys);
+		sorter.sort();
+		
+		//Disables the user-reordering table columns
+		table.getTableHeader().setReorderingAllowed(false);
+	}
+	
+	/**Method to be called when the data of the list of books in SalesHistory has changed, and thus the table needs 
+	 * to updated.
+	 */
+	public void updateData() {
 		//To avoid crashes while it is being reworked
 		booksTable.getSelectionModel().removeListSelectionListener(this);
 		
 		//Update data by updating model
 		TableModel model = getTable().getModel();
 		booksTable.setModel(model);
-		TableColumnModel columnModel = booksTable.getColumnModel();
-		columnModel.getColumn(3).setMaxWidth(100);
-
-		//Sets up sorting by book title
-		TableRowSorter<TableModel> sorter = new TableRowSorter<>(booksTable.getModel());
-		booksTable.setRowSorter(sorter);
-		List<RowSorter.SortKey> sortKeys = new ArrayList<>();
-		int columnIndexToSort = 0;
-		sortKeys.add(new RowSorter.SortKey(columnIndexToSort, SortOrder.ASCENDING));
-		sorter.setSortKeys(sortKeys);
-		sorter.sort();
-
-		//Repaint with current data
-		booksTable.revalidate();
-		booksTable.repaint();
+		setTableSettings(booksTable);
 
 		//Re-add the listSelectionListener
 		booksTable.getSelectionModel().addListSelectionListener(this);				

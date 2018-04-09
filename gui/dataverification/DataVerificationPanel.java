@@ -9,6 +9,7 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
+import javax.swing.table.TableModel;
 
 import gui.royalties.MultilineCellEditor;
 import gui.royalties.MultilineCellRenderer;
@@ -20,7 +21,9 @@ import main.DataVerification;
  *
  */
 @SuppressWarnings("serial")
-public class DataVerificationPanel extends JPanel{
+public class DataVerificationPanel extends JPanel {
+	
+	JTable table;
 	
 	/**Constructor - sets up the DataVerification panel with a GridLayout with only one cell, 
 	 * and adds to it a ScrollPane containing the panel.
@@ -60,26 +63,8 @@ public class DataVerificationPanel extends JPanel{
 		};
 		
 		//Setting up JTable
-		JTable table = new JTable(model);
-		table.setRowHeight(150);
-		table.setShowGrid(true);
-		table.setGridColor(Color.LIGHT_GRAY);
-		table.setAutoCreateRowSorter(true);
-		
-		//Setting column width (problem on other terminals though?)
-		TableColumnModel columnModel = table.getColumnModel();
-		columnModel.getColumn(0).setMinWidth(325);
-		columnModel.getColumn(0).setMaxWidth(325);
-		columnModel.getColumn(1).setMinWidth(75);
-		columnModel.getColumn(1).setMaxWidth(75);
-		
-		//Setting a custom cell renderer and editor for third column so that each
-		//of its cells is a JList (of potential errors) and can be scrolled.
-		columnModel.getColumn(2).setCellRenderer(new MultilineCellRenderer());
-		columnModel.getColumn(2).setCellEditor(new MultilineCellEditor());
-		
-		//Disables the user-reordering table columns
-		table.getTableHeader().setReorderingAllowed(false);
+		table = new JTable(model);
+		setTableSettings(table);
 
 		return table;
 	}
@@ -126,5 +111,41 @@ public class DataVerificationPanel extends JPanel{
 		data[2][2] = listRoyalties;
 
 		return data;
+	}
+
+	/**Ensures the table has a certain row heighth, a visible grid of light gray lines, is autosorted, 
+	 * has a fixed width for its first 2 columns, a custom renderer + editor for its third, and that 
+	 * the user cannot reorder its columns.
+	 * @param table
+	 */
+	private void setTableSettings(JTable table) {
+		table.setRowHeight(150);
+		table.setShowGrid(true);
+		table.setGridColor(Color.LIGHT_GRAY);
+		table.setAutoCreateRowSorter(true);
+		
+		//Setting column width (problem on other terminals though?)
+		TableColumnModel columnModel = table.getColumnModel();
+		columnModel.getColumn(0).setMinWidth(325);
+		columnModel.getColumn(0).setMaxWidth(325);
+		columnModel.getColumn(1).setMinWidth(75);
+		columnModel.getColumn(1).setMaxWidth(75);
+		
+		//Setting a custom cell renderer and editor for third column so that each
+		//of its cells is a JList (of potential errors) and can be scrolled.
+		columnModel.getColumn(2).setCellRenderer(new MultilineCellRenderer());
+		columnModel.getColumn(2).setCellEditor(new MultilineCellEditor());
+		
+		//Disables the user-reordering table columns
+		table.getTableHeader().setReorderingAllowed(false);
+	}
+	
+	/**Method to call when the data may have changed and the table ought to be updated.
+	 */
+	public void updateData() {
+		TableModel model = getTable().getModel();
+		table.setModel(model);
+		
+		setTableSettings(table);
 	}
 }

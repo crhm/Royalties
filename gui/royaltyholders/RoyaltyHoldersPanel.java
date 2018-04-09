@@ -27,10 +27,13 @@ import main.SalesHistory;
 @SuppressWarnings("serial")
 public class RoyaltyHoldersPanel extends JPanel {
 
+	JTable royaltyHoldersTable;
+
 	public RoyaltyHoldersPanel() {
 		super();
 		this.setLayout(new GridLayout());
-		this.add(new JScrollPane(getTable()));
+		royaltyHoldersTable = getTable();
+		this.add(new JScrollPane(royaltyHoldersTable));
 
 	}
 
@@ -55,22 +58,7 @@ public class RoyaltyHoldersPanel extends JPanel {
 
 		//Sets the table
 		JTable table = new JTable(model);
-		
-		//Renders last column as currency yet allows it to be sorted as a double
-		TableColumnModel columnModel = table.getColumnModel();
-		columnModel.getColumn(1).setCellRenderer(NumberRenderer.getCurrencyRenderer());
-
-		//Sorts the table by person name
-		TableRowSorter<TableModel> sorter = new TableRowSorter<>(table.getModel());
-		table.setRowSorter(sorter);
-		List<RowSorter.SortKey> sortKeys = new ArrayList<>();
-		int columnIndexToSort = 0;
-		sortKeys.add(new RowSorter.SortKey(columnIndexToSort, SortOrder.ASCENDING));
-		sorter.setSortKeys(sortKeys);
-		sorter.sort();
-		
-		//Disables the user-reordering table columns
-		table.getTableHeader().setReorderingAllowed(false);
+		setTableSettings(table);
 
 		return table;
 	}
@@ -87,6 +75,36 @@ public class RoyaltyHoldersPanel extends JPanel {
 			count++;
 		}
 		return data;
+	}
+
+	/**Ensures that the table's second column is rendered as a currency, that it is sorted by its first column, 
+	 * and that the user cannot reorder the columns.
+	 * @param table
+	 */
+	private void setTableSettings(JTable table) {
+		//Renders last column as currency yet allows it to be sorted as a double
+		TableColumnModel columnModel = table.getColumnModel();
+		columnModel.getColumn(1).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+
+		//Sorts the table by person name
+		TableRowSorter<TableModel> sorter = new TableRowSorter<>(table.getModel());
+		table.setRowSorter(sorter);
+		List<RowSorter.SortKey> sortKeys = new ArrayList<>();
+		int columnIndexToSort = 0;
+		sortKeys.add(new RowSorter.SortKey(columnIndexToSort, SortOrder.ASCENDING));
+		sorter.setSortKeys(sortKeys);
+		sorter.sort();
+
+		//Disables the user-reordering table columns
+		table.getTableHeader().setReorderingAllowed(false);
+	}
+
+	/**Method to call when the underlying data may have changed and the table needs to be updated.
+	 */
+	public void updateData() {
+		TableModel model = getTable().getModel();
+		royaltyHoldersTable.setModel(model);
+		setTableSettings(royaltyHoldersTable);
 	}
 
 }

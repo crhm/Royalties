@@ -39,14 +39,15 @@ import main.SalesHistory;
  */
 @SuppressWarnings("serial")
 public class SalesPanel extends JPanel {
-
+	JTable salesTable;
+	
 	public SalesPanel() {
 		super();
 
 		this.setLayout(new GridLayout());
 		this.setOpaque(true);
-
-		JScrollPane salesScrollPane = new JScrollPane(getTable());
+		salesTable = getTable();
+		JScrollPane salesScrollPane = new JScrollPane(salesTable);
 		this.add(salesScrollPane);
 	}
 
@@ -77,38 +78,7 @@ public class SalesPanel extends JPanel {
 
 		//Sets up the table
 		JTable table = new JTable(model);
-		TableColumnModel columnModel = table.getColumnModel();
-		columnModel.getColumn(0).setMaxWidth(100);
-		columnModel.getColumn(1).setMaxWidth(60);
-		columnModel.getColumn(2).setMaxWidth(65);
-		columnModel.getColumn(3).setMaxWidth(400);
-		columnModel.getColumn(4).setMaxWidth(150);
-		columnModel.getColumn(5).setMaxWidth(110);
-		columnModel.getColumn(6).setMaxWidth(110);
-		columnModel.getColumn(7).setMaxWidth(80);
-		columnModel.getColumn(8).setMaxWidth(110);
-		columnModel.getColumn(9).setMaxWidth(110);
-		columnModel.getColumn(10).setMaxWidth(110);
-		
-		columnModel.getColumn(9).setCellRenderer(NumberRenderer.getCurrencyRenderer());
-
-		//Sorts the table by Date, Channel, Country and Book (in that order)
-		TableRowSorter<TableModel> sorter = new TableRowSorter<>(table.getModel());
-		table.setRowSorter(sorter);
-		List<RowSorter.SortKey> sortKeys = new ArrayList<>();
-		int columnIndexToSortFirst = 2;
-		sortKeys.add(new RowSorter.SortKey(columnIndexToSortFirst, SortOrder.ASCENDING));
-		int columnIndexToSortSecond = 0;
-		sortKeys.add(new RowSorter.SortKey(columnIndexToSortSecond, SortOrder.ASCENDING));
-		int columnIndexToSortThird = 1;
-		sortKeys.add(new RowSorter.SortKey(columnIndexToSortThird, SortOrder.ASCENDING));
-		int columnIndexToSortFourth = 3;
-		sortKeys.add(new RowSorter.SortKey(columnIndexToSortFourth, SortOrder.ASCENDING));
-		sorter.setSortKeys(sortKeys);
-		sorter.sort();
-
-		//Disables the user-reordering table columns
-		table.getTableHeader().setReorderingAllowed(false);
+		setTableSettings(table);
 		
 		return table;
 	}
@@ -144,5 +114,53 @@ public class SalesPanel extends JPanel {
 			rowCounter++;
 		}
 		return data;
+	}
+
+	/**Ensures that the table has a max width for its columns, renders its tenth column as a currency, 
+	 * that the user cannot reorder the table's columns, 
+	 * and that it is sorted in the following order of columns: 3, 1, 2, 4.
+	 * @param table
+	 */
+	private void setTableSettings(JTable table) {
+		TableColumnModel columnModel = table.getColumnModel();
+		columnModel.getColumn(0).setMaxWidth(100);
+		columnModel.getColumn(1).setMaxWidth(60);
+		columnModel.getColumn(2).setMaxWidth(65);
+		columnModel.getColumn(3).setMaxWidth(400);
+		columnModel.getColumn(4).setMaxWidth(150);
+		columnModel.getColumn(5).setMaxWidth(110);
+		columnModel.getColumn(6).setMaxWidth(110);
+		columnModel.getColumn(7).setMaxWidth(80);
+		columnModel.getColumn(8).setMaxWidth(110);
+		columnModel.getColumn(9).setMaxWidth(110);
+		columnModel.getColumn(10).setMaxWidth(110);
+		
+		columnModel.getColumn(9).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+
+		//Sorts the table by Date, Channel, Country and Book (in that order)
+		TableRowSorter<TableModel> sorter = new TableRowSorter<>(table.getModel());
+		table.setRowSorter(sorter);
+		List<RowSorter.SortKey> sortKeys = new ArrayList<>();
+		int columnIndexToSortFirst = 2;
+		sortKeys.add(new RowSorter.SortKey(columnIndexToSortFirst, SortOrder.ASCENDING));
+		int columnIndexToSortSecond = 0;
+		sortKeys.add(new RowSorter.SortKey(columnIndexToSortSecond, SortOrder.ASCENDING));
+		int columnIndexToSortThird = 1;
+		sortKeys.add(new RowSorter.SortKey(columnIndexToSortThird, SortOrder.ASCENDING));
+		int columnIndexToSortFourth = 3;
+		sortKeys.add(new RowSorter.SortKey(columnIndexToSortFourth, SortOrder.ASCENDING));
+		sorter.setSortKeys(sortKeys);
+		sorter.sort();
+
+		//Disables the user-reordering table columns
+		table.getTableHeader().setReorderingAllowed(false);
+	}
+	
+	/**Method to call when the data may have changed and the table needs to be updated.
+	 */
+	public void updateData() {
+		TableModel model = getTable().getModel();
+		salesTable.setModel(model);
+		setTableSettings(salesTable);
 	}
 }

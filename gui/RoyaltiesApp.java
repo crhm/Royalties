@@ -1,9 +1,12 @@
 package gui;
 
+import java.awt.Component;
 import java.io.File;
 
 import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ChangeListener;
 
 import gui.authors.AuthorsPanel;
 import gui.books.BookPanel;
@@ -23,7 +26,18 @@ import main.SalesHistory;
  *
  */
 @SuppressWarnings("serial")
-public class RoyaltiesApp extends JFrame implements Runnable {
+public class RoyaltiesApp extends JFrame implements Runnable, ChangeListener {
+	
+	JTabbedPane allTabs = new JTabbedPane();        
+	
+	BookPanel bookPanel = new BookPanel();
+	AuthorsPanel authorsPanel = new AuthorsPanel();
+	RoyaltyHoldersPanel royaltyHoldersPanel = new RoyaltyHoldersPanel();
+	ChannelPanel channelPanel = new ChannelPanel();
+	RoyaltiesRulesPanel royaltiesRulesPanel = new RoyaltiesRulesPanel();
+	SalesImportSummaryPanel salesImportSummaryPanel = new SalesImportSummaryPanel();
+	SalesPanel salesPanel= new SalesPanel();
+	DataVerificationPanel dataVerificationPanel = new DataVerificationPanel();
 
 	public static void main(String[] args) {
 		try {
@@ -50,15 +64,15 @@ public class RoyaltiesApp extends JFrame implements Runnable {
 		});
 
 
-		JTabbedPane allTabs = new JTabbedPane();        
-		allTabs.addTab("PLP Books", new BookPanel());
-		allTabs.addTab("Authors", new AuthorsPanel());
-		allTabs.addTab("Royalty Holders", new RoyaltyHoldersPanel());
-		allTabs.addTab("Channels", new ChannelPanel());
-		allTabs.addTab("Royalty Rules", new RoyaltiesRulesPanel());
-		allTabs.addTab("Sales Import Summary", new SalesImportSummaryPanel());
-		allTabs.add("Sales", new SalesPanel());
-		allTabs.addTab("Data Verification", new DataVerificationPanel());
+		allTabs.addTab("PLP Books", bookPanel);
+		allTabs.addTab("Authors", authorsPanel);
+		allTabs.addTab("Royalty Holders", royaltyHoldersPanel);
+		allTabs.addTab("Channels", channelPanel);
+		allTabs.addTab("Royalty Rules", royaltiesRulesPanel);
+		allTabs.addTab("Sales Import Summary", salesImportSummaryPanel);
+		allTabs.add("Sales", salesPanel);
+		allTabs.addTab("Data Verification", dataVerificationPanel);
+		allTabs.addChangeListener(this);
 
 		this.setContentPane(allTabs);
 		this.pack();
@@ -86,4 +100,21 @@ public class RoyaltiesApp extends JFrame implements Runnable {
 			importThread.join(); //wait for this thread to die before starting next one
 		}
 	}
+
+	@Override
+	public void stateChanged(ChangeEvent e) {
+		int index = allTabs.getSelectedIndex();
+
+		switch (index) {
+		case (0) : bookPanel.updateData(); break;
+		case (1) : authorsPanel.updateData(); break;
+		case (2) : royaltyHoldersPanel.updateData(); break;
+		case (3) : channelPanel.updateData(); break;
+		case (4) : royaltiesRulesPanel.updateData(); break;
+		case (5) : salesImportSummaryPanel.updateData(); break;
+		case (6) : salesPanel.updateData(); break;
+		case (7) : dataVerificationPanel.updateData(); break;
+		}
+	}
+
 }

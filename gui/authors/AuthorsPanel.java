@@ -15,6 +15,8 @@ import java.util.List;
 
 @SuppressWarnings("serial")
 public class AuthorsPanel extends JPanel {
+	private JTable listAuthors;
+	
 	public AuthorsPanel() {
 		setLayout(new BorderLayout(0, 0));
 		
@@ -37,7 +39,7 @@ public class AuthorsPanel extends JPanel {
 		JScrollPane scrollPane = new JScrollPane();
 		add(scrollPane, BorderLayout.CENTER);
 		
-		JTable listAuthors = getTable();
+		listAuthors = getTable();
 		scrollPane.setViewportView(listAuthors);
 	}
 	
@@ -59,19 +61,7 @@ public class AuthorsPanel extends JPanel {
 
 		//Sets up table
 		JTable table = new JTable(model);
-		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		
-		//Sets up sorting
-		TableRowSorter<TableModel> sorter = new TableRowSorter<>(table.getModel());
-		table.setRowSorter(sorter);
-		List<RowSorter.SortKey> sortKeys = new ArrayList<>();
-		int columnIndexToSort = 0;
-		sortKeys.add(new RowSorter.SortKey(columnIndexToSort, SortOrder.ASCENDING));
-		sorter.setSortKeys(sortKeys);
-		sorter.sort();
-		
-		//Disables the user-reordering table columns
-		table.getTableHeader().setReorderingAllowed(false);
+		setTableSettings(table);
 
 		return table;
 	}
@@ -87,6 +77,34 @@ public class AuthorsPanel extends JPanel {
 			count++;
 		}
 		return data;
+	}
+	
+	/**Ensures the table passed as argument is in single selection mode, is sorted by its first column, 
+	 * and forbids the reordering of columns.
+	 * @param table
+	 */
+	private void setTableSettings(JTable table) {
+		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		
+		//Sets up sorting
+		TableRowSorter<TableModel> sorter = new TableRowSorter<>(table.getModel());
+		table.setRowSorter(sorter);
+		List<RowSorter.SortKey> sortKeys = new ArrayList<>();
+		int columnIndexToSort = 0;
+		sortKeys.add(new RowSorter.SortKey(columnIndexToSort, SortOrder.ASCENDING));
+		sorter.setSortKeys(sortKeys);
+		sorter.sort();
+		
+		//Disables the user-reordering table columns
+		table.getTableHeader().setReorderingAllowed(false);
+	}
+
+	/**Updates the data in the table of authors
+	 */
+	public void updateData() {
+		TableModel model = getTable().getModel();
+		listAuthors.setModel(model);
+		setTableSettings(listAuthors);
 	}
 
 }

@@ -15,20 +15,30 @@ import main.SalesHistory;
  *
  */
 @SuppressWarnings("serial")
-public class ChannelPanel extends JPanel{
+public class ChannelPanel extends JPanel {
+	JList<String> listChannels = new JList<String>();
 	
 	public ChannelPanel() {
 		super();
 		this.setLayout(new GridLayout());
 
+		
+		listChannels.setListData(getListChannels());;
+		this.add(new JScrollPane(listChannels));
+	}
+	
+	private String[] getListChannels() {
 		String[] channels = new String[SalesHistory.get().getListChannels().values().size()];
 		int count = 0;
 		for (Channel ch : SalesHistory.get().getListChannels().values()) {
 			channels[count] = ch.getName();
 			count++;
 		}
+		return channels;
+	}
 
-		this.add(new JScrollPane(new JList<String>(channels)));
+	public void updateData() {
+		listChannels.setListData(getListChannels());
 	}
 
 }

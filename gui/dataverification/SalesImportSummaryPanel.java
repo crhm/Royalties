@@ -6,6 +6,7 @@ import javax.swing.JTable;
 import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableCellRenderer;
+import javax.swing.table.TableModel;
 
 import java.text.ParseException;
 
@@ -23,6 +24,7 @@ import java.util.Set;
 @SuppressWarnings("serial")
 public class SalesImportSummaryPanel extends JPanel {
 	private JTable tableDates;
+	
 	public SalesImportSummaryPanel() {
 		setLayout(new BorderLayout(0, 0));
 
@@ -52,31 +54,7 @@ public class SalesImportSummaryPanel extends JPanel {
 
 		//Setting up JTable
 		JTable table = new JTable(model);
-		table.setShowGrid(true);
-		table.setGridColor(Color.LIGHT_GRAY);
-		table.setAutoCreateRowSorter(true);
-		
-		//Creating a cell renderer for the date column so that they are displayed as month and year only
-		TableCellRenderer tableCellRenderer = new DefaultTableCellRenderer() {
-
-			SimpleDateFormat f = new SimpleDateFormat("MMM yyyy");
-
-			public Component getTableCellRendererComponent(JTable table,
-					Object value, boolean isSelected, boolean hasFocus,
-					int row, int column) {
-				if( value instanceof Date) {
-					value = f.format(value);
-				}
-				return super.getTableCellRendererComponent(table, value, isSelected,
-						hasFocus, row, column);
-			}
-		};
-		
-		//Setting the cell renderer for the date column
-		table.getColumnModel().getColumn(0).setCellRenderer(tableCellRenderer);
-
-		//Disables the user-reordering table columns
-		table.getTableHeader().setReorderingAllowed(false);
+		setTableSettings(table);
 
 		return table;
 	}
@@ -124,6 +102,48 @@ public class SalesImportSummaryPanel extends JPanel {
 		} else {
 			return false;
 		}
+	}
+	
+	/**Ensures that the table has a visible grid with light gray lines, is sortable, 
+	 * renders the first column as dates in the correct format, and forbids the user from 
+	 * reording columns.
+	 * @param table
+	 */
+	private void setTableSettings(JTable table) {
+		table.setShowGrid(true);
+		table.setGridColor(Color.LIGHT_GRAY);
+		table.setAutoCreateRowSorter(true);
+		
+		//Creating a cell renderer for the date column so that they are displayed as month and year only
+		TableCellRenderer tableCellRenderer = new DefaultTableCellRenderer() {
+
+			SimpleDateFormat f = new SimpleDateFormat("MMM yyyy");
+
+			public Component getTableCellRendererComponent(JTable table,
+					Object value, boolean isSelected, boolean hasFocus,
+					int row, int column) {
+				if( value instanceof Date) {
+					value = f.format(value);
+				}
+				return super.getTableCellRendererComponent(table, value, isSelected,
+						hasFocus, row, column);
+			}
+		};
+		
+		//Setting the cell renderer for the date column
+		table.getColumnModel().getColumn(0).setCellRenderer(tableCellRenderer);
+
+		//Disables the user-reordering table columns
+		table.getTableHeader().setReorderingAllowed(false);
+	}
+
+	/**Method to call when the data may have changed and the table should be updated.
+	 */
+	public void updateData() {
+		TableModel model = getTable().getModel();
+		tableDates.setModel(model);
+		
+		setTableSettings(tableDates);
 	}
 
 }

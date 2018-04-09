@@ -320,4 +320,8 @@ public class RoyaltiesRulesPanel extends JPanel implements ActionListener, ListS
 		return data;
 	}
 
+	public void updateData() {
+		//TODO
+	}
+
 }
