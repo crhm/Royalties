@@ -1,6 +1,5 @@
 package gui;
 
-import java.awt.Component;
 import java.io.File;
 
 import javax.swing.JFrame;
@@ -59,7 +58,7 @@ public class RoyaltiesApp extends JFrame implements Runnable, ChangeListener {
 		this.addWindowListener(new java.awt.event.WindowAdapter() {
 			@Override
 			public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-				//SalesHistory.get().serialise();
+				SalesHistory.get().serialise();
 			}
 		});
 
@@ -91,9 +90,9 @@ public class RoyaltiesApp extends JFrame implements Runnable, ChangeListener {
 	 * @throws InterruptedException if a thread interrupts the import thread.
 	 */
 	private static void obtainData() throws InterruptedException {
-		File f = new File("/tmp/data11.ser");
+		File f = new File("/tmp/data12.ser");
 		if(f.exists() && !f.isDirectory()) { 
-			//SalesHistory.get().deSerialise();
+			SalesHistory.get().deSerialise();
 		} else {
 			Thread importThread = new Thread(new ImportEverything(), "Importing data");
 			importThread.start();

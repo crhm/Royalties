@@ -230,87 +230,95 @@ public class SalesHistory implements java.io.Serializable {
 		this.listPersons.remove(person);
 	}
 
-	//SERIALISATION METHODS //TODO fix so that it is updated for current state of things
-//	/**Writes SalesHistory state to the ObjectOutputStream.
-//	 * <br>Writes by serialising the following SalesHistory variables (in this order, same as read by readObject()):
-//	 * <br>HashMap<Book, Double> cumulativeSalesPerBook
-//	 * <br>HashMap<String, Channel> listChannels
-//	 * <br>HashMap<String, Book> listPLPBooks
-//	 * <br>HashMap<String, Person> listRoyaltyHolders
-//	 * <br>List of Sales salesHistory
-//	 * @param out ObjectOutputStream to write to.
-//	 * @throws IOException
-//	 */
-//	private void writeObject(java.io.ObjectOutputStream out) throws IOException {
-//		try {
-//			out.writeObject(listChannels);
-//			out.writeObject(listPLPBooks);
-//			out.writeObject(listRoyaltyHolders);
-//			out.writeObject(salesHistory);
-//			out.close();
-//			System.out.println("Serialized data is saved.");
-//		} catch (IOException i) {
-//			i.printStackTrace();
-//		}
-//
-//	}
-//	
-//	/**Reads SalesHistory state from the ObjectInputStream.
-//	 * <br>Expects to find (in same order as written by writeObject()):
-//	 * <br>HashMap<String, Channel> listChannels
-//	 * <br>HashMap<String, Book> listPLPBooks
-//	 * <br>HashMap<String, Person> listRoyaltyHolders
-//	 * <br>List of Sales salesHistory
-//	 * <br><br>It then assigns these to the corresponding class variables of the singleton instance of SalesHistory.
-//	 * @param in ObjectInputStream to read from.
-//	 * @throws IOException
-//	 * @throws ClassNotFoundException
-//	 */
-//	@SuppressWarnings("unchecked")
-//	private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
-//		try {
-//			HashMap<String, Channel> listChannels = (HashMap<String, Channel>) in.readObject();
-//			HashMap<String, Book> listPLPBooks = (HashMap<String, Book>) in.readObject();
-//			HashMap<String, Person> listRoyaltyHolders = (HashMap<String, Person>) in.readObject();
-//			List<Sale> salesHistory = (List<Sale>) in.readObject();
-//			in.close();
-//			this.listChannels = listChannels;
-//			this.listPLPBooks = listPLPBooks;
-//			this.listRoyaltyHolders = listRoyaltyHolders;
-//			this.salesHistory = salesHistory;
-//		} catch (IOException i) {
-//			i.printStackTrace();
-//		} catch (ClassNotFoundException c) {
-//			c.printStackTrace();
-//		}
-//	}
+//	SERIALISATION METHODS //TODO fix so that it is updated for current state of things
+	/**Writes SalesHistory state to the ObjectOutputStream.
+	 * <br>Writes by serialising the following SalesHistory variables (in this order, same as read by readObject()):
+	 * listChannels, listPLPBooks, listRoyaltyHolders, salesHistory, listAuthors, listPersons, listMonths, nextBookID, nextPersonID.
+	 * @param out ObjectOutputStream to write to.
+	 * @throws IOException
+	 */
+	private void writeObject(java.io.ObjectOutputStream out) throws IOException {
+		try {
+			out.writeObject(listChannels);
+			out.writeObject(listPLPBooks);
+			out.writeObject(listRoyaltyHolders);
+			out.writeObject(salesHistory);
+			out.writeObject(listAuthors);
+			out.writeObject(listPersons);
+			out.writeObject(listMonths);
+			out.writeObject(nextBookID);
+			out.writeObject(nextPersonID);
+			out.close();
+			System.out.println("Serialized data is saved.");
+		} catch (IOException i) {
+			i.printStackTrace();
+		}
+
+	}
 	
-//	/**Serialises SalesHistory by calling its custom writeObject() method, and outputs it to a file called "/tmp/data.ser"
-//	 */
-//	public void serialise() { //TODO make serialisation output be a filename with date and time? and then in deserialise choose filename with most recent date?
-//		try {
-//			FileOutputStream fileOut = new FileOutputStream("/tmp/data10.ser");
-//			ObjectOutputStream out = new ObjectOutputStream(fileOut);
-//			SalesHistory.get().writeObject(out);
-//			fileOut.close();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-//	}
-//
-//	/**Deserialises SalesHistory from a file called "/tmp/data.ser" by calling its custom readObject() method.
-//	 */
-//	public void deSerialise() {
-//		try {
-//			FileInputStream fileIn = new FileInputStream("/tmp/data10.ser");
-//			ObjectInputStream in = new ObjectInputStream(fileIn);
-//			SalesHistory.get().readObject(in);
-//			fileIn.close();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		} catch (ClassNotFoundException e) {
-//			e.printStackTrace();
-//		}
-//	}
+	/**Reads SalesHistory state from the ObjectInputStream.
+	 * <br>Expects to find (in same order as written by writeObject()):
+	 * listChannels, listPLPBooks, listRoyaltyHolders, salesHistory, listAuthors, listPersons, listMonths, nextBookID, nextPersonID.
+	 * <br><br>It then assigns these to the corresponding class variables of the singleton instance of SalesHistory.
+	 * @param in ObjectInputStream to read from.
+	 * @throws IOException
+	 * @throws ClassNotFoundException
+	 */
+	@SuppressWarnings("unchecked")
+	private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
+		try {
+			HashMap<String, Channel> listChannels = (HashMap<String, Channel>) in.readObject();
+			Set<Book> listPLPBooks = (Set<Book>) in.readObject();
+			HashMap<String, Person> listRoyaltyHolders = (HashMap<String, Person>) in.readObject();
+			List<Sale> salesHistory = (List<Sale>) in.readObject();
+			Set<Person> listAuthors = (Set<Person>) in.readObject();
+			Set<Person> listPersons = (Set<Person>) in.readObject();
+			Set<String> listMonths = (Set<String>) in.readObject();
+			AtomicLong nextBookID = (AtomicLong) in.readObject();
+			AtomicLong nextPersonID = (AtomicLong) in.readObject();
+			in.close();
+			this.listChannels = listChannels;
+			this.listPLPBooks = listPLPBooks;
+			this.listRoyaltyHolders = listRoyaltyHolders;
+			this.salesHistory = salesHistory;
+			this.listAuthors = listAuthors;
+			this.listPersons = listPersons;
+			this.listMonths = listMonths;
+			this.nextBookID = nextBookID;
+			this.nextPersonID = nextPersonID;
+		} catch (IOException i) {
+			i.printStackTrace();
+		} catch (ClassNotFoundException c) {
+			c.printStackTrace();
+		}
+	}
+	
+	/**Serialises SalesHistory by calling its custom writeObject() method, and outputs it to a file called "/tmp/data.ser"
+	 */
+	public void serialise() { //TODO make serialisation output be a filename with date and time? and then in deserialise choose filename with most recent date?
+		try {
+			FileOutputStream fileOut = new FileOutputStream("/tmp/data12.ser");
+			ObjectOutputStream out = new ObjectOutputStream(fileOut);
+			SalesHistory.get().writeObject(out);
+			fileOut.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+
+	/**Deserialises SalesHistory from a file called "/tmp/data.ser" by calling its custom readObject() method.
+	 */
+	public void deSerialise() {
+		try {
+			FileInputStream fileIn = new FileInputStream("/tmp/data12.ser");
+			ObjectInputStream in = new ObjectInputStream(fileIn);
+			SalesHistory.get().readObject(in);
+			fileIn.close();
+		} catch (IOException e) {
+			e.printStackTrace();
+		} catch (ClassNotFoundException e) {
+			e.printStackTrace();
+		}
+	}
 
 }
