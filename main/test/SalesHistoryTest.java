@@ -56,7 +56,7 @@ class SalesHistoryTest {
 	@Test
 	void testCalculateAllRoyalies() {
 		SalesHistory.get().calculateAllRoyalies();
-		assertEquals(26.6, SalesHistory.get().getListRoyaltyHolders().get("Name").getBalance());
+		assertEquals(26.6, person.getBalance());
 	}
 
 	@Test
@@ -66,7 +66,11 @@ class SalesHistoryTest {
 
 	@Test
 	void testAddRoyaltyHolder() {
-		assertEquals(person, SalesHistory.get().getListRoyaltyHolders().get("Name"));
+		Person person2 = null;
+		for (Person p : SalesHistory.get().getListRoyaltyHolders()) {
+			person2 = p;
+		}
+		assertEquals(person, person2);
 	}
 
 	@Test

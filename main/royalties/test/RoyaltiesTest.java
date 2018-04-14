@@ -23,7 +23,7 @@ public class RoyaltiesTest {
 		System.out.println("BB expected balance = $0.5 (approx)");
 		System.out.println("CCC expected balance = $2 (approx)");
 		SalesHistory.get().calculateAllRoyalies();
-		for (Person p : SalesHistory.get().getListRoyaltyHolders().values()) {
+		for (Person p : SalesHistory.get().getListRoyaltyHolders()) {
 			System.out.println(p);
 		}
 	}

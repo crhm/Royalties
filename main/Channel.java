@@ -147,6 +147,32 @@ public class Channel implements java.io.Serializable {
 		validateListForex(listForex);
 		this.historicalForex.put(monthAndYear, listForex);
 	}
+	
+	public void replaceRoyaltyHolder(Person oldPerson, Person newPerson) {
+		/*For each book in listRoyalties, if it has oldPerson has a royaltyHolder, then create a new HashMap (newMappings) with the same mappings
+		 * as the old one except for oldPerson, which is now a mapping of newPerson to whatever royalty oldPerson was mapped to.
+		 * Hold this new HashMap in a HashMap called booksToUpdate which can be traversed outside of this for loop later on 
+		 * (to avoid issues related to modifying something we are traversing).
+		 */
+		HashMap<Book, HashMap<Person, IRoyaltyType>> booksToUpdate = new HashMap<Book, HashMap<Person, IRoyaltyType>>();
+		for (Book b : listRoyalties.keySet()) {
+			if (listRoyalties.get(b).keySet().contains(oldPerson)) {
+				HashMap<Person, IRoyaltyType> newMappings = new HashMap<Person, IRoyaltyType>();
+				for (Person person : listRoyalties.get(b).keySet()) {
+					if (person == oldPerson) {
+						newMappings.put(newPerson, listRoyalties.get(b).get(person));
+					} else {
+						newMappings.put(person, listRoyalties.get(b).get(person));
+					}
+				}
+				booksToUpdate.put(b, newMappings);
+			}
+		}
+		for (Book b : booksToUpdate.keySet()) {
+			listRoyalties.remove(b);
+			listRoyalties.put(b, booksToUpdate.get(b));
+		}
+	}
 
 	@Override
 	public String toString() {

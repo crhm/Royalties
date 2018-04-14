@@ -50,10 +50,10 @@ public class SalesHistory implements java.io.Serializable {
 	private Set<String> listMonths = new HashSet<String>();
 	private HashMap<Book, HashMap<Person, IRoyaltyType>> uniformRoyalties = new HashMap<Book, HashMap<Person, IRoyaltyType>>();
 	//TODO think of getting rid of all Hashmaps for sets instead?
-	
+
 	private AtomicLong nextBookID = new AtomicLong(1);
 	private AtomicLong nextPersonID = new AtomicLong(1);
-		
+
 	//GET IDS FOR OBJECT CREATION
 	/** 
 	 * @return the ID number to be assigned to the next book being created.
@@ -61,14 +61,14 @@ public class SalesHistory implements java.io.Serializable {
 	public long getNextBookID() {
 		return nextBookID.getAndIncrement();
 	}
-	
+
 	/**
 	 * @return the ID number to be assigned to the next person being created
 	 */
 	public long getNextPersonID() {
 		return nextPersonID.getAndIncrement();
 	}
-		
+
 	//GET A SPECIFIC OBJECT	
 	/**Returns a person from listPersons
 	 * @param personName the name of the person to be retrieved
@@ -83,7 +83,7 @@ public class SalesHistory implements java.io.Serializable {
 		}
 		return personFound;
 	}
-	
+
 	/**Returns the person from list of persons with the personNumber passed as argument, or null if there is no such person
 	 * @param personNumber the personNumber of the person to be retrieved
 	 * @return the person with the personNumber passed as argument, or null if there is no such person
@@ -97,7 +97,7 @@ public class SalesHistory implements java.io.Serializable {
 		}
 		return person;
 	}
-	
+
 	/**Returns a book from listPLPBooks
 	 * <br>Note: if there are more than one book with such title in the list of Books, it will return the first one it encounters.
 	 * @param title the title of the book to be retrieved
@@ -112,7 +112,7 @@ public class SalesHistory implements java.io.Serializable {
 		}
 		return bookFound;
 	}
-	
+
 	/**Returns the book from list of Books with the bookNumber passed as argument, or null if there is no such book
 	 * @param number the bookNumber of the book to be retrieved
 	 * @return the book with the bookNumber passed as argument, or null if there is no such book
@@ -126,7 +126,7 @@ public class SalesHistory implements java.io.Serializable {
 		}
 		return book;
 	}
-	
+
 	//CALCULATE ROYALTIES
 	/** Calculates all royalties by calling Sale.calculateRoyalties() on each sale
 	 *  in the list of all sales.
@@ -136,7 +136,7 @@ public class SalesHistory implements java.io.Serializable {
 			s.calculateRoyalties();
 		}
 	}
-	
+
 	//GET A LIST
 	/**Returns a list of the months for which there are sales.
 	 * This list is compiled upon request, and not updated gradually as new sales are added.
@@ -176,7 +176,7 @@ public class SalesHistory implements java.io.Serializable {
 		}
 		return listAuthors;
 	}
-	
+
 	/**
 	 * @return the listPersons
 	 */
@@ -190,15 +190,28 @@ public class SalesHistory implements java.io.Serializable {
 	public List<Sale> getSalesHistory() {
 		return salesHistory;
 	}
-	
+
 	/** Returns the complete list of royalty holders, regardless of channel, 
-	 * as a HashMap mapping Person names to Persons.
+	 * as a Set of persons. Is compiled on request.
 	 * @return the complete list of royalty holders, regardless of channel.
 	 */
-	public HashMap<String, Person> getListRoyaltyHolders() {
+	public Set<Person> getListRoyaltyHolders() {
+		Set<Person> listRoyaltyHolders = new HashSet<Person>();
+		for (Book b : uniformRoyalties.keySet()) {
+			for (Person p : uniformRoyalties.get(b).keySet()) {
+				listRoyaltyHolders.add(p);
+			}
+		}
+		for (Channel ch : listChannels.values()) {
+			for (Book b : ch.getListRoyalties().keySet()) {
+				for (Person p : ch.getListRoyalties().get(b).keySet()) {
+					listRoyaltyHolders.add(p);
+				}
+			}
+		}
 		return listRoyaltyHolders;
 	}
-	
+
 	/** Returns the complete list of books managed by PLP, 
 	 * as a Set of Books.
 	 * @return the complete list of books managed by PLP.
@@ -206,7 +219,7 @@ public class SalesHistory implements java.io.Serializable {
 	public Set<Book> getListPLPBooks() {
 		return listPLPBooks;
 	}
-	
+
 	/**
 	 * @return the uniformRoyalties
 	 */
@@ -221,7 +234,7 @@ public class SalesHistory implements java.io.Serializable {
 	public HashMap<String, Channel> getListChannels() {
 		return listChannels;
 	}
-	
+
 	//ADD AN OBJECT TO A LIST. SHOULD BE CALLED ONLY FROM OBJECTFACTORY (EXCEPT FOR ROYALTYHOLDER)
 	/**Adds someone to the list of persons created. 
 	 * 
@@ -230,7 +243,7 @@ public class SalesHistory implements java.io.Serializable {
 	public void addPerson(Person person) {
 		this.listPersons.add(person);
 	}
-	
+
 	/** Adds a sale to the app.
 	 * <br>First places it in the list of all sales, then updates the book's total number of units sold appropriately.
 	 * @param sale Sale to add to the app.
@@ -238,12 +251,12 @@ public class SalesHistory implements java.io.Serializable {
 	public void addSale(Sale sale) {
 		this.salesHistory.add(sale);	
 	}
-	
+
 	public void addRoyalty(Book b, String royaltyHolderName, IRoyaltyType royalty) {
 		if (royaltyHolderName.isEmpty()) {
 			throw new IllegalArgumentException("Error: royaltyHolderName cannot be empty.");
 		}
-				
+
 		//Obtains the list of royalties for this book if one exists, or creates an empty one if not
 		HashMap<Person, IRoyaltyType> listHolder = null;
 		if (uniformRoyalties.containsKey(b)) {
@@ -251,7 +264,7 @@ public class SalesHistory implements java.io.Serializable {
 		} else {
 			listHolder = new HashMap<Person, IRoyaltyType>();
 		}
-		
+
 		//Obtains the person with the name passed as argument from SalesHistory's list of royalty holders, 
 		//or creates one if one does not yet exist, and adds it to SalesHistory.
 		Person royaltyHolder2 = null;
@@ -261,7 +274,7 @@ public class SalesHistory implements java.io.Serializable {
 			royaltyHolder2 = ObjectFactory.createPerson(royaltyHolderName);
 			SalesHistory.get().addRoyaltyHolder(royaltyHolder2);
 		}
-		
+
 		//Adds the royalty holder + royalty combination to the list of royalties, and links the book to this list of royalties
 		listHolder.put(royaltyHolder2, royalty);
 		this.uniformRoyalties.put(b, listHolder);
@@ -287,7 +300,7 @@ public class SalesHistory implements java.io.Serializable {
 	public void addChannel(Channel channel) {
 		this.listChannels.put(channel.getName(), channel);
 	}
-	
+
 	//Remove methods
 	/**Removes a book from the list of books managed by PLP
 	 * @param book the Book to remove from the list of Books managed by PLP
@@ -295,7 +308,7 @@ public class SalesHistory implements java.io.Serializable {
 	public void removeBook(Book book) {
 		this.listPLPBooks.remove(book);
 	}
-	
+
 	/**Removes a person from the list of persons
 	 * and adds its personNumber to the list of deleted persons
 	 * @param person the Person to remove from the list of persons
@@ -304,7 +317,59 @@ public class SalesHistory implements java.io.Serializable {
 		this.listPersons.remove(person);
 	}
 
-//	SERIALISATION METHODS //TODO fix so that it is updated for current state of things
+	//Replace methods
+	public void replacePerson(Person oldPerson, Person newPerson) {
+		//Replacing amongst authors
+		for (Book b : SalesHistory.get().getListPLPBooks()) {
+			if (b.getAuthor1() == oldPerson) {
+				b.setAuthor1(newPerson);
+			}
+			if (b.getAuthor2() == oldPerson) {
+				b.setAuthor2(newPerson);
+			}
+			if (b.getTranslator() == oldPerson) {
+				b.setTranslator(newPerson);
+			}
+			if (b.getPrefaceAuthor() == oldPerson) {
+				b.setPrefaceAuthor(newPerson);
+			}
+			if (b.getAfterwordAuthor() == oldPerson) {
+				b.setAfterwordAuthor(newPerson);
+			}
+		}
+	
+		//Replacing amongst royalty holders		
+		/*For each book in uniformRoyalties, if it has oldPerson has a royaltyHolder, then create a new HashMap (newMappings) with the same mappings
+		 * as the old one except for oldPerson, which is now a mapping of newPerson to whatever royalty oldPerson was mapped to.
+		 * Hold this new HashMap in a HashMap called booksToUpdate which can be traversed outside of this for loop later on 
+		 * (to avoid issues related to modifying something we are traversing).
+		 */
+		HashMap<Book, HashMap<Person, IRoyaltyType>> booksToUpdate = new HashMap<Book, HashMap<Person, IRoyaltyType>>();
+		for (Book b : SalesHistory.get().getUniformRoyalties().keySet()) {
+			if (SalesHistory.get().getUniformRoyalties().get(b).keySet().contains(oldPerson)) {
+				HashMap<Person, IRoyaltyType> newMappings = new HashMap<Person, IRoyaltyType>();
+				for (Person person : SalesHistory.get().getUniformRoyalties().get(b).keySet()) {
+					if (person == oldPerson) {
+						newMappings.put(newPerson, SalesHistory.get().getUniformRoyalties().get(b).get(person));
+					} else {
+						newMappings.put(person, SalesHistory.get().getUniformRoyalties().get(b).get(person));
+					}
+				}
+				booksToUpdate.put(b, newMappings);
+			}
+		}
+		for (Book b : booksToUpdate.keySet()) {
+			uniformRoyalties.remove(b);
+			uniformRoyalties.put(b, booksToUpdate.get(b));
+		}
+		
+		//Replacing amongst channel royalty lists.
+		for (Channel ch : listChannels.values()) {
+			ch.replaceRoyaltyHolder(oldPerson, newPerson);
+		}
+	}
+
+	//	SERIALISATION METHODS //TODO fix so that it is updated for current state of things
 	/**Writes SalesHistory state to the ObjectOutputStream.
 	 * <br>Writes by serialising the following SalesHistory variables (in this order, same as read by readObject()):
 	 * listChannels, listPLPBooks, listRoyaltyHolders, salesHistory, listAuthors, listPersons, listMonths, nextBookID, nextPersonID.
@@ -329,7 +394,7 @@ public class SalesHistory implements java.io.Serializable {
 		}
 
 	}
-	
+
 	/**Reads SalesHistory state from the ObjectInputStream.
 	 * <br>Expects to find (in same order as written by writeObject()):
 	 * listChannels, listPLPBooks, listRoyaltyHolders, salesHistory, listAuthors, listPersons, listMonths, nextBookID, nextPersonID.
@@ -366,7 +431,7 @@ public class SalesHistory implements java.io.Serializable {
 			c.printStackTrace();
 		}
 	}
-	
+
 	/**Serialises SalesHistory by calling its custom writeObject() method, and outputs it to a file called "/tmp/data.ser"
 	 */
 	public void serialise() { //TODO make serialisation output be a filename with date and time? and then in deserialise choose filename with most recent date?

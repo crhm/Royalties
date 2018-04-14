@@ -67,9 +67,9 @@ public class RoyaltyHoldersPanel extends JPanel {
 	 * <br>Strips person names of quotation marks for cleanliness of presentation.
 	 */
 	private Object[][] getData(){
-		Object[][] data = new Object[SalesHistory.get().getListRoyaltyHolders().values().size()][2];
+		Object[][] data = new Object[SalesHistory.get().getListRoyaltyHolders().size()][2];
 		int count = 0;
-		for (Person p : SalesHistory.get().getListRoyaltyHolders().values()) {
+		for (Person p : SalesHistory.get().getListRoyaltyHolders()) {
 			data[count][0] = p.getName();
 			data[count][1] = p.getBalance();
 			count++;

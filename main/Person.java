@@ -108,6 +108,9 @@ public class Person implements java.io.Serializable {
 		if (p == null) {
 			throw new IllegalArgumentException("Error: person with which to merge cannot be null.");
 		}
+
+		SalesHistory.get().replacePerson(p, this);
+		
 		this.listNames.add(p.getName());
 		for (String s : p.getListNames()) {
 			this.listNames.add(s);

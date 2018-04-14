@@ -18,6 +18,7 @@ class SaleTest {
 	static Sale instance1;
 	static Book book;
 	static Channel channel;
+	static Person person;
 
 	@BeforeAll
 	static void setUpBeforeClass() throws Exception {
@@ -26,7 +27,8 @@ class SaleTest {
 		book = new Book("Title", null, "");
 		SalesHistory.get().addBook(book);
 		instance1 = new Sale(channel, "US", "Jan 2009", book, 8, 0.7, 10, 0.5, 53.2, Currency.getInstance("USD"));
-		SalesHistory.get().addRoyaltyHolder(new Person("Name"));
+		person = new Person("Name");
+		SalesHistory.get().addRoyaltyHolder(person);
 		channel.addRoyalty(book, "Name", new RoyaltyPercentage(0.5));
 	}
 
@@ -61,7 +63,7 @@ class SaleTest {
 	void testCalculateRoyalties() {
 		assertFalse(instance1.getRoyaltyHasBeenCalculated());
 		instance1.calculateRoyalties();
-		assertEquals(26.6, SalesHistory.get().getListRoyaltyHolders().get("Name").getBalance());
+		assertEquals(26.6, person.getBalance());
 		assertTrue(instance1.getRoyaltyHasBeenCalculated());
 	}
 

@@ -55,41 +55,40 @@ public class AllRoyaltiesOct2017Test {
 		SalesHistory.get().calculateAllRoyalies();
 
 		System.out.println("\n\nRoyalty holders where calculations match: ");
-		for (String name : SalesHistory.get().getListRoyaltyHolders().keySet()) {
-			if (actualBalances.containsKey(name)) {
-				BigDecimal actualBalance = new BigDecimal(actualBalances.get(name)).setScale(2, RoundingMode.HALF_UP);
-				double difference = SalesHistory.get().getListRoyaltyHolders().get(name).getBalance() - actualBalance.doubleValue();
+		for (Person p : SalesHistory.get().getListRoyaltyHolders()) {
+			if (actualBalances.containsKey(p.getName())) {
+				BigDecimal actualBalance = new BigDecimal(actualBalances.get(p.getName())).setScale(2, RoundingMode.HALF_UP);
+				double difference = p.getBalance() - actualBalance.doubleValue();
 				if (difference == 0) {
-					System.out.println(name + ": Actual Balance - " + actualBalance.doubleValue() + " vs. Balance Calculated - " 
-							+ SalesHistory.get().getListRoyaltyHolders().get(name).getBalance());
+					System.out.println(p.getName() + ": Actual Balance - " + actualBalance.doubleValue() + " vs. Balance Calculated - " 
+							+ p.getBalance());
 				}				
 			}
 		}
 		System.out.println("\nRoyalty holders where calculations almost match: ");
-		for (String name : SalesHistory.get().getListRoyaltyHolders().keySet()) {
-			if (actualBalances.containsKey(name)) {
-				BigDecimal actualBalance = new BigDecimal(actualBalances.get(name)).setScale(2, RoundingMode.HALF_UP);
-				double difference = SalesHistory.get().getListRoyaltyHolders().get(name).getBalance() - actualBalance.doubleValue();
+		for (Person p : SalesHistory.get().getListRoyaltyHolders()) {
+			if (actualBalances.containsKey(p.getName())) {
+				BigDecimal actualBalance = new BigDecimal(actualBalances.get(p.getName())).setScale(2, RoundingMode.HALF_UP);
+				double difference = p.getBalance() - actualBalance.doubleValue();
 				BigDecimal diffBD = new BigDecimal(difference);
 				BigDecimal percentageDiff = diffBD.divide(actualBalance, 3, RoundingMode.HALF_UP);
 				if (difference > -0.5 && difference < 0.5 && difference != 0) {
-					System.out.println(name + ": Actual Balance - " + actualBalance.doubleValue() + " vs. Balance Calculated - " 
-							+ SalesHistory.get().getListRoyaltyHolders().get(name).getBalance() 
+					System.out.println(p.getName() + ": Actual Balance - " + actualBalance.doubleValue() + " vs. Balance Calculated - " 
+							+ p.getBalance() 
 							+ " Difference: " + percentageDiff.doubleValue()*100 + "%");
 				}				
 			}
 		}
 		System.out.println("\nRoyalty holders where calculations don't match: ");
-		for (String name : SalesHistory.get().getListRoyaltyHolders().keySet()) {
-			if (actualBalances.containsKey(name)) {
-				BigDecimal actualBalance = new BigDecimal(actualBalances.get(name)).setScale(2, RoundingMode.HALF_UP);
-				double difference = SalesHistory.get().getListRoyaltyHolders().get(name).getBalance() - actualBalance.doubleValue();
+		for (Person p : SalesHistory.get().getListRoyaltyHolders()) {
+			if (actualBalances.containsKey(p.getName())) {
+				BigDecimal actualBalance = new BigDecimal(actualBalances.get(p.getName())).setScale(2, RoundingMode.HALF_UP);
+				double difference = p.getBalance() - actualBalance.doubleValue();
 				BigDecimal diffBD = new BigDecimal(difference);
 				BigDecimal percentageDiff = diffBD.divide(actualBalance, 3, RoundingMode.HALF_UP);
 				if (difference < -0.5 || difference > 0.5) {
-					System.out.println(name + ": Actual Balance - " + actualBalance.doubleValue() + " vs. Balance Calculated - " 
-							+ SalesHistory.get().getListRoyaltyHolders().get(name).getBalance() 
-							+ " Difference: " + percentageDiff.doubleValue()*100 + "%");
+					System.out.println(p.getName() + ": Actual Balance - " + actualBalance.doubleValue() + " vs. Balance Calculated - " 
+							+ p.getBalance() + " Difference: " + percentageDiff.doubleValue()*100 + "%");
 				}				
 			}
 		}		
