@@ -41,13 +41,13 @@ public class Book implements java.io.Serializable{
 	 * @throws IllegalArgumentException if title is empty or null or if identifier is null.
 	 */
 	public Book(String title, Person author, String identifier) {
-		this.bookNumber = SalesHistory.get().getNextBookID();
 		validateTitle(title);
 		if (identifier == null) {
 			throw new IllegalArgumentException("Error: identifier may be empty but may not be null.");
 		}
+		this.bookNumber = SalesHistory.get().getNextBookID();
 		this.title = title.replace("\"", "");
-		this.listTitles.add(title);
+		this.listTitles.add(this.title);
 		this.author1 = author;
 		this.author2 = null;
 		this.afterwordAuthor = null;
@@ -74,13 +74,13 @@ public class Book implements java.io.Serializable{
 	 * @throws IllegalArgumentException if title is empty or null or if identifier is null.
 	 */
 	public Book(String title, Person author1, Person author2, Person translator, Person prefaceAuthor, Person afterwordAuthor, String identifier) {
-		this.bookNumber = SalesHistory.get().getNextBookID();
 		validateTitle(title);
 		if (identifier == null) {
 			throw new IllegalArgumentException("Error: identifier may be empty but may not be null.");
 		}
+		this.bookNumber = SalesHistory.get().getNextBookID();
 		this.title = title.replace("\"", "");
-		this.listTitles.add(title);
+		this.listTitles.add(this.title);
 		this.author1 = author1;
 		this.author2 = author2;
 		this.afterwordAuthor = afterwordAuthor;

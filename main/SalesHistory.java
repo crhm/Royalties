@@ -12,6 +12,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.atomic.AtomicLong;
 
+import main.royalties.IRoyaltyType;
+
 /** Main class of this app; a singleton, since it should never be more than one. method get() returns singleton instance.
  * <br><br>This class acts as a container of data which holds:
  * <br>-the complete list of sales, regardless of channel, as an ArrayList<Sale>, because there is no point in retrieving an 
@@ -46,6 +48,7 @@ public class SalesHistory implements java.io.Serializable {
 	private Set<Person> listAuthors = new HashSet<Person>();
 	private Set<Person> listPersons = new HashSet<Person>();
 	private Set<String> listMonths = new HashSet<String>();
+	private HashMap<Book, HashMap<Person, IRoyaltyType>> uniformRoyalties = new HashMap<Book, HashMap<Person, IRoyaltyType>>();
 	//TODO think of getting rid of all Hashmaps for sets instead?
 	
 	private AtomicLong nextBookID = new AtomicLong(1);
@@ -145,6 +148,13 @@ public class SalesHistory implements java.io.Serializable {
 		return listAuthors;
 	}
 	
+	/**
+	 * @return the listPersons
+	 */
+	public Set<Person> getListPersons() {
+		return listPersons;
+	}
+
 	/**Returns the List of all sales that have been added to the app.
 	 * @return the list of all sales that have been added to the app.
 	 */
@@ -168,6 +178,13 @@ public class SalesHistory implements java.io.Serializable {
 		return listPLPBooks;
 	}
 	
+	/**
+	 * @return the uniformRoyalties
+	 */
+	public HashMap<Book, HashMap<Person, IRoyaltyType>> getUniformRoyalties() {
+		return uniformRoyalties;
+	}
+
 	/** Returns the list of channels through which PLP sells books,
 	 *  as a HashMap mapping Channel names to Channels.
 	 * @return the list of channels through which PLP sells books
@@ -191,6 +208,34 @@ public class SalesHistory implements java.io.Serializable {
 	 */
 	public void addSale(Sale sale) {
 		this.salesHistory.add(sale);	
+	}
+	
+	public void addRoyalty(Book b, String royaltyHolderName, IRoyaltyType royalty) {
+		if (royaltyHolderName.isEmpty()) {
+			throw new IllegalArgumentException("Error: royaltyHolderName cannot be empty.");
+		}
+				
+		//Obtains the list of royalties for this book if one exists, or creates an empty one if not
+		HashMap<Person, IRoyaltyType> listHolder = null;
+		if (uniformRoyalties.containsKey(b)) {
+			listHolder = uniformRoyalties.get(b);
+		} else {
+			listHolder = new HashMap<Person, IRoyaltyType>();
+		}
+		
+		//Obtains the person with the name passed as argument from SalesHistory's list of royalty holders, 
+		//or creates one if one does not yet exist, and adds it to SalesHistory.
+		Person royaltyHolder2 = null;
+		if (SalesHistory.get().getPerson(royaltyHolderName) != null) {
+			royaltyHolder2 = SalesHistory.get().getPerson(royaltyHolderName);
+		} else {
+			royaltyHolder2 = ObjectFactory.createPerson(royaltyHolderName);
+			SalesHistory.get().addRoyaltyHolder(royaltyHolder2);
+		}
+		
+		//Adds the royalty holder + royalty combination to the list of royalties, and links the book to this list of royalties
+		listHolder.put(royaltyHolder2, royalty);
+		this.uniformRoyalties.put(b, listHolder);
 	}
 
 	/** Adds a Person to the complete list of Royalty holders

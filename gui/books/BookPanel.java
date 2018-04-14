@@ -129,7 +129,6 @@ public class BookPanel extends JPanel implements ActionListener, ListSelectionLi
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == editButton) {
-				//TODO figure out how I manage consequences for other tables in other tabs that represent such info...?
 				int row = booksTable.convertRowIndexToModel(booksTable.getSelectedRow());
 				String title = (String) booksTable.getModel().getValueAt(row, 0);
 				Book book = SalesHistory.get().getBook(title);

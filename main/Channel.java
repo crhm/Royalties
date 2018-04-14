@@ -114,14 +114,9 @@ public class Channel implements java.io.Serializable {
 		//Obtains the person with the name passed as argument from SalesHistory's list of royalty holders, 
 		//or creates one if one does not yet exist, and adds it to SalesHistory.
 		Person royaltyHolder2 = null;
-		Boolean flag = true;
-		for (Person p : SalesHistory.get().getListRoyaltyHolders().values()) {
-			if (p.getName().equals(royaltyHolderName)) {
-				royaltyHolder2 = p;
-				flag = false;
-			}
-		}
-		if (flag) {
+		if (SalesHistory.get().getPerson(royaltyHolderName) != null) {
+			royaltyHolder2 = SalesHistory.get().getPerson(royaltyHolderName);
+		} else {
 			royaltyHolder2 = ObjectFactory.createPerson(royaltyHolderName);
 			SalesHistory.get().addRoyaltyHolder(royaltyHolder2);
 		}

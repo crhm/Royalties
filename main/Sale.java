@@ -143,11 +143,20 @@ public class Sale implements java.io.Serializable {
 
 			//Calculate Royalty
 			try {
-				for (Person p : channel.getListRoyalties().get(book).keySet()) {
-					IRoyaltyType royalty = channel.getListRoyalties().get(book).get(p);
-					double amount = royalty.getAmountDue(revenuesPLP * exchangeRate, book.getTotalUnitsSold());
-					p.addToBalance(amount);
-					this.royaltyHasBeenCalculated = true;
+				if (SalesHistory.get().getUniformRoyalties().get(book) != null) {
+					for (Person p : SalesHistory.get().getUniformRoyalties().get(book).keySet()) {
+						IRoyaltyType royalty = SalesHistory.get().getUniformRoyalties().get(book).get(p);
+						double amount = royalty.getAmountDue(revenuesPLP * exchangeRate, book.getTotalUnitsSold());
+						p.addToBalance(amount);
+						this.royaltyHasBeenCalculated = true;
+					}
+				} else {
+					for (Person p : channel.getListRoyalties().get(book).keySet()) {
+						IRoyaltyType royalty = channel.getListRoyalties().get(book).get(p);
+						double amount = royalty.getAmountDue(revenuesPLP * exchangeRate, book.getTotalUnitsSold());
+						p.addToBalance(amount);
+						this.royaltyHasBeenCalculated = true;
+					}
 				}
 			} catch (NullPointerException e) {
 				System.out.println("There was a problem getting the royalty list for this sale: " + this);

@@ -9,8 +9,12 @@ import java.util.HashMap;
 
 import importing.ChannelRoyaltiesFileFormat;
 import importing.test.ImportSeveralFiles;
+import main.Book;
+import main.Channel;
+import main.Person;
 import main.SalesHistory;
 import main.royalties.IRoyaltyType;
+import main.royalties.RoyaltyPercentage;
 
 public class AllRoyaltiesOct2017Test {
 
@@ -50,71 +54,44 @@ public class AllRoyaltiesOct2017Test {
 
 		SalesHistory.get().calculateAllRoyalies();
 
-//		System.out.println("\n\nRoyalty holders where calculations match: ");
-//		for (String name : SalesHistory.get().getListRoyaltyHolders().keySet()) {
-//			if (actualBalances.containsKey(name)) {
-//				BigDecimal actualBalance = new BigDecimal(actualBalances.get(name)).setScale(2, RoundingMode.HALF_UP);
-//				double difference = SalesHistory.get().getListRoyaltyHolders().get(name).getBalance() - actualBalance.doubleValue();
-//				if (difference == 0) {
-//					System.out.println(name + ": Actual Balance - " + actualBalance.doubleValue() + " vs. Balance Calculated - " 
-//							+ SalesHistory.get().getListRoyaltyHolders().get(name).getBalance());
-//				}				
-//			}
-//		}
-//		System.out.println("\nRoyalty holders where calculations almost match: ");
-//		for (String name : SalesHistory.get().getListRoyaltyHolders().keySet()) {
-//			if (actualBalances.containsKey(name)) {
-//				BigDecimal actualBalance = new BigDecimal(actualBalances.get(name)).setScale(2, RoundingMode.HALF_UP);
-//				double difference = SalesHistory.get().getListRoyaltyHolders().get(name).getBalance() - actualBalance.doubleValue();
-//				BigDecimal diffBD = new BigDecimal(difference);
-//				BigDecimal percentageDiff = diffBD.divide(actualBalance, 3, RoundingMode.HALF_UP);
-//				if (difference > -0.5 && difference < 0.5 && difference != 0) {
-//					System.out.println(name + ": Actual Balance - " + actualBalance.doubleValue() + " vs. Balance Calculated - " 
-//							+ SalesHistory.get().getListRoyaltyHolders().get(name).getBalance() 
-//							+ " Difference: " + percentageDiff.doubleValue()*100 + "%");
-//				}				
-//			}
-//		}
-//		System.out.println("\nRoyalty holders where calculations don't match: ");
-//		for (String name : SalesHistory.get().getListRoyaltyHolders().keySet()) {
-//			if (actualBalances.containsKey(name)) {
-//				BigDecimal actualBalance = new BigDecimal(actualBalances.get(name)).setScale(2, RoundingMode.HALF_UP);
-//				double difference = SalesHistory.get().getListRoyaltyHolders().get(name).getBalance() - actualBalance.doubleValue();
-//				BigDecimal diffBD = new BigDecimal(difference);
-//				BigDecimal percentageDiff = diffBD.divide(actualBalance, 3, RoundingMode.HALF_UP);
-//				if (difference < -0.5 || difference > 0.5) {
-//					System.out.println(name + ": Actual Balance - " + actualBalance.doubleValue() + " vs. Balance Calculated - " 
-//							+ SalesHistory.get().getListRoyaltyHolders().get(name).getBalance() 
-//							+ " Difference: " + percentageDiff.doubleValue()*100 + "%");
-//				}				
-//			}
-//		}
-//		for (Book b : SalesHistory.get().getListPLPBooks().values()) {
-//			System.out.println(royaltiesUniformAcrossChannelsCheck(b));
-//		}
-
-
-//		System.out.println(SalesHistory.get().seeNumberOfBooks());
-//		System.out.println(SalesHistory.get().getBook(168));
-//		System.out.println(SalesHistory.get().seeNumberOfPersons());
+		System.out.println("\n\nRoyalty holders where calculations match: ");
+		for (String name : SalesHistory.get().getListRoyaltyHolders().keySet()) {
+			if (actualBalances.containsKey(name)) {
+				BigDecimal actualBalance = new BigDecimal(actualBalances.get(name)).setScale(2, RoundingMode.HALF_UP);
+				double difference = SalesHistory.get().getListRoyaltyHolders().get(name).getBalance() - actualBalance.doubleValue();
+				if (difference == 0) {
+					System.out.println(name + ": Actual Balance - " + actualBalance.doubleValue() + " vs. Balance Calculated - " 
+							+ SalesHistory.get().getListRoyaltyHolders().get(name).getBalance());
+				}				
+			}
+		}
+		System.out.println("\nRoyalty holders where calculations almost match: ");
+		for (String name : SalesHistory.get().getListRoyaltyHolders().keySet()) {
+			if (actualBalances.containsKey(name)) {
+				BigDecimal actualBalance = new BigDecimal(actualBalances.get(name)).setScale(2, RoundingMode.HALF_UP);
+				double difference = SalesHistory.get().getListRoyaltyHolders().get(name).getBalance() - actualBalance.doubleValue();
+				BigDecimal diffBD = new BigDecimal(difference);
+				BigDecimal percentageDiff = diffBD.divide(actualBalance, 3, RoundingMode.HALF_UP);
+				if (difference > -0.5 && difference < 0.5 && difference != 0) {
+					System.out.println(name + ": Actual Balance - " + actualBalance.doubleValue() + " vs. Balance Calculated - " 
+							+ SalesHistory.get().getListRoyaltyHolders().get(name).getBalance() 
+							+ " Difference: " + percentageDiff.doubleValue()*100 + "%");
+				}				
+			}
+		}
+		System.out.println("\nRoyalty holders where calculations don't match: ");
+		for (String name : SalesHistory.get().getListRoyaltyHolders().keySet()) {
+			if (actualBalances.containsKey(name)) {
+				BigDecimal actualBalance = new BigDecimal(actualBalances.get(name)).setScale(2, RoundingMode.HALF_UP);
+				double difference = SalesHistory.get().getListRoyaltyHolders().get(name).getBalance() - actualBalance.doubleValue();
+				BigDecimal diffBD = new BigDecimal(difference);
+				BigDecimal percentageDiff = diffBD.divide(actualBalance, 3, RoundingMode.HALF_UP);
+				if (difference < -0.5 || difference > 0.5) {
+					System.out.println(name + ": Actual Balance - " + actualBalance.doubleValue() + " vs. Balance Calculated - " 
+							+ SalesHistory.get().getListRoyaltyHolders().get(name).getBalance() 
+							+ " Difference: " + percentageDiff.doubleValue()*100 + "%");
+				}				
+			}
+		}		
 	}
-
-//	private static Boolean royaltiesUniformAcrossChannelsCheck(Book book) {
-//		Boolean uniformity = true;
-//		HashMap<Person, IRoyaltyType> royaltyRules = SalesHistory.get().getListChannels().get("Amazon").getListRoyalties().get(book);
-//		System.out.println(book);
-//		for (Channel ch : SalesHistory.get().getListChannels().values()) {
-//			if (!ch.getName().equals("Createspace")) {
-//				for (Person p : ch.getListRoyalties().get(book).keySet()) {
-//					if (!royaltyRules.keySet().contains(p)) {
-//						uniformity = false;
-//					} else if (ch.getListRoyalties().get(book).get(p) != royaltyRules.get(p)) {
-//						uniformity = false;
-//					}
-//				}
-//			}
-//		}
-//		return uniformity;
-//	}
-
 }
