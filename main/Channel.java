@@ -187,11 +187,18 @@ public class Channel implements java.io.Serializable {
 		HashMap<Person, IRoyaltyType> oldRoyalties = listRoyalties.get(oldBook);
 		HashMap<Person, IRoyaltyType> newRoyalties = listRoyalties.get(newBook);
 
-		for (Person p : oldRoyalties.keySet()) { //adding oldbook's royalties to that of newbook (unless a royalty holder already has a royalty in newBook)
-			newRoyalties.putIfAbsent(p, oldRoyalties.get(p));
+		if (oldRoyalties != null) {
+			if (newRoyalties == null) {
+				newRoyalties = new HashMap<Person, IRoyaltyType>();
+			}
+			for (Person p : oldRoyalties.keySet()) { //adding oldbook's royalties to that of newbook (unless a royalty holder already has a royalty in newBook)
+				newRoyalties.putIfAbsent(p, oldRoyalties.get(p));
+			}
 		}
 		listRoyalties.remove(oldBook);
-		listRoyalties.put(newBook, newRoyalties);
+		if (newRoyalties != null) {
+			listRoyalties.put(newBook, newRoyalties);
+		}
 	}
 
 	@Override

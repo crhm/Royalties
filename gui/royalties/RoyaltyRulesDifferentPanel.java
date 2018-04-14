@@ -165,7 +165,7 @@ public class RoyaltyRulesDifferentPanel extends JPanel implements ActionListener
 				royaltyDetailsPanel.revalidate();
 				royaltyDetailsPanel.repaint();
 
-				currentBook = (String) bookTitles.getValueAt(tableRow, 0); 
+				currentBook = (String) bookTitles.getValueAt(tableRow, 1); 
 			}	
 		} else {
 			//TODO

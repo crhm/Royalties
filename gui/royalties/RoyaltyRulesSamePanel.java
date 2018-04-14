@@ -165,14 +165,14 @@ public class RoyaltyRulesSamePanel extends JPanel implements ActionListener, Lis
 				royaltyDetailsPanel.revalidate();
 				royaltyDetailsPanel.repaint();
 
-				currentBook = (String) bookTitles.getValueAt(tableRow, 0); 
+				currentBook = (String) bookTitles.getValueAt(tableRow, 1); 
 			}	
 		} else if (e.getSource() == royaltiesTable.getSelectionModel()) {
 			if (royaltiesTable.getSelectedRow() != -1) {
 				deleteButton.setEnabled(true);
 				editButton.setEnabled(true);
 				int row = royaltiesTable.convertRowIndexToModel(royaltiesTable.getSelectedRow());
-				currentPerson = (String) royaltiesTable.getValueAt(row, 0);
+				currentPerson = (String) royaltiesTable.getValueAt(row, 1);
 			} else {
 				deleteButton.setEnabled(false);
 				editButton.setEnabled(false);

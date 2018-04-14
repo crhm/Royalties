@@ -388,12 +388,18 @@ public class SalesHistory implements java.io.Serializable {
 		
 		HashMap<Person, IRoyaltyType> oldRoyalties = uniformRoyalties.get(oldBook);
 		HashMap<Person, IRoyaltyType> newRoyalties = uniformRoyalties.get(newBook);
-
-		for (Person p : oldRoyalties.keySet()) { //adding oldbook's royalties to that of newbook (unless a royalty holder already has a royalty in newBook)
-			newRoyalties.putIfAbsent(p, oldRoyalties.get(p));
+		if (oldRoyalties != null) {
+			if (newRoyalties == null) {
+				newRoyalties = new HashMap<Person, IRoyaltyType>();
+			}
+			for (Person p : oldRoyalties.keySet()) { //adding oldbook's royalties to that of newbook (unless a royalty holder already has a royalty in newBook)
+				newRoyalties.putIfAbsent(p, oldRoyalties.get(p));
+			}
 		}
 		uniformRoyalties.remove(oldBook);
-		uniformRoyalties.put(newBook, newRoyalties);
+		if (newRoyalties != null) {
+			uniformRoyalties.put(newBook, newRoyalties);
+		}
 		
 		for (Channel ch : listChannels.values()) {
 			ch.replaceBook(oldBook, newBook);
