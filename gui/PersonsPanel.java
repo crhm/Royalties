@@ -9,6 +9,7 @@ import java.util.List;
 
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -28,8 +29,8 @@ import main.SalesHistory;
 @SuppressWarnings("serial")
 public class PersonsPanel extends JPanel implements ActionListener, ListSelectionListener {
 	JTable royaltyHoldersTable;
-	int selectedIndex1;
-	int selectedIndex2;
+	int selectedIndex1 = -1;
+	int selectedIndex2 = -1;
 
 	public PersonsPanel() {
 		super();
@@ -122,22 +123,28 @@ public class PersonsPanel extends JPanel implements ActionListener, ListSelectio
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		int row1 = royaltyHoldersTable.convertRowIndexToModel(selectedIndex1);
-		int row2 = royaltyHoldersTable.convertRowIndexToModel(selectedIndex2);
-		long personNumber1 = (long) royaltyHoldersTable.getModel().getValueAt(row1, 2);
-		long personNumber2 = (long) royaltyHoldersTable.getModel().getValueAt(row2, 2);
-		Person person1 = null;
-		Person person2 = null;
-		for (Person p : SalesHistory.get().getListPersons()) {
-			if (p.getPersonNumber() == personNumber1) {
-				person1 = p;
+		if (royaltyHoldersTable.getSelectedRows().length > 2) {
+			JOptionPane.showMessageDialog(this, "Error. Please select only two persons.", "Error!", JOptionPane.ERROR_MESSAGE);
+		} else if (selectedIndex1 == -1 || selectedIndex2 == -1 || selectedIndex1 == selectedIndex2) {
+			JOptionPane.showMessageDialog(this, "Error. Please select two separate persons.", "Error!", JOptionPane.ERROR_MESSAGE);
+		} else {
+			int row1 = royaltyHoldersTable.convertRowIndexToModel(selectedIndex1);
+			int row2 = royaltyHoldersTable.convertRowIndexToModel(selectedIndex2);
+			long personNumber1 = (long) royaltyHoldersTable.getModel().getValueAt(row1, 2);
+			long personNumber2 = (long) royaltyHoldersTable.getModel().getValueAt(row2, 2);
+			Person person1 = null;
+			Person person2 = null;
+			for (Person p : SalesHistory.get().getListPersons()) {
+				if (p.getPersonNumber() == personNumber1) {
+					person1 = p;
+				}
+				if (p.getPersonNumber() == personNumber2) {
+					person2 = p;
+				}
 			}
-			if (p.getPersonNumber() == personNumber2) {
-				person2 = p;
-			}
+			person1.merge(person2);
+			updateData();
 		}
-		person1.merge(person2);
-		updateData();
 	}
 
 	@Override

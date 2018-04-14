@@ -102,8 +102,12 @@ public class Person implements java.io.Serializable {
 	 * <br>Adds all of p's names to this one's. Adds its balance to this one's.
 	 * <br>Removes p from list of persons
 	 * @param p Person which will merged into this one.
+	 * @throws IllegalArgumentException if person p is null
 	 */
 	public void merge(Person p) {
+		if (p == null) {
+			throw new IllegalArgumentException("Error: person with which to merge cannot be null.");
+		}
 		this.listNames.add(p.getName());
 		for (String s : p.getListNames()) {
 			this.listNames.add(s);
