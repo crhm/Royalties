@@ -29,6 +29,7 @@ import main.SalesHistory;
 @SuppressWarnings("serial")
 public class PersonsPanel extends JPanel implements ActionListener, ListSelectionListener {
 	JTable royaltyHoldersTable;
+	JButton mergeButton;
 	int selectedIndex1 = -1;
 	int selectedIndex2 = -1;
 
@@ -39,7 +40,8 @@ public class PersonsPanel extends JPanel implements ActionListener, ListSelectio
 		buttonPanel.setLayout(new GridLayout(1, 3, 0, 0));
 		buttonPanel.add(new JLabel());
 		buttonPanel.add(new JLabel());
-		JButton mergeButton = new JButton("Merge two persons");
+		mergeButton = new JButton("Merge two persons selected");
+		mergeButton.setEnabled(false);
 		mergeButton.addActionListener(this);
 		buttonPanel.add(mergeButton);
 		this.add(buttonPanel, BorderLayout.NORTH);
@@ -122,35 +124,32 @@ public class PersonsPanel extends JPanel implements ActionListener, ListSelectio
 	}
 
 	@Override
-	public void actionPerformed(ActionEvent e) {
-		if (royaltyHoldersTable.getSelectedRows().length > 2) {
-			JOptionPane.showMessageDialog(this, "Error. Please select only two persons.", "Error!", JOptionPane.ERROR_MESSAGE);
-		} else if (selectedIndex1 == -1 || selectedIndex2 == -1 || selectedIndex1 == selectedIndex2) {
-			JOptionPane.showMessageDialog(this, "Error. Please select two separate persons.", "Error!", JOptionPane.ERROR_MESSAGE);
-		} else {
+	public void actionPerformed(ActionEvent e) { 
+		if (e.getSource() == mergeButton) { //Merge button is clicked (should only happen when exactly two persons are selected)
 			int row1 = royaltyHoldersTable.convertRowIndexToModel(selectedIndex1);
 			int row2 = royaltyHoldersTable.convertRowIndexToModel(selectedIndex2);
 			long personNumber1 = (long) royaltyHoldersTable.getModel().getValueAt(row1, 2);
 			long personNumber2 = (long) royaltyHoldersTable.getModel().getValueAt(row2, 2);
-			Person person1 = null;
-			Person person2 = null;
-			for (Person p : SalesHistory.get().getListPersons()) {
-				if (p.getPersonNumber() == personNumber1) {
-					person1 = p;
-				}
-				if (p.getPersonNumber() == personNumber2) {
-					person2 = p;
-				}
+			Person person1 = SalesHistory.get().getPersonWithNumber(personNumber1);
+			Person person2 = SalesHistory.get().getPersonWithNumber(personNumber2);
+			int userChoice = JOptionPane.showConfirmDialog(null, "Please confirm that you want to merge these two persons.", "Please Confirm", JOptionPane.OK_CANCEL_OPTION);
+			if (userChoice == 0) {
+				person1.merge(person2);
+				updateData();
 			}
-			person1.merge(person2);
-			updateData();
-		}
+		}	
 	}
 
 	@Override
-	public void valueChanged(ListSelectionEvent e) {
+	public void valueChanged(ListSelectionEvent e) { //When there is a change in the selection of persons
 		selectedIndex1 = royaltyHoldersTable.getSelectionModel().getMinSelectionIndex();
 		selectedIndex2 = royaltyHoldersTable.getSelectionModel().getMaxSelectionIndex();
+
+		if (royaltyHoldersTable.getSelectedRows().length == 2) {
+			mergeButton.setEnabled(true);
+		} else {
+			mergeButton.setEnabled(false);
+		}
 	}
 
 }

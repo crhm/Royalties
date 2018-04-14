@@ -45,12 +45,12 @@ public class MergeBooksDialog extends JDialog implements ItemListener {
 		JButton btnMerge = new JButton("Merge");
 		panelButtons.add(btnMerge);
 
-		//Setting up the combo boxes
+		//Setting up the panel of Book choices
 		JPanel panelBookChoices = new JPanel();
 		getContentPane().add(panelBookChoices, BorderLayout.CENTER);
 		panelBookChoices.setLayout(new GridLayout(4, 1, 0, 0));
-		//Making an array of book titles
-		Long[] listBooks = new Long[SalesHistory.get().getListPLPBooks().size()];
+		
+		Long[] listBooks = new Long[SalesHistory.get().getListPLPBooks().size()];		//Making an array of book numbers
 		int count = 0;
 		for (Book b : SalesHistory.get().getListPLPBooks()) {
 			listBooks[count] = b.getBookNumber();
@@ -89,9 +89,13 @@ public class MergeBooksDialog extends JDialog implements ItemListener {
 					JOptionPane.showMessageDialog(window, "You cannot merge a book with itself. "
 									+ "Please select two separate books.", "Error!", JOptionPane.ERROR_MESSAGE);
 				} else {
-					book1.merge(book2);
-					SalesHistory.get().removeBook(book2);
-					window.dispose();
+					int userChoice = JOptionPane.showConfirmDialog(window, "Please confirm that you want to merge these two books.", 
+							"Confirmation Required", JOptionPane.OK_CANCEL_OPTION);
+					if (userChoice == 0) {
+						book1.merge(book2);
+						SalesHistory.get().removeBook(book2);
+						window.dispose();
+					}
 				}
 			}
 		});

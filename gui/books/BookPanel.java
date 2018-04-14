@@ -30,7 +30,7 @@ import main.Book;
 import main.SalesHistory;
 
 /**A JPanel containing a JTable representing the list of books managed by PLP.
- * <br>Information displayed for each book: Title, Author, Identifiers, Total Sold.
+ * <br>Information displayed for each book: Book Number, Title, Author, Identifiers, Total Sold.
  * <br>Table can be sorted by user, but prioritises sorting by Book title.
  * <br>Cells are non-editable.
  * @author crhm

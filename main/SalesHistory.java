@@ -84,7 +84,22 @@ public class SalesHistory implements java.io.Serializable {
 		return personFound;
 	}
 	
+	/**Returns the person from list of persons with the personNumber passed as argument, or null if there is no such person
+	 * @param personNumber the personNumber of the person to be retrieved
+	 * @return the person with the personNumber passed as argument, or null if there is no such person
+	 */
+	public Person getPersonWithNumber(Long personNumber) {
+		Person person = null;
+		for (Person p : listPersons) {
+			if (p.getPersonNumber() == personNumber) {
+				person = p;
+			}
+		}
+		return person;
+	}
+	
 	/**Returns a book from listPLPBooks
+	 * <br>Note: if there are more than one book with such title in the list of Books, it will return the first one it encounters.
 	 * @param title the title of the book to be retrieved
 	 * @return the book with a title as the one passed as argument, or null if there is no such book
 	 */
@@ -98,6 +113,10 @@ public class SalesHistory implements java.io.Serializable {
 		return bookFound;
 	}
 	
+	/**Returns the book from list of Books with the bookNumber passed as argument, or null if there is no such book
+	 * @param number the bookNumber of the book to be retrieved
+	 * @return the book with the bookNumber passed as argument, or null if there is no such book
+	 */
 	public Book getBookWithNumber(Long number) {
 		Book book = null;
 		for (Book b : listPLPBooks) {
@@ -106,16 +125,6 @@ public class SalesHistory implements java.io.Serializable {
 			}
 		}
 		return book;
-	}
-	
-	public Set<Book> getAllBooksWithTitle(String title){
-		Set<Book> setBooksSameTitle = new HashSet<Book>();
-		for (Book b : listPLPBooks) {
-			if (b.getTitle().equals(title)) {
-				setBooksSameTitle.add(b);
-			}
-		}
-		return setBooksSameTitle;
 	}
 	
 	//CALCULATE ROYALTIES
