@@ -44,6 +44,8 @@ public class BookPanel extends JPanel implements ActionListener, ListSelectionLi
 	private JButton addButton = new JButton("Add New Book");
 	private JButton deleteButton = new JButton("Delete Book");
 	private JButton mergeButton = new JButton("Choose Two Books to Merge Together");
+	int selectedIndex1 = -1;
+	int selectedIndex2 = -1;
 
 	public BookPanel() {
 		super();
@@ -57,6 +59,7 @@ public class BookPanel extends JPanel implements ActionListener, ListSelectionLi
 		addButton.addActionListener(this);
 		deleteButton.addActionListener(this);
 		mergeButton.addActionListener(this);
+		mergeButton.setEnabled(false);
 		
 		//Setting up button Panel
 		JPanel buttonPanel = new JPanel(new GridLayout(1, 5));
@@ -67,7 +70,6 @@ public class BookPanel extends JPanel implements ActionListener, ListSelectionLi
 		
 		//Setting up JTable and selection behavior
 		this.booksTable = getTable();
-		this.booksTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		this.booksTable.getSelectionModel().addListSelectionListener(this);
 		
 		//Setting up container Panel
@@ -163,17 +165,20 @@ public class BookPanel extends JPanel implements ActionListener, ListSelectionLi
 				updateData();
 			}
 		} else if (e.getSource() == mergeButton) {
-			addButton.setEnabled(false);
-			editButton.setEnabled(false);
-			deleteButton.setEnabled(false);
-			MergeBooksDialog mergeDialog = new MergeBooksDialog();
-			mergeDialog.addWindowListener(new WindowAdapter() {
-				@Override
-				public void windowClosed(WindowEvent e) { //update and repaint table on close of addBookDialog
-					updateData();
-				}				
-			});
-			addButton.setEnabled(true);
+			int row1 = booksTable.convertRowIndexToModel(selectedIndex1);
+			int row2 = booksTable.convertRowIndexToModel(selectedIndex2);
+			long bookNumber1 = (long) booksTable.getModel().getValueAt(row1, 0);
+			long bookNumber2 = (long) booksTable.getModel().getValueAt(row2, 0);
+			Book book1 = SalesHistory.get().getBookWithNumber(bookNumber1);
+			Book book2 = SalesHistory.get().getBookWithNumber(bookNumber2);
+			int userChoice = JOptionPane.showConfirmDialog(null, "Please confirm that you want to merge these two books. "
+					+ "This will affect royalties and past sales.", 
+					"Confirmation Required", JOptionPane.OK_CANCEL_OPTION);
+			if (userChoice == JOptionPane.OK_OPTION) {
+				book1.merge(book2);
+				SalesHistory.get().removeBook(book2);
+				updateData();
+			}
 		}
 	}
 
@@ -181,13 +186,21 @@ public class BookPanel extends JPanel implements ActionListener, ListSelectionLi
 	 */
 	@Override
 	public void valueChanged(ListSelectionEvent e) {
-		if (booksTable.getSelectedRow() != -1) {
+		if (booksTable.getSelectedRows().length == 1) {
+			mergeButton.setEnabled(false);
 			deleteButton.setEnabled(true);
 			editButton.setEnabled(true);
-		} else {
+		} else if (booksTable.getSelectedRows().length == 2) {
+			selectedIndex1 = booksTable.getSelectionModel().getMinSelectionIndex();
+			selectedIndex2 = booksTable.getSelectionModel().getMaxSelectionIndex();
+			mergeButton.setEnabled(true);
 			deleteButton.setEnabled(false);
 			editButton.setEnabled(false);
-		}	
+		} else {
+			mergeButton.setEnabled(false);
+			deleteButton.setEnabled(false);
+			editButton.setEnabled(false);
+		}
 	}
 	
 	/**Ensures the table has a max width for its fourth column, that it is sorted by its first, and 
