@@ -79,11 +79,12 @@ public class BookPanel extends JPanel implements ActionListener, ListSelectionLi
 	 */
 	private JTable getTable() {
 		//Prepares table model
-		Object[] columnNames = {"Title", "Main Author", "Identifiers", "Total Sold"};
+		Object[] columnNames = {"Book Number", "Title", "Main Author", "Identifiers", "Total Sold"};
 		DefaultTableModel model = new DefaultTableModel(getData(), columnNames) {
 			@Override
 			public Class<?> getColumnClass(int column) {
 				switch (column) {
+				case 0 : return Long.class;
 				case 2 : return Arrays.class;
 				case 3 : return Integer.class;
 				default : return String.class;
@@ -106,18 +107,19 @@ public class BookPanel extends JPanel implements ActionListener, ListSelectionLi
 	 * Titles and Authors are stripped of potential quotation marks for cleanliness of presentation.
 	 */
 	private Object[][] getData(){
-		Object[][] data = new Object[SalesHistory.get().getListPLPBooks().size()][4];
+		Object[][] data = new Object[SalesHistory.get().getListPLPBooks().size()][5];
 		int count = 0;
 		for (Book b : SalesHistory.get().getListPLPBooks()) {
-			data[count][0] = b.getTitle();
+			data[count][0] = b.getBookNumber();
+			data[count][1] = b.getTitle();
 			if (b.getAuthor1() != null) {
-				data[count][1] = b.getAuthor1().getName();
+				data[count][2] = b.getAuthor1().getName();
 			} else {
-				data[count][1] = "";
+				data[count][2] = "";
 			}
-			data[count][2] = b.getIdentifiers();
+			data[count][3] = b.getIdentifiers();
 			BigDecimal totalSold = new BigDecimal(b.getTotalUnitsSold());
-			data[count][3] = totalSold.setScale(0);
+			data[count][4] = totalSold.setScale(0);
 
 			count++;
 		}
@@ -130,8 +132,8 @@ public class BookPanel extends JPanel implements ActionListener, ListSelectionLi
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == editButton) {
 				int row = booksTable.convertRowIndexToModel(booksTable.getSelectedRow());
-				String title = (String) booksTable.getModel().getValueAt(row, 0);
-				Book book = SalesHistory.get().getBook(title);
+				Long bookNumber = (Long) booksTable.getModel().getValueAt(row, 0);
+				Book book = SalesHistory.get().getBookWithNumber(bookNumber);
 				EditBookDialog editBookDialog = new EditBookDialog(book);
 				editBookDialog.addWindowListener(new WindowAdapter() {
 				@Override
@@ -155,8 +157,8 @@ public class BookPanel extends JPanel implements ActionListener, ListSelectionLi
 			int option = JOptionPane.showConfirmDialog(this, "Please confirm you want to delete this book.", "Warning!", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
 			if (option == 0) { //If user clicks OK
 				int row = booksTable.convertRowIndexToModel(booksTable.getSelectedRow());
-				String title = (String) booksTable.getModel().getValueAt(row, 0);
-				Book book = SalesHistory.get().getBook(title);
+				Long bookNumber = (Long) booksTable.getModel().getValueAt(row, 0);
+				Book book = SalesHistory.get().getBookWithNumber(bookNumber);
 				SalesHistory.get().removeBook(book);
 				updateData();
 			}
@@ -194,13 +196,14 @@ public class BookPanel extends JPanel implements ActionListener, ListSelectionLi
 	 */
 	private void setTableSettings(JTable table) {
 		TableColumnModel columnModel = table.getColumnModel();
-		columnModel.getColumn(3).setMaxWidth(100);
+		columnModel.getColumn(0).setMaxWidth(100);
+		columnModel.getColumn(4).setMaxWidth(100);
 
 		//Sets up sorting by book title
 		TableRowSorter<TableModel> sorter = new TableRowSorter<>(table.getModel());
 		table.setRowSorter(sorter);
 		List<RowSorter.SortKey> sortKeys = new ArrayList<>();
-		int columnIndexToSort = 0;
+		int columnIndexToSort = 1;
 		sortKeys.add(new RowSorter.SortKey(columnIndexToSort, SortOrder.ASCENDING));
 		sorter.setSortKeys(sortKeys);
 		sorter.sort();

@@ -137,8 +137,8 @@ public class RoyaltyRulesDifferentPanel extends JPanel implements ActionListener
 				royaltyDetails.removeAll();
 				royaltyDetails.revalidate();
 				int tableRow = bookTitles.getSelectedRow();
-				String bookTitle = bookTitles.getValueAt(tableRow, 0).toString();
-				Book book = SalesHistory.get().getBook(bookTitle);
+				Long bookNumber = (Long) bookTitles.getValueAt(tableRow, 0);
+				Book book = SalesHistory.get().getBookWithNumber(bookNumber);
 				JTable royaltiesAmazon = getTableRoyalties(book, "Amazon");
 				JTable royaltiesApple = getTableRoyalties(book, "Apple");
 				JTable royaltiesKobo = getTableRoyalties(book, "Kobo");
@@ -235,11 +235,12 @@ public class RoyaltyRulesDifferentPanel extends JPanel implements ActionListener
 	 * @return the JTable of book titles (sortable alphabetically, single selection only, not editable)
 	 */
 	private JTable getTableBooks() {
-		String[] columnNames = {"Book Title"};
+		String[] columnNames = {"Book Number", "Book Title"};
 		DefaultTableModel model = new DefaultTableModel(getDataBooks(), columnNames) {
 			@Override
 			public Class<?> getColumnClass(int column) {
 				switch (column ) {
+				case 0 : return Long.class;
 				default : return String.class;
 				}
 			}
@@ -269,11 +270,12 @@ public class RoyaltyRulesDifferentPanel extends JPanel implements ActionListener
 			}
 		}
 		int numberOfRows = listBooks.size();
-		Object[][] data = new Object[numberOfRows][1];
+		Object[][] data = new Object[numberOfRows][2];
 		int count = 0;
 		
 		for (Book b : listBooks) {
-			data[count][0] = b.getTitle();
+			data[count][0] = b.getBookNumber();
+			data[count][1] = b.getTitle();
 			count++;
 		}
 		return data;
@@ -297,7 +299,7 @@ public class RoyaltyRulesDifferentPanel extends JPanel implements ActionListener
 		TableRowSorter<TableModel> sorter = new TableRowSorter<>(bookTitles.getModel());
 		bookTitles.setRowSorter(sorter);
 		List<RowSorter.SortKey> sortKeys = new ArrayList<>();
-		int columnIndexToSort = 0;
+		int columnIndexToSort = 1;
 		sortKeys.add(new RowSorter.SortKey(columnIndexToSort, SortOrder.ASCENDING));
 		sorter.setSortKeys(sortKeys);
 		sorter.sort();

@@ -1,6 +1,7 @@
 package gui.books;
 
 import javax.swing.JDialog;
+import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 
 import java.awt.BorderLayout;
@@ -12,6 +13,8 @@ import main.SalesHistory;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.ItemEvent;
+import java.awt.event.ItemListener;
 import java.util.Arrays;
 
 import javax.swing.DefaultComboBoxModel;
@@ -19,7 +22,13 @@ import javax.swing.JButton;
 import javax.swing.JComboBox;
 
 @SuppressWarnings("serial")
-public class MergeBooksDialog extends JDialog {
+public class MergeBooksDialog extends JDialog implements ItemListener {
+	
+	private JComboBox<Long> comboBoxBook1;
+	private JComboBox<Long> comboBoxBook2;
+	private JLabel labelBook1 = new JLabel();
+	private JLabel labelBook2 = new JLabel();
+	
 	public MergeBooksDialog() {
 		setTitle("Choose Two Books To Merge Together");
 		setBounds(100, 100, 450, 300);
@@ -39,25 +48,29 @@ public class MergeBooksDialog extends JDialog {
 		//Setting up the combo boxes
 		JPanel panelBookChoices = new JPanel();
 		getContentPane().add(panelBookChoices, BorderLayout.CENTER);
-		panelBookChoices.setLayout(new GridLayout(2, 1, 0, 0));
+		panelBookChoices.setLayout(new GridLayout(4, 1, 0, 0));
 		//Making an array of book titles
-		String[] listBooks = new String[SalesHistory.get().getListPLPBooks().size()];
+		Long[] listBooks = new Long[SalesHistory.get().getListPLPBooks().size()];
 		int count = 0;
 		for (Book b : SalesHistory.get().getListPLPBooks()) {
-			listBooks[count] = b.getTitle();
+			listBooks[count] = b.getBookNumber();
 			count++;
 		}
 		Arrays.sort(listBooks);
-		DefaultComboBoxModel<String> model1 = new DefaultComboBoxModel<String>(listBooks);
-		DefaultComboBoxModel<String> model2 = new DefaultComboBoxModel<String>(listBooks);
+		DefaultComboBoxModel<Long> model1 = new DefaultComboBoxModel<Long>(listBooks);
+		DefaultComboBoxModel<Long> model2 = new DefaultComboBoxModel<Long>(listBooks);
 
-		JComboBox<String> comboBoxBook1 = new JComboBox<String>();
+		comboBoxBook1 = new JComboBox<Long>();
 		comboBoxBook1.setModel(model1);
+		comboBoxBook1.addItemListener(this);
 		panelBookChoices.add(comboBoxBook1);
+		panelBookChoices.add(labelBook1);
 
-		JComboBox<String> comboBoxBook2 = new JComboBox<String>();
+		comboBoxBook2 = new JComboBox<Long>();
 		comboBoxBook2.setModel(model2);
+		comboBoxBook2.addItemListener(this);
 		panelBookChoices.add(comboBoxBook2);
+		panelBookChoices.add(labelBook2);
 
 		//Setting up button actions
 		MergeBooksDialog window = this;
@@ -70,8 +83,8 @@ public class MergeBooksDialog extends JDialog {
 
 		btnMerge.addActionListener(new ActionListener() { //Merge is performed if merge button is pressed, window closes
 			public void actionPerformed(ActionEvent e) {
-				Book book1 = SalesHistory.get().getBook((String) comboBoxBook1.getSelectedItem());
-				Book book2 = SalesHistory.get().getBook((String) comboBoxBook2.getSelectedItem());
+				Book book1 = SalesHistory.get().getBookWithNumber((Long) comboBoxBook1.getSelectedItem());
+				Book book2 = SalesHistory.get().getBookWithNumber((Long) comboBoxBook2.getSelectedItem());
 				if (book1.getBookNumber() == book2.getBookNumber()) { //If user attempts to merge the same two books
 					JOptionPane.showMessageDialog(window, "You cannot merge a book with itself. "
 									+ "Please select two separate books.", "Error!", JOptionPane.ERROR_MESSAGE);
@@ -86,6 +99,16 @@ public class MergeBooksDialog extends JDialog {
 		this.setDefaultCloseOperation(JDialog.DISPOSE_ON_CLOSE);
 		this.setVisible(true);
 
+	}
+
+	@Override
+	public void itemStateChanged(ItemEvent e) {
+		if (e.getSource() == comboBoxBook1) {
+			labelBook1.setText(SalesHistory.get().getBookWithNumber((Long) comboBoxBook1.getSelectedItem()).getTitle());
+		} else if (e.getSource() == comboBoxBook2) {
+			labelBook2.setText(SalesHistory.get().getBookWithNumber((Long) comboBoxBook2.getSelectedItem()).getTitle());
+		}
+		
 	}
 
 }

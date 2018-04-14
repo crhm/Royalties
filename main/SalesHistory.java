@@ -98,6 +98,26 @@ public class SalesHistory implements java.io.Serializable {
 		return bookFound;
 	}
 	
+	public Book getBookWithNumber(Long number) {
+		Book book = null;
+		for (Book b : listPLPBooks) {
+			if (b.getBookNumber() == number) {
+				book = b;
+			}
+		}
+		return book;
+	}
+	
+	public Set<Book> getAllBooksWithTitle(String title){
+		Set<Book> setBooksSameTitle = new HashSet<Book>();
+		for (Book b : listPLPBooks) {
+			if (b.getTitle().equals(title)) {
+				setBooksSameTitle.add(b);
+			}
+		}
+		return setBooksSameTitle;
+	}
+	
 	//CALCULATE ROYALTIES
 	/** Calculates all royalties by calling Sale.calculateRoyalties() on each sale
 	 *  in the list of all sales.
@@ -342,7 +362,7 @@ public class SalesHistory implements java.io.Serializable {
 	 */
 	public void serialise() { //TODO make serialisation output be a filename with date and time? and then in deserialise choose filename with most recent date?
 		try {
-			FileOutputStream fileOut = new FileOutputStream("/tmp/data12.ser");
+			FileOutputStream fileOut = new FileOutputStream("/tmp/data13.ser");
 			ObjectOutputStream out = new ObjectOutputStream(fileOut);
 			SalesHistory.get().writeObject(out);
 			fileOut.close();
@@ -355,7 +375,7 @@ public class SalesHistory implements java.io.Serializable {
 	 */
 	public void deSerialise() {
 		try {
-			FileInputStream fileIn = new FileInputStream("/tmp/data12.ser");
+			FileInputStream fileIn = new FileInputStream("/tmp/data13.ser");
 			ObjectInputStream in = new ObjectInputStream(fileIn);
 			SalesHistory.get().readObject(in);
 			fileIn.close();

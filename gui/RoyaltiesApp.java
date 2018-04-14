@@ -13,7 +13,7 @@ import gui.books.BookPanel;
 import gui.channels.ChannelPanel;
 import gui.dataverification.DataVerificationPanel;
 import gui.dataverification.SalesImportSummaryPanel;
-import gui.royalties.RoyaltiesRulesPanel;
+import gui.persons.PersonsPanel;
 import gui.royalties.RoyaltyRulesDifferentPanel;
 import gui.royalties.RoyaltyRulesSamePanel;
 import gui.royaltyholders.RoyaltyHoldersPanel;
@@ -39,15 +39,15 @@ public class RoyaltiesApp extends JFrame implements Runnable, ChangeListener {
 	JTabbedPane allTabs = new JTabbedPane();        
 	
 	BookPanel bookPanel = new BookPanel();
+	PersonsPanel personsPanel = new PersonsPanel();
 	AuthorsPanel authorsPanel = new AuthorsPanel();
 	RoyaltyHoldersPanel royaltyHoldersPanel = new RoyaltyHoldersPanel();
 	ChannelPanel channelPanel = new ChannelPanel();
-	RoyaltyRulesSamePanel royaltiesRulesPanel = new RoyaltyRulesSamePanel();
+	RoyaltyRulesSamePanel royaltiesRulesSamePanel = new RoyaltyRulesSamePanel();
+	RoyaltyRulesDifferentPanel royaltyRulesDifferentPanel = new RoyaltyRulesDifferentPanel();
 	SalesImportSummaryPanel salesImportSummaryPanel = new SalesImportSummaryPanel();
 	SalesPanel salesPanel= new SalesPanel();
 	DataVerificationPanel dataVerificationPanel = new DataVerificationPanel();
-	PersonsPanel personsPanel = new PersonsPanel();
-	RoyaltyRulesDifferentPanel royaltyRulesDifferentPanel = new RoyaltyRulesDifferentPanel();
 
 	public static void main(String[] args) {
 		try {
@@ -158,15 +158,15 @@ public class RoyaltiesApp extends JFrame implements Runnable, ChangeListener {
 
 
 		allTabs.addTab("PLP Books", bookPanel);
+		allTabs.addTab("Persons", personsPanel);
 		allTabs.addTab("Authors", authorsPanel);
 		allTabs.addTab("Royalty Holders", royaltyHoldersPanel);
 		allTabs.addTab("Channels", channelPanel);
-		allTabs.addTab("Royalty Rules", royaltiesRulesPanel);
+		allTabs.addTab("Royalties For All Channels", royaltiesRulesSamePanel);
+		allTabs.addTab("Royalties For Specific Channels", royaltyRulesDifferentPanel);
 		allTabs.addTab("Sales Import Summary", salesImportSummaryPanel);
 		allTabs.add("Sales", salesPanel);
 		allTabs.addTab("Data Verification", dataVerificationPanel);
-		allTabs.addTab("Persons", personsPanel);
-		allTabs.addTab("Diff Royalties", royaltyRulesDifferentPanel);
 		allTabs.addChangeListener(this);
 
 		this.setContentPane(allTabs);
@@ -186,7 +186,7 @@ public class RoyaltiesApp extends JFrame implements Runnable, ChangeListener {
 	 * @throws InterruptedException if a thread interrupts the import thread.
 	 */
 	private static void obtainData() throws InterruptedException {
-		File f = new File("/tmp/data12.ser");
+		File f = new File("/tmp/data13.ser");
 		if(f.exists() && !f.isDirectory()) { 
 			SalesHistory.get().deSerialise();
 		} else {
@@ -202,15 +202,15 @@ public class RoyaltiesApp extends JFrame implements Runnable, ChangeListener {
 
 		switch (index) {
 		case (0) : bookPanel.updateData(); break;
-		case (1) : authorsPanel.updateData(); break;
-		case (2) : royaltyHoldersPanel.updateData(); break;
-		case (3) : channelPanel.updateData(); break;
-		case (4) : royaltiesRulesPanel.updateData(); break;
-		case (5) : salesImportSummaryPanel.updateData(); break;
-		case (6) : salesPanel.updateData(); break;
-		case (7) : dataVerificationPanel.updateData(); break;
-		case (8) : personsPanel.updateData(); break;
-		case (9) : royaltyRulesDifferentPanel.updateData(); break;
+		case (1) : personsPanel.updateData(); break;
+		case (2) : authorsPanel.updateData(); break;
+		case (3) : royaltyHoldersPanel.updateData(); break;
+		case (4) : channelPanel.updateData(); break;
+		case (5) : royaltiesRulesSamePanel.updateData(); break;
+		case (6) : royaltyRulesDifferentPanel.updateData(); break;
+		case (7) : salesImportSummaryPanel.updateData(); break;
+		case (8) : salesPanel.updateData(); break;
+		case (9) : dataVerificationPanel.updateData(); break;
 		}
 	}
 
