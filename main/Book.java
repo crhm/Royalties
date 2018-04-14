@@ -261,6 +261,9 @@ public class Book implements java.io.Serializable{
 	 * @param b Book which will merged into this one.
 	 */
 	public void merge(Book b) {
+		
+		SalesHistory.get().replaceBook(b, this);
+		
 		for (String s : b.getListTitles()) {
 			this.addTitle(s);
 		}

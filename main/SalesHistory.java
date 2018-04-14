@@ -318,6 +318,11 @@ public class SalesHistory implements java.io.Serializable {
 	}
 
 	//Replace methods
+	/**This method replaces all references to oldPerson (as an author and as a royalty holder) so that they become references to newPerson.
+	 * Useful when merging two persons (which results in the deletion of one person as all its attributes are passed onto the other).
+	 * @param oldPerson
+	 * @param newPerson
+	 */
 	public void replacePerson(Person oldPerson, Person newPerson) {
 		//Replacing amongst authors
 		for (Book b : SalesHistory.get().getListPLPBooks()) {
@@ -366,6 +371,32 @@ public class SalesHistory implements java.io.Serializable {
 		//Replacing amongst channel royalty lists.
 		for (Channel ch : listChannels.values()) {
 			ch.replaceRoyaltyHolder(oldPerson, newPerson);
+		}
+	}
+	
+	/**Replaces a book by another in all the places it may occur (sales, and royalty lists, both general and channel specific).
+	 * Royalties of old book are added to that of newBook unless the royaltyholder already exists in newBook.
+	 * @param oldBook
+	 * @param newBook
+	 */
+	public void replaceBook(Book oldBook, Book newBook) {
+		for (Sale s : salesHistory) {
+			if (s.getBook() == oldBook) {
+				s.setBook(newBook);
+			}
+		}
+		
+		HashMap<Person, IRoyaltyType> oldRoyalties = uniformRoyalties.get(oldBook);
+		HashMap<Person, IRoyaltyType> newRoyalties = uniformRoyalties.get(newBook);
+
+		for (Person p : oldRoyalties.keySet()) { //adding oldbook's royalties to that of newbook (unless a royalty holder already has a royalty in newBook)
+			newRoyalties.putIfAbsent(p, oldRoyalties.get(p));
+		}
+		uniformRoyalties.remove(oldBook);
+		uniformRoyalties.put(newBook, newRoyalties);
+		
+		for (Channel ch : listChannels.values()) {
+			ch.replaceBook(oldBook, newBook);
 		}
 	}
 
@@ -436,7 +467,7 @@ public class SalesHistory implements java.io.Serializable {
 	 */
 	public void serialise() { //TODO make serialisation output be a filename with date and time? and then in deserialise choose filename with most recent date?
 		try {
-			FileOutputStream fileOut = new FileOutputStream("/tmp/data13.ser");
+			FileOutputStream fileOut = new FileOutputStream("/tmp/data14.ser");
 			ObjectOutputStream out = new ObjectOutputStream(fileOut);
 			SalesHistory.get().writeObject(out);
 			fileOut.close();
@@ -449,7 +480,7 @@ public class SalesHistory implements java.io.Serializable {
 	 */
 	public void deSerialise() {
 		try {
-			FileInputStream fileIn = new FileInputStream("/tmp/data13.ser");
+			FileInputStream fileIn = new FileInputStream("/tmp/data14.ser");
 			ObjectInputStream in = new ObjectInputStream(fileIn);
 			SalesHistory.get().readObject(in);
 			fileIn.close();

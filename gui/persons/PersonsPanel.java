@@ -133,7 +133,7 @@ public class PersonsPanel extends JPanel implements ActionListener, ListSelectio
 			Person person1 = SalesHistory.get().getPersonWithNumber(personNumber1);
 			Person person2 = SalesHistory.get().getPersonWithNumber(personNumber2);
 			int userChoice = JOptionPane.showConfirmDialog(null, "Please confirm that you want to merge these two persons.", "Please Confirm", JOptionPane.OK_CANCEL_OPTION);
-			if (userChoice == 0) {
+			if (userChoice == JOptionPane.OK_OPTION) {
 				person1.merge(person2);
 				updateData();
 			}

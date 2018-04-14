@@ -23,7 +23,7 @@ public class Sale implements java.io.Serializable {
 	private final Channel channel;
 	private final String country;
 	private final String date;
-	private final Book book;
+	private Book book;
 	private final double netUnitsSold;
 	private final double royaltyTypePLP;
 	private final double price;
@@ -84,6 +84,13 @@ public class Sale implements java.io.Serializable {
 
 	public Book getBook() {
 		return book;
+	}
+	
+	/**Should only be called when there is a book merge...
+	 * @param book
+	 */
+	public void setBook(Book book) {
+		this.book = book;
 	}
 
 	public double getNetUnitsSold() {

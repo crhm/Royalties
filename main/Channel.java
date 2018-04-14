@@ -148,6 +148,10 @@ public class Channel implements java.io.Serializable {
 		this.historicalForex.put(monthAndYear, listForex);
 	}
 	
+	/**Replaces one royalty holder by another (keeping the same royalties)
+	 * @param oldPerson
+	 * @param newPerson
+	 */
 	public void replaceRoyaltyHolder(Person oldPerson, Person newPerson) {
 		/*For each book in listRoyalties, if it has oldPerson has a royaltyHolder, then create a new HashMap (newMappings) with the same mappings
 		 * as the old one except for oldPerson, which is now a mapping of newPerson to whatever royalty oldPerson was mapped to.
@@ -172,6 +176,22 @@ public class Channel implements java.io.Serializable {
 			listRoyalties.remove(b);
 			listRoyalties.put(b, booksToUpdate.get(b));
 		}
+	}
+	
+	/**Removes the mapping of royalties for oldBook, and adds its royalties to the list mapped by newBook, unless the royaltyHolder preexists there, 
+	 * in which case it does not add it (thus keeping the royalty as it was for newBook originally)
+	 * @param oldBook
+	 * @param newBook
+	 */
+	public void replaceBook(Book oldBook, Book newBook) {
+		HashMap<Person, IRoyaltyType> oldRoyalties = listRoyalties.get(oldBook);
+		HashMap<Person, IRoyaltyType> newRoyalties = listRoyalties.get(newBook);
+
+		for (Person p : oldRoyalties.keySet()) { //adding oldbook's royalties to that of newbook (unless a royalty holder already has a royalty in newBook)
+			newRoyalties.putIfAbsent(p, oldRoyalties.get(p));
+		}
+		listRoyalties.remove(oldBook);
+		listRoyalties.put(newBook, newRoyalties);
 	}
 
 	@Override

@@ -89,9 +89,10 @@ public class MergeBooksDialog extends JDialog implements ItemListener {
 					JOptionPane.showMessageDialog(window, "You cannot merge a book with itself. "
 									+ "Please select two separate books.", "Error!", JOptionPane.ERROR_MESSAGE);
 				} else {
-					int userChoice = JOptionPane.showConfirmDialog(window, "Please confirm that you want to merge these two books.", 
+					int userChoice = JOptionPane.showConfirmDialog(window, "Please confirm that you want to merge these two books. "
+							+ "This will affect royalties and past sales.", 
 							"Confirmation Required", JOptionPane.OK_CANCEL_OPTION);
-					if (userChoice == 0) {
+					if (userChoice == JOptionPane.OK_OPTION) {
 						book1.merge(book2);
 						SalesHistory.get().removeBook(book2);
 						window.dispose();
