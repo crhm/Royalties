@@ -217,7 +217,7 @@ public class RoyaltyRulesSamePanel extends JPanel implements ActionListener, Lis
 		int count = 0;
 		for (Person p : listRoyalties.keySet()) {
 			data[count][0] = p.getName();
-			data[count][1] = listRoyalties.get(p);
+			data[count][1] = listRoyalties.get(p).toString();
 			count++;
 		}
 		return data;

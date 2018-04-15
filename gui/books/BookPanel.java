@@ -43,7 +43,7 @@ public class BookPanel extends JPanel implements ActionListener, ListSelectionLi
 	private JButton editButton = new JButton("Edit Book");
 	private JButton addButton = new JButton("Add New Book");
 	private JButton deleteButton = new JButton("Delete Book");
-	private JButton mergeButton = new JButton("Choose Two Books to Merge Together");
+	private JButton mergeButton = new JButton("Merge together two books selected");
 	int selectedIndex1 = -1;
 	int selectedIndex2 = -1;
 
@@ -87,8 +87,8 @@ public class BookPanel extends JPanel implements ActionListener, ListSelectionLi
 			public Class<?> getColumnClass(int column) {
 				switch (column) {
 				case 0 : return Long.class;
-				case 2 : return Arrays.class;
-				case 3 : return Integer.class;
+				case 3 : return Arrays.class;
+				case 4 : return Integer.class;
 				default : return String.class;
 				}
 			}

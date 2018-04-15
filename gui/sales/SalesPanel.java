@@ -107,7 +107,7 @@ public class SalesPanel extends JPanel {
 				data[rowCounter][8] = s.getChannel().getHistoricalForex().get(s.getDate()).get(s.getCurrency().getCurrencyCode());
 				data[rowCounter][9] = s.getRevenuesPLP() * (Double) data[rowCounter][8];
 			} else {
-				data[rowCounter][8] = 1;
+				data[rowCounter][8] = 1.00;
 				data[rowCounter][9] = s.getRevenuesPLP();
 			}
 			data[rowCounter][10] = s.getRoyaltyHasBeenCalculated();
