@@ -49,8 +49,9 @@ public class SalesHistory implements java.io.Serializable {
 	private Set<Person> listPersons = new HashSet<Person>();
 	private Set<String> listMonths = new HashSet<String>();
 	private HashMap<Book, HashMap<Person, IRoyaltyType>> uniformRoyalties = new HashMap<Book, HashMap<Person, IRoyaltyType>>();
-	//TODO think of getting rid of all Hashmaps for sets instead?
-
+	//TODO think of getting rid of uniformRoyalties Hashmap by instead making it belong to each book?
+	//TODO get rid of all hashmaps and create get methods instead?
+	
 	private AtomicLong nextBookID = new AtomicLong(1);
 	private AtomicLong nextPersonID = new AtomicLong(1);
 
@@ -406,7 +407,7 @@ public class SalesHistory implements java.io.Serializable {
 		}
 	}
 
-	//	SERIALISATION METHODS //TODO fix so that it is updated for current state of things
+	//	SERIALISATION METHODS
 	/**Writes SalesHistory state to the ObjectOutputStream.
 	 * <br>Writes by serialising the following SalesHistory variables (in this order, same as read by readObject()):
 	 * listChannels, listPLPBooks, listRoyaltyHolders, salesHistory, listAuthors, listPersons, listMonths, nextBookID, nextPersonID.

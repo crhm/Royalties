@@ -88,13 +88,12 @@ public class Person implements java.io.Serializable {
 		this.listNames.add(name);
 	}
 	
-	/**Adds double passed as argument to the person's balance (rounded half up to 2 decimal places).
+	/**Adds double passed as argument to the person's balance
 	 * 
 	 * @param amount Amount to add to balance.
 	 */
 	public void addToBalance(double amount) {
-		BigDecimal tempAmount = new BigDecimal(amount).setScale(2, RoundingMode.HALF_UP);
-		this.balance = this.balance + tempAmount.doubleValue();
+		this.balance = this.balance + amount;
 	}
 	
 	//MERGE METHOD

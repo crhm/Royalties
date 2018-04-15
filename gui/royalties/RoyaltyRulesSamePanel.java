@@ -23,11 +23,9 @@ import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
 import main.Book;
-import main.Channel;
 import main.Person;
 import main.SalesHistory;
 import main.royalties.IRoyaltyType;
-import main.royalties.RoyaltyPercentage;
 
 /**A JPanel displaying royalties information.
  * <br>The user selects which channel he wishes to see the royalties for, then is shown the channel's list of books for which 
@@ -43,9 +41,7 @@ import main.royalties.RoyaltyPercentage;
 @SuppressWarnings("serial")
 public class RoyaltyRulesSamePanel extends JPanel implements ActionListener, ListSelectionListener{
 
-	//TODO add button should be dynamic; if only no particular royalty is selected, it should read 'add book to list of books with royalties...'
-	//and first add a book (from list of books - books already with a royalty for this channel, or create a new one) and then add a royalty to it. 
-	//If one is selected, it should read 'add royalty to this book' and perform that action only.
+	//TODO add button should be dynamic; if only no particular royalty is selected, it should be disabled.
 
 	private JPanel buttonPanel = new JPanel(new GridLayout(1, 5));
 	private JButton editButton = new JButton("Edit");

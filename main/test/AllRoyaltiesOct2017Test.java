@@ -9,12 +9,8 @@ import java.util.HashMap;
 
 import importing.ChannelRoyaltiesFileFormat;
 import importing.test.ImportSeveralFiles;
-import main.Book;
-import main.Channel;
 import main.Person;
 import main.SalesHistory;
-import main.royalties.IRoyaltyType;
-import main.royalties.RoyaltyPercentage;
 
 public class AllRoyaltiesOct2017Test {
 

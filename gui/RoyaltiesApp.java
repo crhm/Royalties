@@ -1,6 +1,11 @@
 package gui;
 
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.HashMap;
 
 import javax.swing.JFrame;
@@ -20,12 +25,8 @@ import gui.royaltyholders.RoyaltyHoldersPanel;
 import gui.sales.SalesPanel;
 import importing.ImportGeneralRoyalties;
 import importing.test.ImportEverything;
-import main.Book;
-import main.Channel;
 import main.Person;
 import main.SalesHistory;
-import main.royalties.IRoyaltyType;
-import main.royalties.RoyaltyPercentage;
 
 /**GUI for royalties app. Opens a full screen window with several panels displaying different information:
  * <br>Sales, Royalty Holders, PLP Books, Channels, Royalty Holders Per Channel, Data Verification.
@@ -57,90 +58,74 @@ public class RoyaltiesApp extends JFrame implements Runnable, ChangeListener {
 			Thread guiThread = new Thread(test, "Swing GUI");
 			guiThread.start();
 			ImportGeneralRoyalties.importData();
-//			for (Book b : SalesHistory.get().getListPLPBooks()) {
-//				String amazon = null;
-//				String apple = null;
-//				String kobo = null;
-//				String nook = null;
-//				if (SalesHistory.get().getListChannels().get("Amazon").getListRoyalties().get(b) != null) {
-//					amazon = SalesHistory.get().getListChannels().get("Amazon").getListRoyalties().get(b).toString();
-//				}
-//				if (SalesHistory.get().getListChannels().get("Apple").getListRoyalties().get(b) != null) {
-//					apple = SalesHistory.get().getListChannels().get("Apple").getListRoyalties().get(b).toString();
-//				}
-//				if (SalesHistory.get().getListChannels().get("Kobo").getListRoyalties().get(b) != null) {
-//					kobo = SalesHistory.get().getListChannels().get("Kobo").getListRoyalties().get(b).toString();
-//				}
-//				if (SalesHistory.get().getListChannels().get("Nook").getListRoyalties().get(b) != null) {
-//					nook = SalesHistory.get().getListChannels().get("Nook").getListRoyalties().get(b).toString();
-//				}
-//				if (amazon != null && amazon.equals(apple) && amazon.equals(kobo) && amazon.equals(nook)) {
-//				} else {
-//					System.out.println(b.getTitle());
-//					System.out.println(amazon + "\n" + apple + "\n" + kobo + "\n" + nook + "\n");
-//				}
-//			}
-//			int countBooksNotUniform = 0;
-//			for (Book b : SalesHistory.get().getListPLPBooks()) {
-//				if(!royaltiesUniformAcrossChannelsCheck(b)) {
-//					countBooksNotUniform++;
-//				}
-//			}
-//			System.out.println(countBooksNotUniform);
+
+			HashMap<String, Double> actualBalances = new HashMap<String, Double>();
+			try {
+				BufferedReader br = new BufferedReader(new FileReader("Data/Balances Oct 2017.csv"));
+				StringBuilder lines = new StringBuilder();
+				String line = "";
+				while (line!= null) {
+					line = br.readLine();
+					lines.append(line + "\n");
+				}
+				br.close();
+				String temp = lines.toString();
+
+				String[] allLines = temp.split("\n");
+				int counter = 0;
+				for (String s : allLines) {
+					if (s.length() > 5 && counter > 0) { 
+						String[] values = s.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)", -1);
+						BigDecimal roundedValue = new BigDecimal(values[0]).setScale(2, RoundingMode.HALF_UP);
+						actualBalances.put(values[1], roundedValue.doubleValue());
+					}
+					counter ++;
+				} 
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			System.out.println("\n\nRoyalty holders where calculations match: ");
+			for (Person p : SalesHistory.get().getListRoyaltyHolders()) {
+				if (actualBalances.containsKey(p.getName())) {
+					BigDecimal actualBalance = new BigDecimal(actualBalances.get(p.getName())).setScale(2, RoundingMode.HALF_UP);
+					double difference = p.getBalance() - actualBalance.doubleValue();
+					if (difference == 0) {
+						System.out.println(p.getName() + ": Actual Balance - " + actualBalance.doubleValue() + " vs. Balance Calculated - " 
+								+ p.getBalance());
+					}				
+				}
+			}
+			System.out.println("\nRoyalty holders where calculations almost match: ");
+			for (Person p : SalesHistory.get().getListRoyaltyHolders()) {
+				if (actualBalances.containsKey(p.getName())) {
+					BigDecimal actualBalance = new BigDecimal(actualBalances.get(p.getName())).setScale(2, RoundingMode.HALF_UP);
+					double difference = p.getBalance() - actualBalance.doubleValue();
+					BigDecimal diffBD = new BigDecimal(difference);
+					BigDecimal percentageDiff = diffBD.divide(actualBalance, 3, RoundingMode.HALF_UP);
+					if (difference > -0.5 && difference < 0.5 && difference != 0) {
+						System.out.println(p.getName() + ": Actual Balance - " + actualBalance.doubleValue() + " vs. Balance Calculated - " 
+								+ p.getBalance() 
+								+ " Difference: " + percentageDiff.doubleValue()*100 + "%");
+					}				
+				}
+			}
+			System.out.println("\nRoyalty holders where calculations don't match: ");
+			for (Person p : SalesHistory.get().getListRoyaltyHolders()) {
+				if (actualBalances.containsKey(p.getName())) {
+					BigDecimal actualBalance = new BigDecimal(actualBalances.get(p.getName())).setScale(2, RoundingMode.HALF_UP);
+					double difference = p.getBalance() - actualBalance.doubleValue();
+					BigDecimal diffBD = new BigDecimal(difference);
+					BigDecimal percentageDiff = diffBD.divide(actualBalance, 3, RoundingMode.HALF_UP);
+					if (difference < -0.5 || difference > 0.5) {
+						System.out.println(p.getName() + ": Actual Balance - " + actualBalance.doubleValue() + " vs. Balance Calculated - " 
+								+ p.getBalance() + " Difference: " + percentageDiff.doubleValue()*100 + "%");
+					}				
+				}
+			}		
 			
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-	}
-
-	private static Boolean royaltiesUniformAcrossChannelsCheck(Book book) {
-		Boolean uniformity = true;
-		//For each channel (except createspace), check that it has a royalty list for that book
-		for (Channel ch : SalesHistory.get().getListChannels().values()) {
-			if (!ch.getName().equals("Createspace") && ch.getListRoyalties().get(book) == null) {
-				System.out.println("No royalty List Found for " + book.getTitle() + " in " + ch.getName());
-				uniformity = false;
-			}
-		}
-		if (uniformity) {
-			HashMap<Person, IRoyaltyType> royaltiesAmazon = SalesHistory.get().getListChannels().get("Amazon").getListRoyalties().get(book);
-			HashMap<Person, IRoyaltyType> royaltiesApple = SalesHistory.get().getListChannels().get("Apple").getListRoyalties().get(book);
-			HashMap<Person, IRoyaltyType> royaltiesKobo = SalesHistory.get().getListChannels().get("Kobo").getListRoyalties().get(book);
-			HashMap<Person, IRoyaltyType> royaltiesNook = SalesHistory.get().getListChannels().get("Nook").getListRoyalties().get(book);
-
-			if (!checkRoyaltyRules(royaltiesAmazon, royaltiesApple) || !checkRoyaltyRules(royaltiesAmazon, royaltiesKobo)
-					|| !checkRoyaltyRules(royaltiesAmazon, royaltiesNook)) {
-				uniformity = false;
-				System.out.println(book);
-				System.out.println(royaltiesAmazon);
-				System.out.println(royaltiesApple);
-				System.out.println(royaltiesKobo);
-				System.out.println(royaltiesNook);
-			}
-		}
-		return uniformity;
-	}
-
-	private static Boolean checkRoyaltyRules(HashMap<Person, IRoyaltyType> channel1, HashMap<Person, IRoyaltyType> channel2) {
-		Boolean same = true;
-
-		for (Person p : channel1.keySet()) {
-			if (!channel2.keySet().contains(p)) {
-				same = false;
-				System.out.println("Found a royalty holder that was in one channel but not the other");
-			}
-		}
-		if (same) {
-			for (Person p : channel1.keySet()) {
-				if (((RoyaltyPercentage) channel1.get(p)).getPercentage() != ((RoyaltyPercentage) channel2.get(p)).getPercentage()) {
-					same = false;
-					System.out.println("Found a percentage that was different");
-				}
-			}
-		}
-		
-
-		return same;
 	}
 	
 	private void initialize() {

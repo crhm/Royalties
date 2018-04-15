@@ -47,7 +47,7 @@ public class SalesPanel extends JPanel implements ActionListener {
 	JTable salesTable;
 	JPanel tablePanel = new JPanel(new BorderLayout());
 	JPanel buttonPanel = new JPanel(new GridLayout(1, 4, 0, 0));
-	JButton bttnCalculateRoyalties = new JButton("Recalculate Royalties");
+	JButton bttnCalculateRoyalties = new JButton("Calculate Royalties");
 	
 	public SalesPanel() {
 		super();
