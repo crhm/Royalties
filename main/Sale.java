@@ -85,7 +85,7 @@ public class Sale implements java.io.Serializable {
 	public Book getBook() {
 		return book;
 	}
-	
+
 	/**Should only be called when there is a book merge...
 	 * @param book
 	 */
@@ -133,9 +133,7 @@ public class Sale implements java.io.Serializable {
 	 * it will print an error message and do nothing else.
 	 */
 	public void calculateRoyalties() {
-		if (royaltyHasBeenCalculated) {
-			System.out.println("Error: Royalties have already been calculated for this sale.");
-		} else {
+		if (!royaltyHasBeenCalculated) {
 			//Get exchange rate
 			double exchangeRate = 0;
 			try {
@@ -168,7 +166,7 @@ public class Sale implements java.io.Serializable {
 			} catch (NullPointerException e) {
 				System.out.println("There was a problem getting the royalty list for this sale: " + this);
 			}
-		}		
+		}
 	}
 
 	@Override
@@ -190,7 +188,7 @@ public class Sale implements java.io.Serializable {
 			throw new IllegalArgumentException("Error: channel should belong to the list of channels in SalesHistory");
 		}
 	}
-	
+
 	/**Checks that book is not null, and that it is on the list of books managed by PLP in SalesHistory
 	 * @throws IllegalArgumentException if field takes unauthorised value
 	 */
@@ -211,7 +209,7 @@ public class Sale implements java.io.Serializable {
 			throw new IllegalArgumentException("Error: currency cannot be null");
 		}
 	}
-	
+
 	/**Checks that country is not null or empty
 	 * @throws IllegalArgumentException if field takes unauthorised value
 	 */
@@ -228,7 +226,7 @@ public class Sale implements java.io.Serializable {
 		if (date == null || date.isEmpty()){
 			throw new IllegalArgumentException("Error: date cannot be empty or null");
 		}
-		
+
 		SimpleDateFormat format = new SimpleDateFormat("MMM yyyy");
 		try {
 			format.parse(date);

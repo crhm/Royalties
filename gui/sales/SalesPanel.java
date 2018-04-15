@@ -1,10 +1,15 @@
 package gui.sales;
 
+import java.awt.BorderLayout;
 import java.awt.GridLayout;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.Currency;
 import java.util.List;
 
+import javax.swing.JButton;
+import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -38,17 +43,29 @@ import main.SalesHistory;
  *
  */
 @SuppressWarnings("serial")
-public class SalesPanel extends JPanel {
+public class SalesPanel extends JPanel implements ActionListener {
 	JTable salesTable;
+	JPanel tablePanel = new JPanel(new BorderLayout());
+	JPanel buttonPanel = new JPanel(new GridLayout(1, 4, 0, 0));
+	JButton bttnCalculateRoyalties = new JButton("Recalculate Royalties");
 	
 	public SalesPanel() {
 		super();
 
-		this.setLayout(new GridLayout());
+		this.setLayout(new BorderLayout());
 		this.setOpaque(true);
 		salesTable = getTable();
 		JScrollPane salesScrollPane = new JScrollPane(salesTable);
-		this.add(salesScrollPane);
+		tablePanel.add(salesScrollPane, BorderLayout.CENTER);
+		
+		bttnCalculateRoyalties.addActionListener(this);
+		buttonPanel.add(new JLabel());
+		buttonPanel.add(new JLabel());
+		buttonPanel.add(new JLabel());
+		buttonPanel.add(bttnCalculateRoyalties);
+		
+		this.add(tablePanel, BorderLayout.CENTER);
+		this.add(buttonPanel, BorderLayout.NORTH);
 	}
 
 	/**Returns the JTable representing the sales history of PLP.
@@ -162,5 +179,13 @@ public class SalesPanel extends JPanel {
 		TableModel model = getTable().getModel();
 		salesTable.setModel(model);
 		setTableSettings(salesTable);
+	}
+
+	@Override
+	public void actionPerformed(ActionEvent e) {
+		if (e.getSource() == bttnCalculateRoyalties) {
+			SalesHistory.get().calculateAllRoyalies();
+			updateData();
+		}
 	}
 }
