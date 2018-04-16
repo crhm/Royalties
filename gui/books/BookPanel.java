@@ -16,11 +16,13 @@ import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
-import javax.swing.ListSelectionModel;
 import javax.swing.RowSorter;
 import javax.swing.SortOrder;
+import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TableColumnModelEvent;
+import javax.swing.event.TableColumnModelListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
@@ -37,7 +39,7 @@ import main.SalesHistory;
  *
  */
 @SuppressWarnings("serial")
-public class BookPanel extends JPanel implements ActionListener, ListSelectionListener{
+public class BookPanel extends JPanel implements ActionListener, ListSelectionListener, TableColumnModelListener {
 	
 	private JTable booksTable;
 	private JButton editButton = new JButton("Edit Book");
@@ -46,6 +48,12 @@ public class BookPanel extends JPanel implements ActionListener, ListSelectionLi
 	private JButton mergeButton = new JButton("Merge together two books selected");
 	int selectedIndex1 = -1;
 	int selectedIndex2 = -1;
+	int widthCol0 = 50;
+	int widthCol1 = 300;
+	int widthCol2 = 130;
+	int widthCol3 = 300;
+	int widthCol4 = 50;
+
 
 	public BookPanel() {
 		super();
@@ -71,6 +79,7 @@ public class BookPanel extends JPanel implements ActionListener, ListSelectionLi
 		//Setting up JTable and selection behavior
 		this.booksTable = getTable();
 		this.booksTable.getSelectionModel().addListSelectionListener(this);
+		this.booksTable.getColumnModel().addColumnModelListener(this);
 		
 		//Setting up container Panel
 		this.add(buttonPanel, BorderLayout.NORTH);
@@ -209,8 +218,14 @@ public class BookPanel extends JPanel implements ActionListener, ListSelectionLi
 	 */
 	private void setTableSettings(JTable table) {
 		TableColumnModel columnModel = table.getColumnModel();
-		columnModel.getColumn(0).setMaxWidth(100);
-		columnModel.getColumn(4).setMaxWidth(100);
+		columnModel.getColumn(0).setPreferredWidth(widthCol0);
+		columnModel.getColumn(0).setMaxWidth(85);
+		columnModel.getColumn(1).setPreferredWidth(widthCol1);
+		columnModel.getColumn(2).setPreferredWidth(widthCol2);
+		columnModel.getColumn(2).setMaxWidth(160);
+		columnModel.getColumn(3).setPreferredWidth(widthCol3);
+		columnModel.getColumn(4).setPreferredWidth(widthCol4);
+		columnModel.getColumn(4).setMaxWidth(85);
 
 		//Sets up sorting by book title
 		TableRowSorter<TableModel> sorter = new TableRowSorter<>(table.getModel());
@@ -231,6 +246,7 @@ public class BookPanel extends JPanel implements ActionListener, ListSelectionLi
 	public void updateData() {
 		//To avoid crashes while it is being reworked
 		booksTable.getSelectionModel().removeListSelectionListener(this);
+		booksTable.getColumnModel().removeColumnModelListener(this); ;
 		
 		//Update data by updating model
 		TableModel model = getTable().getModel();
@@ -238,11 +254,40 @@ public class BookPanel extends JPanel implements ActionListener, ListSelectionLi
 		setTableSettings(booksTable);
 
 		//Re-add the listSelectionListener
-		booksTable.getSelectionModel().addListSelectionListener(this);				
+		booksTable.getSelectionModel().addListSelectionListener(this);		
+		booksTable.getColumnModel().addColumnModelListener(this);
 
 		//By redrawing the table, the selection has disappeared, so disable edit and delete buttons
 		editButton.setEnabled(false);
 		deleteButton.setEnabled(false);
 	}
+
+	@Override
+	public void columnMarginChanged(ChangeEvent e) {
+		TableColumnModel model = booksTable.getColumnModel();
+		widthCol0 = model.getColumn(0).getWidth();
+		widthCol1 = model.getColumn(1).getWidth();
+		widthCol2 = model.getColumn(2).getWidth();
+		widthCol3 = model.getColumn(3).getWidth();
+		widthCol4 = model.getColumn(4).getWidth();		
+	}
+
+	@Override
+	public void columnSelectionChanged(ListSelectionEvent e) {
+	}
+	
+	@Override
+	public void columnAdded(TableColumnModelEvent e) {
+	}
+
+	@Override
+	public void columnRemoved(TableColumnModelEvent e) {
+	}
+
+	@Override
+	public void columnMoved(TableColumnModelEvent e) {
+	}
+
+
 
 }
