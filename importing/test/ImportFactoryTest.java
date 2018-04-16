@@ -34,10 +34,10 @@ class ImportFactoryTest {
 		ImportFactory.ImportData("Data/UsuableFormats/Createspace Oct 2017 Euros -- royalty_details_1952179_2018-01-28_narab-0.csv");
 		assertEquals(1, SalesHistory.get().getListPLPBooks().size());
 		assertEquals(1, SalesHistory.get().getSalesHistory().size());
-		assertNotNull(SalesHistory.get().getListChannels().get("Createspace"));
+		assertNotNull(SalesHistory.get().getChannel("Createspace"));
 		ImportFactory.ImportData("Data/UsuableFormats/Kobo Oct 2017 -- _EEAB5A75-C291-43F0-B5FC-8461EBBDBF7C_Oct 2017.csv");
 		System.out.println(SalesHistory.get().getListPLPBooks());
-		assertNotNull(SalesHistory.get().getListChannels().get("Kobo"));
+		assertNotNull(SalesHistory.get().getChannel("Kobo"));
 	}
 
 }

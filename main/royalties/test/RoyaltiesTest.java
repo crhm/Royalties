@@ -12,13 +12,13 @@ public class RoyaltiesTest {
 		ImportFactory.ImportData("Data/UsuableFormats/85711804_1017_AU.txt");
 		Book uACS = SalesHistory.get().getBook("Under A Cruel Star");
 		Book jDPAB = SalesHistory.get().getBook("Jacqueline du Pré: A Biography");
-		SalesHistory.get().getListChannels().get("Apple").addRoyalty(uACS, "AAAAA", new RoyaltyPercentage(0.5));
-		SalesHistory.get().getListChannels().get("Apple").addRoyalty(uACS, "BB", new RoyaltyPercentage(0.1));
-		SalesHistory.get().getListChannels().get("Apple").addRoyalty(jDPAB, "CCC", new RoyaltyPercentage(0.25));
+		SalesHistory.get().getChannel("Apple").addRoyalty(uACS, "AAAAA", new RoyaltyPercentage(0.5));
+		SalesHistory.get().getChannel("Apple").addRoyalty(uACS, "BB", new RoyaltyPercentage(0.1));
+		SalesHistory.get().getChannel("Apple").addRoyalty(jDPAB, "CCC", new RoyaltyPercentage(0.25));
 		for (Sale s : SalesHistory.get().getSalesHistory()) {
 			System.out.println(s);
 		}
-		System.out.println("Echange rate: " + SalesHistory.get().getListChannels().get("Apple").getHistoricalForex().get("Oct 2017").get("CAD"));
+		System.out.println("Echange rate: " + SalesHistory.get().getChannel("Apple").getHistoricalForex().get("Oct 2017").get("CAD"));
 		System.out.println("AAAAA expected balance = $2.5 (approx)");
 		System.out.println("BB expected balance = $0.5 (approx)");
 		System.out.println("CCC expected balance = $2 (approx)");

@@ -207,7 +207,7 @@ public class RoyaltyRulesDifferentPanel extends JPanel implements ActionListener
 	 * @return The royalties data to be put in to a tablemodel
 	 */
 	private Object[][] getDataRoyalties(Book b, String channelName){
-		HashMap<Person, IRoyaltyType> listRoyalties = SalesHistory.get().getListChannels().get(channelName).getListRoyalties().get(b);
+		HashMap<Person, IRoyaltyType> listRoyalties = SalesHistory.get().getChannel(channelName).getListRoyalties().get(b);
 		if (listRoyalties != null) {
 			int numberOfRows = listRoyalties.keySet().size(); //THIS IS ALWAYS WHERE IT FAILS WHEN THERE'S A BUG
 			Object[][] data = new Object[numberOfRows][3];

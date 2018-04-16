@@ -211,7 +211,7 @@ public class Channel implements java.io.Serializable {
 	 * @param name
 	 */
 	private void validateName(String name) {
-		if (SalesHistory.get().getListChannels().get(name) != null) {
+		if (SalesHistory.get().getChannel(name) != null) {
 			throw new IllegalArgumentException("Error: another channel with that name already exists.");
 		}
 		

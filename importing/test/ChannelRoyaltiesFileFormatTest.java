@@ -34,7 +34,7 @@ class ChannelRoyaltiesFileFormatTest {
 		new ImportSeveralFiles("Data/File names.txt");
 		ChannelRoyaltiesFileFormat test = new ChannelRoyaltiesFileFormat();
 		test.importData("Data/Amazon Royalties.csv");
-		assertEquals(155, SalesHistory.get().getListChannels().get("Amazon").getListRoyalties().keySet().size());
+		assertEquals(155, SalesHistory.get().getChannel("Amazon").getListRoyalties().keySet().size());
 	}
 
 }

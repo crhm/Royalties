@@ -18,7 +18,10 @@ public class DataVerification {
 		String output = "";
 
 		//Set of all channels in app
-		Set<String> allChannels = SalesHistory.get().getListChannels().keySet();
+		Set<String> allChannels = new HashSet<String>();
+		for (Channel ch : SalesHistory.get().getListChannels()) {
+			allChannels.add(ch.getName());
+		}
 
 		//Maps all dates in app to the channels that have sales for that date in the app
 		HashMap<String, Set<String>> channelsPerMonth = new HashMap<String, Set<String>>();
@@ -91,7 +94,7 @@ public class DataVerification {
 
 		for (String channel : listBooksSoldPerChannel.keySet()) {
 			for (Book b : listBooksSoldPerChannel.get(channel)) {
-				if (!SalesHistory.get().getListChannels().get(channel).getListRoyalties().keySet().contains(b)) {
+				if (!SalesHistory.get().getChannel(channel).getListRoyalties().keySet().contains(b)) {
 					output = output.concat("No royalty information was found for \"" + b.getTitle() 
 							+ "\" at this channel: " + channel + "\n");
 				}
@@ -107,7 +110,7 @@ public class DataVerification {
 		Set<Channel> relevantChannels = new HashSet<Channel>();
 		Set<String> months = new TreeSet<String>();
 
-		for (Channel ch : SalesHistory.get().getListChannels().values()) {
+		for (Channel ch : SalesHistory.get().getListChannels()) {
 			if (!ch.getSaleCurrencyIsAlwaysUSD()) {
 				relevantChannels.add(ch);
 			}

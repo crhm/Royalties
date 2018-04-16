@@ -130,7 +130,7 @@ public abstract class FileFormat {
 		//Checks if the Createspace channel already exists in app; if not, creates it.
 		Channel channel = null;
 		Boolean needToCreateNewChannel = true;
-		for (Channel ch : SalesHistory.get().getListChannels().values()) {
+		for (Channel ch : SalesHistory.get().getListChannels()) {
 			if (ch.getName().equals(channelName)) {
 				channel = ch;
 				needToCreateNewChannel = false;

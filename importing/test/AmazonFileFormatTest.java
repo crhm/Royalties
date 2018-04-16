@@ -35,7 +35,7 @@ class AmazonFileFormatTest {
 		test.importData("Data/UsuableFormats/Amazon sales & royalty data Oct 2017 -- KDP Prior Month Royalties-2017-10-1517170571744-77e60e4db2d4ae84832f7bea14d2b940.csv");
 		assertEquals(89, SalesHistory.get().getListPLPBooks().size());
 		assertEquals(196, SalesHistory.get().getSalesHistory().size());
-		assertNotNull(SalesHistory.get().getListChannels().get("Amazon"));
+		assertNotNull(SalesHistory.get().getChannel("Amazon"));
 	}
 
 }

@@ -40,7 +40,7 @@ class CreatespaceFileFormatTest {
 		test.importData("Data/UsuableFormats/Createspace Oct 2017 Euros -- royalty_details_1952179_2018-01-28_narab-0.csv");
 		assertEquals(1, SalesHistory.get().getListPLPBooks().size());
 		assertEquals(1, SalesHistory.get().getSalesHistory().size());
-		assertNotNull(SalesHistory.get().getListChannels().get("Createspace"));
+		assertNotNull(SalesHistory.get().getChannel("Createspace"));
 		for (Sale s : SalesHistory.get().getSalesHistory()) {
 			BigDecimal total = new BigDecimal((s.getPrice() - s.getDeliveryCost()) * s.getNetUnitsSold());
 			BigDecimal royaltyPercentage = new BigDecimal(s.getRoyaltyTypePLP());

@@ -14,8 +14,8 @@ public class AllForexFilesIntegrationTest {
 		AmazonForexFileFormat test = new AmazonForexFileFormat();
 		test.importData("Data/UsuableFormats/Amazon payment data for Oct 2017 -- KDP Payments-1517170629138-0c18d9f0770c13d87289dfe806919f31.csv");
 
-		System.out.println(SalesHistory.get().getListChannels().get("Amazon").getHistoricalForex().get("Oct 2017"));
-		System.out.println(SalesHistory.get().getListChannels().get("Apple").getHistoricalForex().get("Oct 2017"));
+		System.out.println(SalesHistory.get().getChannel("Amazon").getHistoricalForex().get("Oct 2017"));
+		System.out.println(SalesHistory.get().getChannel("Apple").getHistoricalForex().get("Oct 2017"));
 	}
 
 }

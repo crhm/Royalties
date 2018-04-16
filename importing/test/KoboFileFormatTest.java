@@ -40,7 +40,7 @@ class KoboFileFormatTest {
 		test.importData("Data/UsuableFormats/Kobo Oct 2017 -- _EEAB5A75-C291-43F0-B5FC-8461EBBDBF7C_Oct 2017.csv");
 		assertEquals(9, SalesHistory.get().getListPLPBooks().size());
 		assertEquals(12, SalesHistory.get().getSalesHistory().size());
-		assertNotNull(SalesHistory.get().getListChannels().get("Kobo"));
+		assertNotNull(SalesHistory.get().getChannel("Kobo"));
 		for (Sale s : SalesHistory.get().getSalesHistory()) {
 			BigDecimal total = new BigDecimal((s.getPrice() - s.getDeliveryCost()) * s.getNetUnitsSold());
 			BigDecimal royaltyPercentage = new BigDecimal(s.getRoyaltyTypePLP());

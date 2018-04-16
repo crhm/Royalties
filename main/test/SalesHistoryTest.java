@@ -80,7 +80,7 @@ class SalesHistoryTest {
 
 	@Test
 	void testAddChannel() {
-		assertEquals(channel, SalesHistory.get().getListChannels().get("Channel"));
+		assertEquals(channel, SalesHistory.get().getChannel("Channel"));
 	}
 	
 	@Test

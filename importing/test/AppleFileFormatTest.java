@@ -35,7 +35,7 @@ class AppleFileFormatTest {
 		test.importData("Data/UsuableFormats/85711804_1017_US.txt");
 		assertEquals(26, SalesHistory.get().getListPLPBooks().size());
 		assertEquals(26, SalesHistory.get().getSalesHistory().size());
-		assertNotNull(SalesHistory.get().getListChannels().get("Apple"));
+		assertNotNull(SalesHistory.get().getChannel("Apple"));
 		System.out.println(SalesHistory.get().getListPLPBooks());
 	}
 

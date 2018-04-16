@@ -184,7 +184,7 @@ public class Sale implements java.io.Serializable {
 		if (channel == null) {
 			throw new IllegalArgumentException("Error: channel cannot be null");
 		}
-		if (!SalesHistory.get().getListChannels().containsKey(channel.getName())) {
+		if (!SalesHistory.get().getListChannels().contains(channel)) {
 			throw new IllegalArgumentException("Error: channel should belong to the list of channels in SalesHistory");
 		}
 	}

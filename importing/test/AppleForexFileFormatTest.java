@@ -33,7 +33,7 @@ class AppleForexFileFormatTest {
 	void testImportData() {
 		AppleForexFileFormat test = new AppleForexFileFormat();
 		test.importData("Data/UsuableFormats/Apple payment data Oct 2017 -- financial_report.csv");
-		assertEquals(Double.valueOf(1), SalesHistory.get().getListChannels().get("Apple").getHistoricalForex().get("Oct 2017").get("USD"));
+		assertEquals(Double.valueOf(1), SalesHistory.get().getChannel("Apple").getHistoricalForex().get("Oct 2017").get("USD"));
 	}
 
 }

@@ -33,7 +33,7 @@ class AmazonForexFileFormatTest {
 	void testImportData() {
 		AmazonForexFileFormat test = new AmazonForexFileFormat();
 		test.importData("Data/UsuableFormats/Amazon payment data for Oct 2017 -- KDP Payments-1517170629138-0c18d9f0770c13d87289dfe806919f31.csv");
-		assertEquals(Double.valueOf(1), SalesHistory.get().getListChannels().get("Amazon").getHistoricalForex().get("Oct 2017").get("USD"));
+		assertEquals(Double.valueOf(1), SalesHistory.get().getChannel("Amazon").getHistoricalForex().get("Oct 2017").get("USD"));
 	}
 
 }

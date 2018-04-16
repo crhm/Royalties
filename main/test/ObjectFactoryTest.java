@@ -64,13 +64,13 @@ class ObjectFactoryTest {
 	@Test
 	void testCreateChannelDefaultBoolean() {
 		Channel channel = ObjectFactory.createChannel("NewChannel", new AmazonFileFormat());
-		assertEquals(channel, SalesHistory.get().getListChannels().get("NewChannel"));
+		assertEquals(channel, SalesHistory.get().getChannel("NewChannel"));
 	}
 
 	@Test
 	void testCreateChannelCustomBoolean() {
 		Channel channel2 = ObjectFactory.createChannel("NewChannel2", new AmazonFileFormat(), true);
-		assertEquals(channel2, SalesHistory.get().getListChannels().get("NewChannel2"));
+		assertEquals(channel2, SalesHistory.get().getChannel("NewChannel2"));
 		assertTrue(channel2.getSaleCurrencyIsAlwaysUSD());
 	}
 

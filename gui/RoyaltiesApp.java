@@ -171,7 +171,7 @@ public class RoyaltiesApp extends JFrame implements Runnable, ChangeListener {
 	 * @throws InterruptedException if a thread interrupts the import thread.
 	 */
 	private static void obtainData() throws InterruptedException {
-		File f = new File("/tmp/data14.ser");
+		File f = new File("/tmp/data16.ser");
 		if(f.exists() && !f.isDirectory()) { 
 			SalesHistory.get().deSerialise();
 		} else {

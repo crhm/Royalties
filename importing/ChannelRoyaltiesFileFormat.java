@@ -19,7 +19,7 @@ public class ChannelRoyaltiesFileFormat extends FileFormat implements java.io.Se
 	@Override
 	public void importData(String filePath) {
 		try {
-			for (Channel ch : SalesHistory.get().getListChannels().values()) {
+			for (Channel ch : SalesHistory.get().getListChannels()) {
 				if (filePath.contains(ch.getName())) {
 					this.channel = ch;
 				}

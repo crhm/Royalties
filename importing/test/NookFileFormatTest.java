@@ -40,7 +40,7 @@ class NookFileFormatTest {
 		test.importData("Data/UsuableFormats/Nook report for Oct 2017 -- payments_by_id_0000682440.csv");
 		assertEquals(10, SalesHistory.get().getListPLPBooks().size());
 		assertEquals(10, SalesHistory.get().getSalesHistory().size());
-		assertNotNull(SalesHistory.get().getListChannels().get("Nook"));
+		assertNotNull(SalesHistory.get().getChannel("Nook"));
 		for (Sale s : SalesHistory.get().getSalesHistory()) {
 			BigDecimal total = new BigDecimal((s.getPrice() - s.getDeliveryCost()) * s.getNetUnitsSold());
 			BigDecimal royaltyPercentage = new BigDecimal(s.getRoyaltyTypePLP());

@@ -44,7 +44,7 @@ public class EditRoyaltyDialog extends JFrame implements ActionListener {
 		
 		person = SalesHistory.get().getPerson(personName);
 		book = SalesHistory.get().getBook(bookTitle);
-		royaltyType = SalesHistory.get().getListChannels().get(channelName).getListRoyalties().get(book).get(person);
+		royaltyType = SalesHistory.get().getChannel(channelName).getListRoyalties().get(book).get(person);
 		
 		contentPanel = new JPanel(new GridLayout(4, 2));
 		contentPanel.setBorder(BorderFactory.createEmptyBorder(10, 10, 10, 10));

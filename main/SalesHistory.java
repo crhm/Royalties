@@ -43,13 +43,12 @@ public class SalesHistory implements java.io.Serializable {
 
 	private List<Sale> salesHistory = new ArrayList<Sale>();
 	private HashMap<String, Person> listRoyaltyHolders = new HashMap<String, Person>();
-	private HashMap<String, Channel> listChannels = new HashMap<String, Channel>();
+	private Set<Channel> listChannels = new HashSet<Channel>();
 	private Set<Book> listPLPBooks = new HashSet<Book>();
 	private Set<Person> listAuthors = new HashSet<Person>();
 	private Set<Person> listPersons = new HashSet<Person>();
 	private Set<String> listMonths = new HashSet<String>();
 	private HashMap<Book, HashMap<Person, IRoyaltyType>> uniformRoyalties = new HashMap<Book, HashMap<Person, IRoyaltyType>>();
-	//TODO think of getting rid of uniformRoyalties Hashmap by instead making it belong to each book?
 	//TODO get rid of all hashmaps and create get methods instead?
 	
 	private AtomicLong nextBookID = new AtomicLong(1);
@@ -127,6 +126,21 @@ public class SalesHistory implements java.io.Serializable {
 		}
 		return book;
 	}
+	
+	/**
+	 * 
+	 * @param channelName
+	 * @return the channel with that name, or null if there is none.
+	 */
+	public Channel getChannel(String channelName) {
+		Channel channel = null;
+		for (Channel ch : listChannels) {
+			if (ch.getName().equals(channelName)) {
+				channel = ch;
+			}
+		}
+		return channel;
+	}
 
 	//CALCULATE ROYALTIES
 	/** Calculates all royalties by calling Sale.calculateRoyalties() on each sale
@@ -203,7 +217,7 @@ public class SalesHistory implements java.io.Serializable {
 				listRoyaltyHolders.add(p);
 			}
 		}
-		for (Channel ch : listChannels.values()) {
+		for (Channel ch : listChannels) {
 			for (Book b : ch.getListRoyalties().keySet()) {
 				for (Person p : ch.getListRoyalties().get(b).keySet()) {
 					listRoyaltyHolders.add(p);
@@ -229,10 +243,10 @@ public class SalesHistory implements java.io.Serializable {
 	}
 
 	/** Returns the list of channels through which PLP sells books,
-	 *  as a HashMap mapping Channel names to Channels.
+	 *  as a set of Channels.
 	 * @return the list of channels through which PLP sells books
 	 */
-	public HashMap<String, Channel> getListChannels() {
+	public Set<Channel> getListChannels() {
 		return listChannels;
 	}
 
@@ -299,7 +313,7 @@ public class SalesHistory implements java.io.Serializable {
 	 * @param channel
 	 */
 	public void addChannel(Channel channel) {
-		this.listChannels.put(channel.getName(), channel);
+		this.listChannels.add(channel);
 	}
 
 	//Remove methods
@@ -370,7 +384,7 @@ public class SalesHistory implements java.io.Serializable {
 		}
 		
 		//Replacing amongst channel royalty lists.
-		for (Channel ch : listChannels.values()) {
+		for (Channel ch : listChannels) {
 			ch.replaceRoyaltyHolder(oldPerson, newPerson);
 		}
 	}
@@ -402,7 +416,7 @@ public class SalesHistory implements java.io.Serializable {
 			uniformRoyalties.put(newBook, newRoyalties);
 		}
 		
-		for (Channel ch : listChannels.values()) {
+		for (Channel ch : listChannels) {
 			ch.replaceBook(oldBook, newBook);
 		}
 	}
@@ -444,7 +458,7 @@ public class SalesHistory implements java.io.Serializable {
 	@SuppressWarnings("unchecked")
 	private void readObject(java.io.ObjectInputStream in) throws IOException, ClassNotFoundException {
 		try {
-			HashMap<String, Channel> listChannels = (HashMap<String, Channel>) in.readObject();
+			Set<Channel> listChannels = (Set<Channel>) in.readObject();
 			Set<Book> listPLPBooks = (Set<Book>) in.readObject();
 			HashMap<String, Person> listRoyaltyHolders = (HashMap<String, Person>) in.readObject();
 			List<Sale> salesHistory = (List<Sale>) in.readObject();
@@ -474,7 +488,7 @@ public class SalesHistory implements java.io.Serializable {
 	 */
 	public void serialise() { //TODO make serialisation output be a filename with date and time? and then in deserialise choose filename with most recent date?
 		try {
-			FileOutputStream fileOut = new FileOutputStream("/tmp/data14.ser");
+			FileOutputStream fileOut = new FileOutputStream("/tmp/data16.ser");
 			ObjectOutputStream out = new ObjectOutputStream(fileOut);
 			SalesHistory.get().writeObject(out);
 			fileOut.close();
@@ -487,7 +501,7 @@ public class SalesHistory implements java.io.Serializable {
 	 */
 	public void deSerialise() {
 		try {
-			FileInputStream fileIn = new FileInputStream("/tmp/data14.ser");
+			FileInputStream fileIn = new FileInputStream("/tmp/data16.ser");
 			ObjectInputStream in = new ObjectInputStream(fileIn);
 			SalesHistory.get().readObject(in);
 			fileIn.close();

@@ -28,9 +28,9 @@ public class ChannelPanel extends JPanel {
 	}
 	
 	private String[] getListChannels() {
-		String[] channels = new String[SalesHistory.get().getListChannels().values().size()];
+		String[] channels = new String[SalesHistory.get().getListChannels().size()];
 		int count = 0;
-		for (Channel ch : SalesHistory.get().getListChannels().values()) {
+		for (Channel ch : SalesHistory.get().getListChannels()) {
 			channels[count] = ch.getName();
 			count++;
 		}
