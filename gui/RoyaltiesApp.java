@@ -24,8 +24,6 @@ import gui.royalties.RoyaltyRulesSamePanel;
 import gui.royaltyholders.RoyaltyHoldersPanel;
 import gui.sales.SalesPanel;
 import importing.test.ImportEverything;
-import main.Book;
-import main.Person;
 import main.SalesHistory;
 
 /**GUI for royalties app. Opens a full screen window with several panels displaying different information:
@@ -170,16 +168,13 @@ public class RoyaltiesApp extends JFrame implements Runnable, ChangeListener {
 	 * @throws InterruptedException if a thread interrupts the import thread.
 	 */
 	private static void obtainData() throws InterruptedException {
-		File f = new File("/tmp/data16.ser");
+		File f = new File("/tmp/data17.ser");
 		if(f.exists() && !f.isDirectory()) { 
-			//SalesHistory.get().deSerialise();
+			SalesHistory.get().deSerialise();
+		} else {
 			Thread importThread = new Thread(new ImportEverything(), "Importing data");
 			importThread.start();
 			importThread.join(); //wait for this thread to die before starting next one
-		} else {
-//			Thread importThread = new Thread(new ImportEverything(), "Importing data");
-//			importThread.start();
-//			importThread.join(); //wait for this thread to die before starting next one
 		}
 	}
 

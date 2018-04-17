@@ -134,4 +134,40 @@ public class RoyaltyDependentOnUnitsSold implements IRoyaltyType, java.io.Serial
 
 		}
 	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#hashCode()
+	 */
+	@Override
+	public int hashCode() {
+		final int prime = 31;
+		int result = 1;
+		long temp;
+		temp = Double.doubleToLongBits(defaultPercentage);
+		result = prime * result + (int) (temp ^ (temp >>> 32));
+		result = prime * result + ((percentagesForUnitsSold == null) ? 0 : percentagesForUnitsSold.hashCode());
+		return result;
+	}
+
+	/* (non-Javadoc)
+	 * @see java.lang.Object#equals(java.lang.Object)
+	 */
+	@Override
+	public boolean equals(Object obj) {
+		if (this == obj)
+			return true;
+		if (obj == null)
+			return false;
+		if (getClass() != obj.getClass())
+			return false;
+		RoyaltyDependentOnUnitsSold other = (RoyaltyDependentOnUnitsSold) obj;
+		if (Double.doubleToLongBits(defaultPercentage) != Double.doubleToLongBits(other.defaultPercentage))
+			return false;
+		if (percentagesForUnitsSold == null) {
+			if (other.percentagesForUnitsSold != null)
+				return false;
+		} else if (!percentagesForUnitsSold.equals(other.percentagesForUnitsSold))
+			return false;
+		return true;
+	}
 }

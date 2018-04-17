@@ -493,7 +493,7 @@ public class SalesHistory implements java.io.Serializable {
 	 */
 	public void serialise() { //TODO make serialisation output be a filename with date and time? and then in deserialise choose filename with most recent date?
 		try {
-			FileOutputStream fileOut = new FileOutputStream("/tmp/data16.ser");
+			FileOutputStream fileOut = new FileOutputStream("/tmp/data17.ser");
 			ObjectOutputStream out = new ObjectOutputStream(fileOut);
 			SalesHistory.get().writeObject(out);
 			fileOut.close();
@@ -506,7 +506,7 @@ public class SalesHistory implements java.io.Serializable {
 	 */
 	public void deSerialise() {
 		try {
-			FileInputStream fileIn = new FileInputStream("/tmp/data16.ser");
+			FileInputStream fileIn = new FileInputStream("/tmp/data17.ser");
 			ObjectInputStream in = new ObjectInputStream(fileIn);
 			SalesHistory.get().readObject(in);
 			fileIn.close();
