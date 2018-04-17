@@ -5,10 +5,12 @@ import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
 
+/**Class for static methods desgined to check integrity of imported data.
+ * @author crhm
+ *
+ */
 public class DataVerification {
 	
-	//TODO Comments
-
 	/**Checks whether all channels have sales data for all months found in data 
 	 * 
 	 * @return An empty string if all channels have sales data for all months found in data, or a string detailing which channels 
@@ -75,23 +77,29 @@ public class DataVerification {
 		return channelsPerMonth;
 	}
 	
+	/**Checks whether royalties can be found for each sale.
+	 * 
+	 * @return An empty string if no issue is detected, and a string detailing which book at which channel is missing royalties if issues are detected.
+	 */
 	public static String checkRoyaltiesDataForAllChannels() {
 		String output = "";
 
 		HashMap<String, Set<Book>> listBooksSoldPerChannel = new HashMap<String, Set<Book>>();
 
+		//Building the list of books sold per channel, so that they can be checked for royalties per channel later
 		for (Sale s : SalesHistory.get().getSalesHistory()) {
-			if (listBooksSoldPerChannel.containsKey(s.getChannel().getName())) {
+			if (listBooksSoldPerChannel.containsKey(s.getChannel().getName())) { //If there's already a mapping for that channel
 				Set<Book> bookTitles = listBooksSoldPerChannel.get(s.getChannel().getName());
 				bookTitles.add(s.getBook());
 				listBooksSoldPerChannel.put(s.getChannel().getName(), bookTitles);
-			} else {
+			} else { //if there's not
 				Set<Book> bookTitles = new HashSet<Book>();
 				bookTitles.add(s.getBook());
 				listBooksSoldPerChannel.put(s.getChannel().getName(), bookTitles);
 			}
 		}
 
+		//Checking all books sold by each channel has a royalty.
 		for (String channel : listBooksSoldPerChannel.keySet()) {
 			for (Book b : listBooksSoldPerChannel.get(channel)) {
 				if (!SalesHistory.get().getChannel(channel).getListRoyalties().keySet().contains(b)) {
@@ -104,37 +112,39 @@ public class DataVerification {
 		return output;
 	}
 
+	/**Checks that for all channels that do not have all exchanges in USD, an exchange rate can be found for each currency at each date
+	 * present in the sales.
+	 * @return an empty string if no issues are detected, and one detailing, line by line, the missing information, if they are.
+	 */
 	public static String checkForexDataForRelevantChannels() {
 		String output = "";
+		
+		//Setting up what to compare against (list of channels that aren't in USD and list of months for which there are sales)
+		Set<String> months = SalesHistory.get().getListMonths();
 
 		Set<Channel> relevantChannels = new HashSet<Channel>();
-		Set<String> months = new TreeSet<String>();
-
 		for (Channel ch : SalesHistory.get().getListChannels()) {
 			if (!ch.getSaleCurrencyIsAlwaysUSD()) {
 				relevantChannels.add(ch);
 			}
 		}
 
-		for (Sale s : SalesHistory.get().getSalesHistory()) {
-			months.add(s.getDate());
-		}
-
+		//Mapping, for each channel, which currencies were found in the sales for which month.
 		HashMap<String, HashMap<String, Set<String>>> saleCurrenciesPerMonthPerChannel = new HashMap<String, HashMap<String, Set<String>>>();
 
 		for (Sale s : SalesHistory.get().getSalesHistory()) {
-			if (!s.getChannel().getSaleCurrencyIsAlwaysUSD()) {
-				if (saleCurrenciesPerMonthPerChannel.containsKey(s.getChannel().getName())) {
+			if (!s.getChannel().getSaleCurrencyIsAlwaysUSD()) { //For the relevant sales...
+				if (saleCurrenciesPerMonthPerChannel.containsKey(s.getChannel().getName())) { //if there's already a mapping for that channel
 					HashMap<String, Set<String>> saleCurrenciesPerMonth = saleCurrenciesPerMonthPerChannel.get(s.getChannel().getName());
-					if (saleCurrenciesPerMonth.containsKey(s.getDate())) {
+					if (saleCurrenciesPerMonth.containsKey(s.getDate())) { //if there's already a mapping for that date for that channel
 						Set<String> currencies = saleCurrenciesPerMonth.get(s.getDate());
 						currencies.add(s.getCurrency().getCurrencyCode());
-					} else {
+					} else { //If there's no mapping of that date for that channel
 						Set<String> currencies = new TreeSet<String>();
 						currencies.add(s.getCurrency().getCurrencyCode());
 						saleCurrenciesPerMonth.put(s.getDate(), currencies);
 					}
-				} else {
+				} else { //if there's no mapping for that channel yet.
 					Set<String> currencies = new TreeSet<String>();
 					currencies.add(s.getCurrency().getCurrencyCode());
 					HashMap<String, Set<String>> saleCurrenciesPerMonth = new HashMap<String, Set<String>>();
@@ -144,6 +154,7 @@ public class DataVerification {
 			}
 		}
 
+		//Building the output by comparing what ought to be found with what was found.
 		for (Channel ch : relevantChannels) {
 			if (ch.getHistoricalForex().isEmpty()) {
 				output = output.concat("No historical FX rates where found for this channel: " + ch);

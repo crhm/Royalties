@@ -31,7 +31,8 @@ public class DataVerificationPanel extends JPanel {
 	public DataVerificationPanel() {
 		super();
 		this.setLayout(new GridLayout(1, 1));
-		this.add(new JScrollPane(getTable()));
+		table = getTable();
+		this.add(new JScrollPane(table));
 	}
 	
 	/**Returns the JTable representing the information obtained through the DataVerification methods.
@@ -145,7 +146,10 @@ public class DataVerificationPanel extends JPanel {
 	public void updateData() {
 		TableModel model = getTable().getModel();
 		table.setModel(model);
-		
 		setTableSettings(table);
+		
+		//Had to use this here but I don't know why, it wouldn't work otherwise...
+		this.removeAll();
+		this.add(new JScrollPane(table));
 	}
 }
