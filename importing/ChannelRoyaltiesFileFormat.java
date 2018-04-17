@@ -64,8 +64,7 @@ public class ChannelRoyaltiesFileFormat extends FileFormat implements java.io.Se
 			lineDivided[counter] = s.trim();
 			counter++;
 		}
-
-		Book book = obtainBook(lineDivided[0], lineDivided[1]);
+		Book book = obtainBook(lineDivided[0].replace("\"", ""), lineDivided[1]);
 		
 		int personsIndex = 2; //Because royalties start in 3d column, given first two are book title and id
 		//because there are never more than 4 royalty holders, hence never more than 10 columns and last royalty holder should be on 9th column
