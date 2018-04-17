@@ -6,6 +6,7 @@ import java.io.IOException;
 
 import main.Book;
 import main.Channel;
+import main.ObjectFactory;
 import main.SalesHistory;
 import main.royalties.IRoyaltyType;
 import main.royalties.RoyaltyPercentage;
@@ -18,7 +19,7 @@ public class ChannelRoyaltiesFileFormat extends FileFormat implements java.io.Se
 	@Override
 	public void importData(String filePath) {
 		try {
-			for (Channel ch : SalesHistory.get().getListChannels().values()) {
+			for (Channel ch : SalesHistory.get().getListChannels()) {
 				if (filePath.contains(ch.getName())) {
 					this.channel = ch;
 				}
@@ -63,29 +64,8 @@ public class ChannelRoyaltiesFileFormat extends FileFormat implements java.io.Se
 			lineDivided[counter] = s.trim();
 			counter++;
 		}
-
-		Book book = null; 
-		if (SalesHistory.get().getListPLPBooks().get(lineDivided[0])!=null) {
-			book = SalesHistory.get().getListPLPBooks().get(lineDivided[0]);
-		} else {
-			Boolean newBook = true;
-			for (Book b : SalesHistory.get().getListPLPBooks().values()) {
-				if (b.getIdentifiers().contains(lineDivided[1])) {
-					book = b;
-					newBook = false;
-				} else if (b.getTitle().toLowerCase().equals(lineDivided[0].toLowerCase())){
-					book = b;
-					newBook = false;
-				} else if (b.getTitle().toLowerCase().contains(lineDivided[0].toLowerCase()) || lineDivided[0].toLowerCase().contains(b.getTitle().toLowerCase())) {
-					book = b;
-					newBook = false;
-				}
-			}
-			if (newBook) {
-				book = new Book(lineDivided[0], "", lineDivided[1]);
-				SalesHistory.get().addBook(book);
-			}
-		}
+		Book book = obtainBook(lineDivided[0].replace("\"", ""), lineDivided[1]);
+		
 		int personsIndex = 2; //Because royalties start in 3d column, given first two are book title and id
 		//because there are never more than 4 royalty holders, hence never more than 10 columns and last royalty holder should be on 9th column
 		while (personsIndex < 9) { //because there are never more than 4 royalty holders, hence never more than 10 columns and last royalty holder should be on 9th
@@ -95,6 +75,36 @@ public class ChannelRoyaltiesFileFormat extends FileFormat implements java.io.Se
 			}
 			personsIndex = personsIndex + 2; //because royalty holders are every two columns
 		}
+	}
+	
+	private Book obtainBook(String bookTitle, String identifier) {
+		Book book = null; 
+		if (SalesHistory.get().getBook(bookTitle)!=null) {
+			book = SalesHistory.get().getBook(bookTitle);
+			if (!identifier.isEmpty()) {
+				book.addIdentifier(identifier);
+			}
+		} else {
+			Boolean newBook = true;
+			for (Book b : SalesHistory.get().getListPLPBooks()) {
+				if (b.getIdentifiers().contains(identifier)) {
+					book = b;
+					book.addTitle(bookTitle);
+					newBook = false;
+				} else if (b.getTitle().toLowerCase().equals(bookTitle.toLowerCase())){
+					book = b;
+					book.addTitle(bookTitle);
+					if (!identifier.isEmpty()) {
+						b.addIdentifier(identifier);
+					}
+					newBook = false;
+				}
+			}
+			if (newBook) {
+				book = ObjectFactory.createBook(bookTitle, "", identifier);
+			}
+		}
+		return book;
 	}
 
 }

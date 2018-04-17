@@ -23,7 +23,7 @@ import main.royalties.IRoyaltyType;
  *
  */
 public class Channel implements java.io.Serializable {
-
+	
 	private static final long serialVersionUID = 6186357366182288547L;
 	private FileFormat fileFormat;
 	private final String name;
@@ -102,12 +102,7 @@ public class Channel implements java.io.Serializable {
 		if (royaltyHolderName.isEmpty()) {
 			throw new IllegalArgumentException("Error: royaltyHolderName cannot be empty.");
 		}
-		
-		//Adds the book to SalesHistory if it does not already exist
-		if (!SalesHistory.get().getListPLPBooks().containsKey(b.getTitle())) {
-			SalesHistory.get().addBook(b);
-		}
-		
+				
 		//Obtains the list of royalties for this book if one exists, or creates an empty one if not
 		HashMap<Person, IRoyaltyType> listHolder = null;
 		if (listRoyalties.containsKey(b)) {
@@ -119,15 +114,10 @@ public class Channel implements java.io.Serializable {
 		//Obtains the person with the name passed as argument from SalesHistory's list of royalty holders, 
 		//or creates one if one does not yet exist, and adds it to SalesHistory.
 		Person royaltyHolder2 = null;
-		Boolean flag = true;
-		for (Person p : SalesHistory.get().getListRoyaltyHolders().values()) {
-			if (p.getName().equals(royaltyHolderName)) {
-				royaltyHolder2 = p;
-				flag = false;
-			}
-		}
-		if (flag) {
-			royaltyHolder2 = new Person(royaltyHolderName);
+		if (SalesHistory.get().getPerson(royaltyHolderName) != null) {
+			royaltyHolder2 = SalesHistory.get().getPerson(royaltyHolderName);
+		} else {
+			royaltyHolder2 = ObjectFactory.createPerson(royaltyHolderName);
 			SalesHistory.get().addRoyaltyHolder(royaltyHolder2);
 		}
 		
@@ -157,6 +147,59 @@ public class Channel implements java.io.Serializable {
 		validateListForex(listForex);
 		this.historicalForex.put(monthAndYear, listForex);
 	}
+	
+	/**Replaces one royalty holder by another (keeping the same royalties)
+	 * @param oldPerson
+	 * @param newPerson
+	 */
+	public void replaceRoyaltyHolder(Person oldPerson, Person newPerson) {
+		/*For each book in listRoyalties, if it has oldPerson has a royaltyHolder, then create a new HashMap (newMappings) with the same mappings
+		 * as the old one except for oldPerson, which is now a mapping of newPerson to whatever royalty oldPerson was mapped to.
+		 * Hold this new HashMap in a HashMap called booksToUpdate which can be traversed outside of this for loop later on 
+		 * (to avoid issues related to modifying something we are traversing).
+		 */
+		HashMap<Book, HashMap<Person, IRoyaltyType>> booksToUpdate = new HashMap<Book, HashMap<Person, IRoyaltyType>>();
+		for (Book b : listRoyalties.keySet()) {
+			if (listRoyalties.get(b).keySet().contains(oldPerson)) {
+				HashMap<Person, IRoyaltyType> newMappings = new HashMap<Person, IRoyaltyType>();
+				for (Person person : listRoyalties.get(b).keySet()) {
+					if (person == oldPerson) {
+						newMappings.put(newPerson, listRoyalties.get(b).get(person));
+					} else {
+						newMappings.put(person, listRoyalties.get(b).get(person));
+					}
+				}
+				booksToUpdate.put(b, newMappings);
+			}
+		}
+		for (Book b : booksToUpdate.keySet()) {
+			listRoyalties.remove(b);
+			listRoyalties.put(b, booksToUpdate.get(b));
+		}
+	}
+	
+	/**Removes the mapping of royalties for oldBook, and adds its royalties to the list mapped by newBook, unless the royaltyHolder preexists there, 
+	 * in which case it does not add it (thus keeping the royalty as it was for newBook originally)
+	 * @param oldBook
+	 * @param newBook
+	 */
+	public void replaceBook(Book oldBook, Book newBook) {
+		HashMap<Person, IRoyaltyType> oldRoyalties = listRoyalties.get(oldBook);
+		HashMap<Person, IRoyaltyType> newRoyalties = listRoyalties.get(newBook);
+
+		if (oldRoyalties != null) {
+			if (newRoyalties == null) {
+				newRoyalties = new HashMap<Person, IRoyaltyType>();
+			}
+			for (Person p : oldRoyalties.keySet()) { //adding oldbook's royalties to that of newbook (unless a royalty holder already has a royalty in newBook)
+				newRoyalties.putIfAbsent(p, oldRoyalties.get(p));
+			}
+		}
+		listRoyalties.remove(oldBook);
+		if (newRoyalties != null) {
+			listRoyalties.put(newBook, newRoyalties);
+		}
+	}
 
 	@Override
 	public String toString() {
@@ -168,7 +211,7 @@ public class Channel implements java.io.Serializable {
 	 * @param name
 	 */
 	private void validateName(String name) {
-		if (SalesHistory.get().getListChannels().get(name) != null) {
+		if (SalesHistory.get().getChannel(name) != null) {
 			throw new IllegalArgumentException("Error: another channel with that name already exists.");
 		}
 		

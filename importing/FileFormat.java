@@ -9,6 +9,8 @@ import java.util.Date;
 
 import main.Book;
 import main.Channel;
+import main.ObjectFactory;
+import main.Person;
 import main.SalesHistory;
 
 //TODO Read https://stackoverflow.com/questions/21817816/java-reading-a-file-different-methods
@@ -71,26 +73,31 @@ public abstract class FileFormat {
 	 * @param identifier identifier found in raw data for this sale
 	 * @return the book to add to the sale to be imported
 	 */
-	protected Book obtainBook(String bookTitle, String author, String identifier) {
+	protected Book obtainBook(String bookTitle, String authorName, String identifier) {
 		Book book = null;
-		Boolean flag2 = true;
-		for (Book b : SalesHistory.get().getListPLPBooks().values()) {
+		Boolean needToCreateNewBook = true;
+		for (Book b : SalesHistory.get().getListPLPBooks()) {
 			String existingBookTitle = b.getTitle().toLowerCase();
 			String bookTitleFound = bookTitle.replace("\"", "").toLowerCase();
 			if (existingBookTitle.equals(bookTitleFound) || b.getIdentifiers().contains(identifier)) {
 				book = b;
-				flag2 = false;
-				if (!b.getIdentifiers().contains(identifier)) {
+				needToCreateNewBook = false;
+				if (!identifier.isEmpty()) {
 					b.addIdentifier(identifier);
 				}
-				if (b.getAuthor().equals("")) {
-					b.setAuthor(author);
+				if (book.getAuthor1() == null && !authorName.isEmpty()) {
+					Person author = null;
+					if (SalesHistory.get().getPerson(authorName) != null) {
+						author = SalesHistory.get().getPerson(authorName);
+					} else {
+						author = ObjectFactory.createPerson(authorName);
+					}
+					book.setAuthor1(author);
 				}
 			}
 		}
-		if (flag2) {
-			book = new Book(bookTitle, author, identifier);
-			SalesHistory.get().addBook(book);			
+		if (needToCreateNewBook) {
+			book = ObjectFactory.createBook(bookTitle, authorName, identifier);
 		}
 		return book;
 	}
@@ -122,16 +129,15 @@ public abstract class FileFormat {
 	protected Channel obtainChannel(String channelName, FileFormat fileFormat, boolean isCurrencyAlwaysUSD) {
 		//Checks if the Createspace channel already exists in app; if not, creates it.
 		Channel channel = null;
-		Boolean flag1 = true;
-		for (Channel ch : SalesHistory.get().getListChannels().values()) {
+		Boolean needToCreateNewChannel = true;
+		for (Channel ch : SalesHistory.get().getListChannels()) {
 			if (ch.getName().equals(channelName)) {
 				channel = ch;
-				flag1 = false;
+				needToCreateNewChannel = false;
 			}
 		}
-		if (flag1) {
-			channel = new Channel(channelName, fileFormat, isCurrencyAlwaysUSD);
-			SalesHistory.get().addChannel(channel);
+		if (needToCreateNewChannel) {
+			channel = ObjectFactory.createChannel(channelName, fileFormat, isCurrencyAlwaysUSD);
 		}		
 		return channel;
 	}

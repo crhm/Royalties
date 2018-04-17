@@ -9,7 +9,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.JButton;
-import javax.swing.JComboBox;
 import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -40,87 +39,59 @@ import main.royalties.IRoyaltyType;
  *
  */
 @SuppressWarnings("serial")
-public class RoyaltiesRulesPanel extends JPanel implements ActionListener, ListSelectionListener{
-	
-	//TODO add button should be dynamic; if only no particular royalty is selected, it should read 'add book to list of books with royalties...'
-	//and first add a book (from list of books - books already with a royalty for this channel, or create a new one) and then add a royalty to it. 
-	//If one is selected, it should read 'add royalty to this book' and perform that action only.
-		
+public class RoyaltyRulesSamePanel extends JPanel implements ActionListener, ListSelectionListener{
+
+	//TODO add button should be dynamic; if only no particular royalty is selected, it should be disabled.
+
 	private JPanel buttonPanel = new JPanel(new GridLayout(1, 5));
 	private JButton editButton = new JButton("Edit");
 	private JButton addButton = new JButton("Add");
 	private JButton deleteButton = new JButton("Delete");
-	
-	private JPanel containerPanel = new JPanel(new BorderLayout());
 
-	//ComboBox to select the channel whose royalties are to be displayed
-	private JComboBox<String> channelsDropDown = null; 
+	private JPanel containerPanel = new JPanel(new GridLayout(1, 2, 5, 0));
 
 	//Displays the book titles for which there are royalty holders (for the selected channel)
 	private JTable bookTitles = null; 
-	
+
 	//Displays the royalties for the selected book
 	private JTable royaltiesTable = null;
 
 	//Displays the details of the royalties for the book selected amongst the book titles. If none are selected, no details are shown
-	private JPanel royaltyDetails = new JPanel(new BorderLayout()); 
+	private JPanel royaltyDetailsPanel = new JPanel(new BorderLayout()); 
 
 	//Holds the index of selected book title so that in case of sorting the selection can be maintained despite index change
 	private int selectionIndexBeforeSort = 0;
-	
-	//Holds the name of the channel that is currently selected. Initialised as "Apple" because it is first in the Channel list
-	private String currentChannel = "Apple";
-	
+
 	//Holds the name of the royalty holder that is currently selected
 	private String currentPerson = null;
-	
+
 	//Holds the title of the book that is currently selected
 	private String currentBook = null;
 
-	public RoyaltiesRulesPanel() {
+	public RoyaltyRulesSamePanel() {
 		super();
 		this.setLayout(new BorderLayout());
 
-		//Obtains list of channels and passes it to the combobox
-		String[] listChannels = new String[SalesHistory.get().getListChannels().keySet().size()];
-		int counter = 0;
-		for (String s : SalesHistory.get().getListChannels().keySet()) {
-			listChannels[counter] = s;
-			counter++;
-		}
-		channelsDropDown = new JComboBox<String>(listChannels);
-		channelsDropDown.addActionListener(this);
-
-		//Gets the list of book titles for initial channel (apple)
+		//Gets the list of book titles
 		bookTitles = getTableBooks();
-		bookTitles.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-
-		//Sort the table 
-		TableRowSorter<TableModel> sorter = new TableRowSorter<>(bookTitles.getModel());
-		bookTitles.setRowSorter(sorter);
-		List<RowSorter.SortKey> sortKeys = new ArrayList<>();
-		int columnIndexToSort = 0;
-		sortKeys.add(new RowSorter.SortKey(columnIndexToSort, SortOrder.ASCENDING));
-		sorter.setSortKeys(sortKeys);
-		sorter.sort();	
-
+		setTableSettings(bookTitles);
+		
 		//Add ListSelectionListener to list of books
 		bookTitles.getSelectionModel().addListSelectionListener(this);
 
 		//Adds components to the main container panel
-		containerPanel.add(channelsDropDown, BorderLayout.NORTH);
-		containerPanel.add(new JScrollPane(bookTitles), BorderLayout.WEST);
-		containerPanel.add(royaltyDetails, BorderLayout.CENTER);
-		
+		containerPanel.add(new JScrollPane(bookTitles));
+		containerPanel.add(royaltyDetailsPanel);
+
 		//Because no royalty is selected to start with
 		deleteButton.setEnabled(false);
 		editButton.setEnabled(false);
-		
+
 		//Adding ActionListener to buttons
 		deleteButton.addActionListener(this);
 		addButton.addActionListener(this);
 		editButton.addActionListener(this);
-		
+
 		//Set up buttonPanel
 		buttonPanel.add(new JLabel());
 		buttonPanel.add(new JLabel());
@@ -147,45 +118,12 @@ public class RoyaltiesRulesPanel extends JPanel implements ActionListener, ListS
 				//TODO
 			}
 		} else if (e.getSource() == editButton) {
-			new EditRoyaltyDialog(currentChannel, currentBook, currentPerson);
-		} else { //Action is from channels Combobox 
-			//Change channel variable to reflect one currently selected
-			this.currentChannel = (String) channelsDropDown.getSelectedItem();
-
-			//Empty and erase royalty details panel
-			if (royaltiesTable != null && royaltiesTable.isShowing()) {
-				royaltiesTable.getSelectionModel().removeListSelectionListener(this);
-			}
-			royaltyDetails.removeAll();
-			royaltyDetails.revalidate();
-			royaltyDetails.repaint();
-
-			//Have to do this to avoid crashes as it would listen to a selection on a table that is going to be completely redone
-			bookTitles.getSelectionModel().removeListSelectionListener(this);
-
-			//Fills the table with the new data (as obtained by getting the model off of a new table)
-			TableModel model = getTableBooks().getModel();
-			bookTitles.setModel(model);
-			bookTitles.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-			//Sorts table
-			TableRowSorter<TableModel> sorter = new TableRowSorter<>(bookTitles.getModel());
-			bookTitles.setRowSorter(sorter);
-			List<RowSorter.SortKey> sortKeys = new ArrayList<>();
-			int columnIndexToSort = 0;
-			sortKeys.add(new RowSorter.SortKey(columnIndexToSort, SortOrder.ASCENDING));
-			sorter.setSortKeys(sortKeys);
-			sorter.sort();
-
-			//Repaint with current data
-			bookTitles.revalidate();
-			bookTitles.repaint();
-
-			//Reinstate list selection listener so that royalty details can be obtained for this new list
-			bookTitles.getSelectionModel().addListSelectionListener(this);
+			//new EditRoyaltyDialog(currentChannel, currentBook, currentPerson);
+			//TODO
 		}
 	}
 
-	/**When a book title is selected in the list of titles, it displays the royalties for that book in the royaltyDetails panel
+	/**When a book title is selected in the list of titles, it displays the royalties for that book in the royaltyDetailsPanel panel
 	 * as a table with royalty holders and their royalty type (and percentage)
 	 */
 	@Override
@@ -199,16 +137,17 @@ public class RoyaltiesRulesPanel extends JPanel implements ActionListener, ListS
 				bookTitles.getSelectionModel().setSelectionInterval(0, bookTitles.convertRowIndexToView(selectionIndexBeforeSort));
 			} else {
 				//Genuine value change, another book title has been selected
+				bookTitles.repaint(); //Without this the change in selection occurs but does not show visually...
 				editButton.setEnabled(false);
 				deleteButton.setEnabled(false);
 				int tableRow = bookTitles.getSelectedRow();
-				String bookTitle = bookTitles.getValueAt(tableRow, 0).toString();
-				Book book = SalesHistory.get().getListPLPBooks().get(bookTitle);
+				Long bookNumber = (Long) bookTitles.getValueAt(tableRow, 0);
+				Book book = SalesHistory.get().getBookWithNumber(bookNumber);
 				if (royaltiesTable != null && royaltiesTable.isShowing()) {
 					royaltiesTable.getSelectionModel().removeListSelectionListener(this);
 				}
-				royaltyDetails.removeAll();
-				royaltyDetails.revalidate();
+				royaltyDetailsPanel.removeAll();
+				royaltyDetailsPanel.revalidate();
 				if (royaltiesTable != null) {
 					TableModel model = getTableRoyalties(book).getModel(); 
 					royaltiesTable.setModel(model);
@@ -218,18 +157,18 @@ public class RoyaltiesRulesPanel extends JPanel implements ActionListener, ListS
 					royaltiesTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 				}
 				royaltiesTable.getSelectionModel().addListSelectionListener(this);
-				royaltyDetails.add(new JScrollPane(royaltiesTable), BorderLayout.CENTER);
-				royaltyDetails.revalidate();
-				royaltyDetails.repaint();
+				royaltyDetailsPanel.add(new JScrollPane(royaltiesTable), BorderLayout.CENTER);
+				royaltyDetailsPanel.revalidate();
+				royaltyDetailsPanel.repaint();
 
-				currentBook = (String) bookTitles.getValueAt(tableRow, 0); 
+				currentBook = (String) bookTitles.getValueAt(tableRow, 1); 
 			}	
 		} else if (e.getSource() == royaltiesTable.getSelectionModel()) {
 			if (royaltiesTable.getSelectedRow() != -1) {
 				deleteButton.setEnabled(true);
 				editButton.setEnabled(true);
 				int row = royaltiesTable.convertRowIndexToModel(royaltiesTable.getSelectedRow());
-				currentPerson = (String) royaltiesTable.getValueAt(row, 0);
+				currentPerson = (String) royaltiesTable.getValueAt(row, 1);
 			} else {
 				deleteButton.setEnabled(false);
 				editButton.setEnabled(false);
@@ -256,7 +195,7 @@ public class RoyaltiesRulesPanel extends JPanel implements ActionListener, ListS
 			}
 		};
 		JTable table = new JTable(model);
-		
+
 		//Disables the user-reordering table columns
 		table.getTableHeader().setReorderingAllowed(false);
 
@@ -268,13 +207,13 @@ public class RoyaltiesRulesPanel extends JPanel implements ActionListener, ListS
 	 * @return The royalties data to be put in to a tablemodel
 	 */
 	private Object[][] getDataRoyalties(Book b){
-		HashMap<Person, IRoyaltyType> listRoyalties = SalesHistory.get().getListChannels().get(currentChannel).getListRoyalties().get(b);
-		int numberOfRows = listRoyalties.keySet().size(); //THIS IS ALWAYS WHERE IT FAILS WHEN THERE'S A BUG
+		HashMap<Person, IRoyaltyType> listRoyalties = SalesHistory.get().getUniformRoyalties().get(b);
+		int numberOfRows = listRoyalties.keySet().size();
 		Object[][] data = new Object[numberOfRows][2];
 		int count = 0;
 		for (Person p : listRoyalties.keySet()) {
 			data[count][0] = p.getName();
-			data[count][1] = listRoyalties.get(p);
+			data[count][1] = listRoyalties.get(p).toString();
 			count++;
 		}
 		return data;
@@ -284,11 +223,12 @@ public class RoyaltiesRulesPanel extends JPanel implements ActionListener, ListS
 	 * @return the JTable of book titles (sortable alphabetically, single selection only, not editable)
 	 */
 	private JTable getTableBooks() {
-		String[] columnNames = {"Book Title"};
+		String[] columnNames = {"Book Number", "Book Title"};
 		DefaultTableModel model = new DefaultTableModel(getDataBooks(), columnNames) {
 			@Override
 			public Class<?> getColumnClass(int column) {
 				switch (column ) {
+				case 0 : return Long.class;
 				default : return String.class;
 				}
 			}
@@ -298,26 +238,115 @@ public class RoyaltiesRulesPanel extends JPanel implements ActionListener, ListS
 			}	
 		};
 		JTable table = new JTable(model);
-		
-		//Disables the user-reordering table columns
-		table.getTableHeader().setReorderingAllowed(false);
 
 		return table;
 	}
 
-	/**Returns the data to be put into a tablemodel for the list of books with royalties info for currently selected channel
+	/**Returns the data to be put into a tablemodel for the list of books 
 	 * 
-	 * @return data to be put into a tablemodel for the list of books with royalties info for currently selected channel
+	 * @return data to be put into a tablemodel for the list of books
 	 */
 	private Object[][] getDataBooks(){
-		int numberOfRows = SalesHistory.get().getListChannels().get(currentChannel).getListRoyalties().keySet().size();
-		Object[][] data = new Object[numberOfRows][1];
+		int numberOfRows = SalesHistory.get().getUniformRoyalties().keySet().size();
+		Object[][] data = new Object[numberOfRows][2];
 		int count = 0;
-		for (Book b : SalesHistory.get().getListChannels().get(currentChannel).getListRoyalties().keySet()) {
-			data[count][0] = b.getTitle();
+		for (Book b : SalesHistory.get().getUniformRoyalties().keySet()) {
+			data[count][0] = b.getBookNumber();
+			data[count][1] = b.getTitle();
 			count++;
 		}
 		return data;
 	}
+	
+	/**Makes sure the table is in single selection mode and is sorted by its second column,
+	 *  and that the user cannot reorder its columns
+	 * @param table
+	 */
+	private void setTableSettings(JTable table) {
+		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+		
+		table.getColumnModel().getColumn(0).setMaxWidth(100);
+
+		//Sort the table by the second column 
+		TableRowSorter<TableModel> sorter = new TableRowSorter<>(table.getModel());
+		table.setRowSorter(sorter);
+		List<RowSorter.SortKey> sortKeys = new ArrayList<>();
+		int columnIndexToSort = 1;
+		sortKeys.add(new RowSorter.SortKey(columnIndexToSort, SortOrder.ASCENDING));
+		sorter.setSortKeys(sortKeys);
+		sorter.sort();	
+		
+		table.getTableHeader().setReorderingAllowed(false);
+	}
+
+	/**Method to call when underlying data may have changed and the tables needs to be updated,
+	 *  more specifically bookTitles is updated and royaltyDetailsPanel is emptied since no book will be selected
+	 */
+	public void updateData() {
+		//Empty and erase royalty details panel
+		if (royaltiesTable != null && royaltiesTable.isShowing()) {
+			royaltiesTable.getSelectionModel().removeListSelectionListener(this);
+		}
+		royaltyDetailsPanel.removeAll();
+		royaltyDetailsPanel.revalidate();
+		royaltyDetailsPanel.repaint();
+
+		//Have to do this to avoid crashes as it would listen to a selection on a table that is going to be completely redone
+		bookTitles.getSelectionModel().removeListSelectionListener(this);
+
+		//Fills the table with the new data (as obtained by getting the model off of a new table)
+		TableModel model = getTableBooks().getModel();
+		bookTitles.setModel(model);
+		setTableSettings(bookTitles);
+
+		//Repaint with current data
+		bookTitles.revalidate();
+		bookTitles.repaint();
+
+		//Reinstate list selection listener so that royalty details can be obtained for this new list
+		bookTitles.getSelectionModel().addListSelectionListener(this);
+	}
+
+//	private static Boolean royaltiesUniformAcrossChannelsCheck(Book book) {
+//		Boolean uniformity = true;
+//		//For each channel (except createspace), check that it has a royalty list for that book
+//		for (Channel ch : SalesHistory.get().getListChannels().values()) {
+//			if (!ch.getName().equals("Createspace") && ch.getListRoyalties().get(book) == null) {
+//				uniformity = false;
+//			}
+//		}
+//		if (uniformity) {
+//			HashMap<Person, IRoyaltyType> royaltiesAmazon = SalesHistory.get().getListChannels().get("Amazon").getListRoyalties().get(book);
+//			HashMap<Person, IRoyaltyType> royaltiesApple = SalesHistory.get().getListChannels().get("Apple").getListRoyalties().get(book);
+//			HashMap<Person, IRoyaltyType> royaltiesKobo = SalesHistory.get().getListChannels().get("Kobo").getListRoyalties().get(book);
+//			HashMap<Person, IRoyaltyType> royaltiesNook = SalesHistory.get().getListChannels().get("Nook").getListRoyalties().get(book);
+//
+//			if (!checkRoyaltyRules(royaltiesAmazon, royaltiesApple) || !checkRoyaltyRules(royaltiesAmazon, royaltiesKobo)
+//					|| !checkRoyaltyRules(royaltiesAmazon, royaltiesNook)) {
+//				uniformity = false;
+//			}
+//		}
+//		return uniformity;
+//	}
+//
+//	private static Boolean checkRoyaltyRules(HashMap<Person, IRoyaltyType> channel1, HashMap<Person, IRoyaltyType> channel2) {
+//		Boolean same = true;
+//
+//		for (Person p : channel1.keySet()) {
+//			if (!channel2.keySet().contains(p)) {
+//				same = false;
+//			}
+//		}
+//		if (same) {
+//			for (Person p : channel1.keySet()) {
+//				if (((RoyaltyPercentage) channel1.get(p)).getPercentage() != ((RoyaltyPercentage) channel2.get(p)).getPercentage()) {
+//					same = false;
+//				}
+//			}
+//		}
+//
+//
+//		return same;
+//	}
 
 }

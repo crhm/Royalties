@@ -27,10 +27,13 @@ import main.SalesHistory;
 @SuppressWarnings("serial")
 public class RoyaltyHoldersPanel extends JPanel {
 
+	JTable royaltyHoldersTable;
+
 	public RoyaltyHoldersPanel() {
 		super();
 		this.setLayout(new GridLayout());
-		this.add(new JScrollPane(getTable()));
+		royaltyHoldersTable = getTable();
+		this.add(new JScrollPane(royaltyHoldersTable));
 
 	}
 
@@ -55,7 +58,30 @@ public class RoyaltyHoldersPanel extends JPanel {
 
 		//Sets the table
 		JTable table = new JTable(model);
-		
+		setTableSettings(table);
+
+		return table;
+	}
+
+	/**Returns the data to be plugged into the appropriate table model.
+	 * <br>Strips person names of quotation marks for cleanliness of presentation.
+	 */
+	private Object[][] getData(){
+		Object[][] data = new Object[SalesHistory.get().getListRoyaltyHolders().size()][2];
+		int count = 0;
+		for (Person p : SalesHistory.get().getListRoyaltyHolders()) {
+			data[count][0] = p.getName();
+			data[count][1] = p.getBalance();
+			count++;
+		}
+		return data;
+	}
+
+	/**Ensures that the table's second column is rendered as a currency, that it is sorted by its first column, 
+	 * and that the user cannot reorder the columns.
+	 * @param table
+	 */
+	private void setTableSettings(JTable table) {
 		//Renders last column as currency yet allows it to be sorted as a double
 		TableColumnModel columnModel = table.getColumnModel();
 		columnModel.getColumn(1).setCellRenderer(NumberRenderer.getCurrencyRenderer());
@@ -68,25 +94,17 @@ public class RoyaltyHoldersPanel extends JPanel {
 		sortKeys.add(new RowSorter.SortKey(columnIndexToSort, SortOrder.ASCENDING));
 		sorter.setSortKeys(sortKeys);
 		sorter.sort();
-		
+
 		//Disables the user-reordering table columns
 		table.getTableHeader().setReorderingAllowed(false);
-
-		return table;
 	}
 
-	/**Returns the data to be plugged into the appropriate table model.
-	 * <br>Strips person names of quotation marks for cleanliness of presentation.
+	/**Method to call when the underlying data may have changed and the table needs to be updated.
 	 */
-	private Object[][] getData(){
-		Object[][] data = new Object[SalesHistory.get().getListRoyaltyHolders().values().size()][2];
-		int count = 0;
-		for (Person p : SalesHistory.get().getListRoyaltyHolders().values()) {
-			data[count][0] = p.getName();
-			data[count][1] = p.getBalance();
-			count++;
-		}
-		return data;
+	public void updateData() {
+		TableModel model = getTable().getModel();
+		royaltyHoldersTable.setModel(model);
+		setTableSettings(royaltyHoldersTable);
 	}
 
 }

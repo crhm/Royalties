@@ -5,6 +5,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
+import main.Person;
 import main.SalesHistory;
 
 import java.awt.BorderLayout;
@@ -14,6 +15,8 @@ import java.util.List;
 
 @SuppressWarnings("serial")
 public class AuthorsPanel extends JPanel {
+	private JTable listAuthors;
+	
 	public AuthorsPanel() {
 		setLayout(new BorderLayout(0, 0));
 		
@@ -36,7 +39,7 @@ public class AuthorsPanel extends JPanel {
 		JScrollPane scrollPane = new JScrollPane();
 		add(scrollPane, BorderLayout.CENTER);
 		
-		JTable listAuthors = getTable();
+		listAuthors = getTable();
 		scrollPane.setViewportView(listAuthors);
 	}
 	
@@ -58,6 +61,29 @@ public class AuthorsPanel extends JPanel {
 
 		//Sets up table
 		JTable table = new JTable(model);
+		setTableSettings(table);
+
+		return table;
+	}
+
+	/**Returns the data to be plugged into the model for the JTable representing the list of books managed by PLP
+	 * Titles and Authors are stripped of potential quotation marks for cleanliness of presentation.
+	 */
+	private Object[][] getData(){
+		Object[][] data = new Object[SalesHistory.get().getListAuthors().size()][1];
+		int count = 0;
+		for (Person p : SalesHistory.get().getListAuthors()) {
+			data[count][0] = p.getName();
+			count++;
+		}
+		return data;
+	}
+	
+	/**Ensures the table passed as argument is in single selection mode, is sorted by its first column, 
+	 * and forbids the reordering of columns.
+	 * @param table
+	 */
+	private void setTableSettings(JTable table) {
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		
 		//Sets up sorting
@@ -71,21 +97,14 @@ public class AuthorsPanel extends JPanel {
 		
 		//Disables the user-reordering table columns
 		table.getTableHeader().setReorderingAllowed(false);
-
-		return table;
 	}
 
-	/**Returns the data to be plugged into the model for the JTable representing the list of books managed by PLP
-	 * Titles and Authors are stripped of potential quotation marks for cleanliness of presentation.
+	/**Updates the data in the table of authors
 	 */
-	private Object[][] getData(){
-		Object[][] data = new Object[SalesHistory.get().getListAuthors().size()][1];
-		int count = 0;
-		for (String s : SalesHistory.get().getListAuthors()) {
-			data[count][0] = s;
-			count++;
-		}
-		return data;
+	public void updateData() {
+		TableModel model = getTable().getModel();
+		listAuthors.setModel(model);
+		setTableSettings(listAuthors);
 	}
 
 }

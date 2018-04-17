@@ -7,8 +7,7 @@ import java.util.Currency;
 import importing.FileFormat;
 import main.Book;
 import main.Channel;
-import main.Sale;
-import main.SalesHistory;
+import main.ObjectFactory;
 
 /**Class that represents the format for raw monthly sales data files from Apple channel and performs the import of the data found
  *  in such files, through method importData(). It is an implementation of the IFileFormat interface.
@@ -110,8 +109,7 @@ public class AppleFileFormat extends FileFormat implements java.io.Serializable 
 		}
 
 		//Creates the sale and adds its to the app
-		Sale sale = new Sale(channel, country, date, book, netUnitsSold, royaltyTypePLP, price, deliveryCost, revenuesPLP, currency);
-		SalesHistory.get().addSale(sale);
+		ObjectFactory.createSale(channel, country, date, book, netUnitsSold, royaltyTypePLP, price, deliveryCost, revenuesPLP, currency);
 	}
 
 }

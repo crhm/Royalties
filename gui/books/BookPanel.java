@@ -8,45 +8,51 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.RowSorter;
 import javax.swing.SortOrder;
+import javax.swing.event.ChangeEvent;
 import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
+import javax.swing.event.TableColumnModelEvent;
+import javax.swing.event.TableColumnModelListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
-import com.sun.xml.internal.bind.v2.runtime.unmarshaller.XsiNilLoader.Array;
-
 import main.Book;
 import main.SalesHistory;
 
 /**A JPanel containing a JTable representing the list of books managed by PLP.
- * <br>Information displayed for each book: Title, Author, Identifiers, Total Sold.
+ * <br>Information displayed for each book: Book Number, Title, Author, Identifiers, Total Sold.
  * <br>Table can be sorted by user, but prioritises sorting by Book title.
  * <br>Cells are non-editable.
  * @author crhm
  *
  */
 @SuppressWarnings("serial")
-public class BookPanel extends JPanel implements ActionListener, ListSelectionListener{
+public class BookPanel extends JPanel implements ActionListener, ListSelectionListener, TableColumnModelListener {
 	
 	private JTable booksTable;
 	private JButton editButton = new JButton("Edit Book");
 	private JButton addButton = new JButton("Add New Book");
 	private JButton deleteButton = new JButton("Delete Book");
-	
-	//TODO fix appearance of edit button to only happen when one book is selected, and think about delete behavior when more than one is selected
-	//TODO add "these are the same books" button for multiple selection?
+	private JButton mergeButton = new JButton("Merge together two books selected");
+	int selectedIndex1 = -1;
+	int selectedIndex2 = -1;
+	int widthCol0 = 50;
+	int widthCol1 = 300;
+	int widthCol2 = 130;
+	int widthCol3 = 300;
+	int widthCol4 = 50;
 
 
 	public BookPanel() {
@@ -60,11 +66,12 @@ public class BookPanel extends JPanel implements ActionListener, ListSelectionLi
 		editButton.addActionListener(this);
 		addButton.addActionListener(this);
 		deleteButton.addActionListener(this);
+		mergeButton.addActionListener(this);
+		mergeButton.setEnabled(false);
 		
 		//Setting up button Panel
 		JPanel buttonPanel = new JPanel(new GridLayout(1, 5));
-		buttonPanel.add(new JLabel());//Bad solution to problem of making buttons smaller - fix please? TODO
-		buttonPanel.add(new JLabel());
+		buttonPanel.add(mergeButton);
 		buttonPanel.add(addButton);
 		buttonPanel.add(deleteButton);
 		buttonPanel.add(editButton);
@@ -72,6 +79,7 @@ public class BookPanel extends JPanel implements ActionListener, ListSelectionLi
 		//Setting up JTable and selection behavior
 		this.booksTable = getTable();
 		this.booksTable.getSelectionModel().addListSelectionListener(this);
+		this.booksTable.getColumnModel().addColumnModelListener(this);
 		
 		//Setting up container Panel
 		this.add(buttonPanel, BorderLayout.NORTH);
@@ -82,13 +90,14 @@ public class BookPanel extends JPanel implements ActionListener, ListSelectionLi
 	 */
 	private JTable getTable() {
 		//Prepares table model
-		Object[] columnNames = {"Title", "Author", "Identifiers", "Total Sold"};
+		Object[] columnNames = {"Book Number", "Title", "Main Author", "Identifiers", "Total Sold"};
 		DefaultTableModel model = new DefaultTableModel(getData(), columnNames) {
 			@Override
 			public Class<?> getColumnClass(int column) {
 				switch (column) {
-				case 2 : return Array.class;
-				case 3 : return Integer.class;
+				case 0 : return Long.class;
+				case 3 : return Arrays.class;
+				case 4 : return Integer.class;
 				default : return String.class;
 				}
 			}
@@ -100,20 +109,7 @@ public class BookPanel extends JPanel implements ActionListener, ListSelectionLi
 
 		//Sets up table
 		JTable table = new JTable(model);
-		TableColumnModel columnModel = table.getColumnModel();
-		columnModel.getColumn(3).setMaxWidth(100);
-
-		//Sets up sorting by book title
-		TableRowSorter<TableModel> sorter = new TableRowSorter<>(table.getModel());
-		table.setRowSorter(sorter);
-		List<RowSorter.SortKey> sortKeys = new ArrayList<>();
-		int columnIndexToSort = 0;
-		sortKeys.add(new RowSorter.SortKey(columnIndexToSort, SortOrder.ASCENDING));
-		sorter.setSortKeys(sortKeys);
-		sorter.sort();
-		
-		//Disables the user-reordering table columns
-		table.getTableHeader().setReorderingAllowed(false);
+		setTableSettings(table);
 
 		return table;
 	}
@@ -122,14 +118,19 @@ public class BookPanel extends JPanel implements ActionListener, ListSelectionLi
 	 * Titles and Authors are stripped of potential quotation marks for cleanliness of presentation.
 	 */
 	private Object[][] getData(){
-		Object[][] data = new Object[SalesHistory.get().getListPLPBooks().values().size()][4];
+		Object[][] data = new Object[SalesHistory.get().getListPLPBooks().size()][5];
 		int count = 0;
-		for (Book b : SalesHistory.get().getListPLPBooks().values()) {
-			data[count][0] = b.getTitle();
-			data[count][1] = b.getAuthor();
-			data[count][2] = b.getIdentifiers();
+		for (Book b : SalesHistory.get().getListPLPBooks()) {
+			data[count][0] = b.getBookNumber();
+			data[count][1] = b.getTitle();
+			if (b.getAuthor1() != null) {
+				data[count][2] = b.getAuthor1().getName();
+			} else {
+				data[count][2] = "";
+			}
+			data[count][3] = b.getIdentifiers();
 			BigDecimal totalSold = new BigDecimal(b.getTotalUnitsSold());
-			data[count][3] = totalSold.setScale(0);
+			data[count][4] = totalSold.setScale(0);
 
 			count++;
 		}
@@ -141,15 +142,14 @@ public class BookPanel extends JPanel implements ActionListener, ListSelectionLi
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == editButton) {
-				//TODO figure out how I manage consequences for other tables in other tabs that represent such info...?
 				int row = booksTable.convertRowIndexToModel(booksTable.getSelectedRow());
-				String title = (String) booksTable.getModel().getValueAt(row, 0);
-				Book book = SalesHistory.get().getListPLPBooks().get(title);
+				Long bookNumber = (Long) booksTable.getModel().getValueAt(row, 0);
+				Book book = SalesHistory.get().getBookWithNumber(bookNumber);
 				EditBookDialog editBookDialog = new EditBookDialog(book);
 				editBookDialog.addWindowListener(new WindowAdapter() {
 				@Override
 				public void windowClosed(WindowEvent e) { //update and repaint table on close of editBookDialog
-					updateTable();
+					updateData();
 				}				
 			});
 		} else if (e.getSource() == addButton) {
@@ -157,7 +157,7 @@ public class BookPanel extends JPanel implements ActionListener, ListSelectionLi
 			addBookDialog.addWindowListener(new WindowAdapter() {
 				@Override
 				public void windowClosed(WindowEvent e) { //update and repaint table on close of addBookDialog
-					updateTable();
+					updateData();
 				}				
 			});
 
@@ -168,10 +168,25 @@ public class BookPanel extends JPanel implements ActionListener, ListSelectionLi
 			int option = JOptionPane.showConfirmDialog(this, "Please confirm you want to delete this book.", "Warning!", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
 			if (option == 0) { //If user clicks OK
 				int row = booksTable.convertRowIndexToModel(booksTable.getSelectedRow());
-				String title = (String) booksTable.getModel().getValueAt(row, 0);
-				Book book = SalesHistory.get().getListPLPBooks().get(title);
+				Long bookNumber = (Long) booksTable.getModel().getValueAt(row, 0);
+				Book book = SalesHistory.get().getBookWithNumber(bookNumber);
 				SalesHistory.get().removeBook(book);
-				updateTable();
+				updateData();
+			}
+		} else if (e.getSource() == mergeButton) {
+			int row1 = booksTable.convertRowIndexToModel(selectedIndex1);
+			int row2 = booksTable.convertRowIndexToModel(selectedIndex2);
+			long bookNumber1 = (long) booksTable.getModel().getValueAt(row1, 0);
+			long bookNumber2 = (long) booksTable.getModel().getValueAt(row2, 0);
+			Book book1 = SalesHistory.get().getBookWithNumber(bookNumber1);
+			Book book2 = SalesHistory.get().getBookWithNumber(bookNumber2);
+			int userChoice = JOptionPane.showConfirmDialog(null, "Please confirm that you want to merge these two books. "
+					+ "This will affect royalties and past sales.", 
+					"Confirmation Required", JOptionPane.OK_CANCEL_OPTION);
+			if (userChoice == JOptionPane.OK_OPTION) {
+				book1.merge(book2);
+				SalesHistory.get().removeBook(book2);
+				updateData();
 			}
 		}
 	}
@@ -180,47 +195,99 @@ public class BookPanel extends JPanel implements ActionListener, ListSelectionLi
 	 */
 	@Override
 	public void valueChanged(ListSelectionEvent e) {
-		if (booksTable.getSelectedRow() != -1) {
+		if (booksTable.getSelectedRows().length == 1) {
+			mergeButton.setEnabled(false);
 			deleteButton.setEnabled(true);
 			editButton.setEnabled(true);
-		} else {
+		} else if (booksTable.getSelectedRows().length == 2) {
+			selectedIndex1 = booksTable.getSelectionModel().getMinSelectionIndex();
+			selectedIndex2 = booksTable.getSelectionModel().getMaxSelectionIndex();
+			mergeButton.setEnabled(true);
 			deleteButton.setEnabled(false);
 			editButton.setEnabled(false);
-		}	
+		} else {
+			mergeButton.setEnabled(false);
+			deleteButton.setEnabled(false);
+			editButton.setEnabled(false);
+		}
+	}
+	
+	/**Ensures the table has a max width for its fourth column, that it is sorted by its first, and 
+	 * that the reordering of columns by the user is disabled.
+	 * @param table
+	 */
+	private void setTableSettings(JTable table) {
+		TableColumnModel columnModel = table.getColumnModel();
+		columnModel.getColumn(0).setPreferredWidth(widthCol0);
+		columnModel.getColumn(0).setMaxWidth(85);
+		columnModel.getColumn(1).setPreferredWidth(widthCol1);
+		columnModel.getColumn(2).setPreferredWidth(widthCol2);
+		columnModel.getColumn(2).setMaxWidth(160);
+		columnModel.getColumn(3).setPreferredWidth(widthCol3);
+		columnModel.getColumn(4).setPreferredWidth(widthCol4);
+		columnModel.getColumn(4).setMaxWidth(85);
+
+		//Sets up sorting by book title
+		TableRowSorter<TableModel> sorter = new TableRowSorter<>(table.getModel());
+		table.setRowSorter(sorter);
+		List<RowSorter.SortKey> sortKeys = new ArrayList<>();
+		int columnIndexToSort = 1;
+		sortKeys.add(new RowSorter.SortKey(columnIndexToSort, SortOrder.ASCENDING));
+		sorter.setSortKeys(sortKeys);
+		sorter.sort();
+		
+		//Disables the user-reordering table columns
+		table.getTableHeader().setReorderingAllowed(false);
 	}
 	
 	/**Method to be called when the data of the list of books in SalesHistory has changed, and thus the table needs 
-	 * to be repainted.
+	 * to updated.
 	 */
-	private void updateTable() {
+	public void updateData() {
 		//To avoid crashes while it is being reworked
 		booksTable.getSelectionModel().removeListSelectionListener(this);
+		booksTable.getColumnModel().removeColumnModelListener(this); ;
 		
 		//Update data by updating model
 		TableModel model = getTable().getModel();
 		booksTable.setModel(model);
-		TableColumnModel columnModel = booksTable.getColumnModel();
-		columnModel.getColumn(3).setMaxWidth(100);
-
-		//Sets up sorting by book title
-		TableRowSorter<TableModel> sorter = new TableRowSorter<>(booksTable.getModel());
-		booksTable.setRowSorter(sorter);
-		List<RowSorter.SortKey> sortKeys = new ArrayList<>();
-		int columnIndexToSort = 0;
-		sortKeys.add(new RowSorter.SortKey(columnIndexToSort, SortOrder.ASCENDING));
-		sorter.setSortKeys(sortKeys);
-		sorter.sort();
-
-		//Repaint with current data
-		booksTable.revalidate();
-		booksTable.repaint();
+		setTableSettings(booksTable);
 
 		//Re-add the listSelectionListener
-		booksTable.getSelectionModel().addListSelectionListener(this);				
+		booksTable.getSelectionModel().addListSelectionListener(this);		
+		booksTable.getColumnModel().addColumnModelListener(this);
 
 		//By redrawing the table, the selection has disappeared, so disable edit and delete buttons
 		editButton.setEnabled(false);
 		deleteButton.setEnabled(false);
 	}
+
+	@Override
+	public void columnMarginChanged(ChangeEvent e) {
+		TableColumnModel model = booksTable.getColumnModel();
+		widthCol0 = model.getColumn(0).getWidth();
+		widthCol1 = model.getColumn(1).getWidth();
+		widthCol2 = model.getColumn(2).getWidth();
+		widthCol3 = model.getColumn(3).getWidth();
+		widthCol4 = model.getColumn(4).getWidth();		
+	}
+
+	@Override
+	public void columnSelectionChanged(ListSelectionEvent e) {
+	}
+	
+	@Override
+	public void columnAdded(TableColumnModelEvent e) {
+	}
+
+	@Override
+	public void columnRemoved(TableColumnModelEvent e) {
+	}
+
+	@Override
+	public void columnMoved(TableColumnModelEvent e) {
+	}
+
+
 
 }
