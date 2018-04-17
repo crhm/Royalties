@@ -50,7 +50,7 @@ public class SalesHistory implements java.io.Serializable {
 	private Set<String> listMonths = new HashSet<String>();
 	private HashMap<Book, HashMap<Person, IRoyaltyType>> uniformRoyalties = new HashMap<Book, HashMap<Person, IRoyaltyType>>();
 	//TODO get rid of all hashmaps and create get methods instead?
-	
+
 	private AtomicLong nextBookID = new AtomicLong(1);
 	private AtomicLong nextPersonID = new AtomicLong(1);
 
@@ -126,7 +126,7 @@ public class SalesHistory implements java.io.Serializable {
 		}
 		return book;
 	}
-	
+
 	/**
 	 * 
 	 * @param channelName
@@ -239,6 +239,11 @@ public class SalesHistory implements java.io.Serializable {
 	 * @return the uniformRoyalties
 	 */
 	public HashMap<Book, HashMap<Person, IRoyaltyType>> getUniformRoyalties() {
+		for (Book b : listPLPBooks) {
+			if (UniformRoyalties.check(b)) {
+				uniformRoyalties.put(b, SalesHistory.get().getChannel("Amazon").getListRoyalties().get(b));
+			}
+		}
 		return uniformRoyalties;
 	}
 
@@ -357,7 +362,7 @@ public class SalesHistory implements java.io.Serializable {
 				b.setAfterwordAuthor(newPerson);
 			}
 		}
-	
+
 		//Replacing amongst royalty holders		
 		/*For each book in uniformRoyalties, if it has oldPerson has a royaltyHolder, then create a new HashMap (newMappings) with the same mappings
 		 * as the old one except for oldPerson, which is now a mapping of newPerson to whatever royalty oldPerson was mapped to.
@@ -382,13 +387,13 @@ public class SalesHistory implements java.io.Serializable {
 			uniformRoyalties.remove(b);
 			uniformRoyalties.put(b, booksToUpdate.get(b));
 		}
-		
+
 		//Replacing amongst channel royalty lists.
 		for (Channel ch : listChannels) {
 			ch.replaceRoyaltyHolder(oldPerson, newPerson);
 		}
 	}
-	
+
 	/**Replaces a book by another in all the places it may occur (sales, and royalty lists, both general and channel specific).
 	 * Royalties of old book are added to that of newBook unless the royaltyholder already exists in newBook.
 	 * @param oldBook
@@ -400,7 +405,7 @@ public class SalesHistory implements java.io.Serializable {
 				s.setBook(newBook);
 			}
 		}
-		
+
 		HashMap<Person, IRoyaltyType> oldRoyalties = uniformRoyalties.get(oldBook);
 		HashMap<Person, IRoyaltyType> newRoyalties = uniformRoyalties.get(newBook);
 		if (oldRoyalties != null) {
@@ -415,7 +420,7 @@ public class SalesHistory implements java.io.Serializable {
 		if (newRoyalties != null) {
 			uniformRoyalties.put(newBook, newRoyalties);
 		}
-		
+
 		for (Channel ch : listChannels) {
 			ch.replaceBook(oldBook, newBook);
 		}

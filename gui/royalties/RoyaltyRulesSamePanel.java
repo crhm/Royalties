@@ -208,7 +208,7 @@ public class RoyaltyRulesSamePanel extends JPanel implements ActionListener, Lis
 	 */
 	private Object[][] getDataRoyalties(Book b){
 		HashMap<Person, IRoyaltyType> listRoyalties = SalesHistory.get().getUniformRoyalties().get(b);
-		int numberOfRows = listRoyalties.keySet().size(); //THIS IS ALWAYS WHERE IT FAILS WHEN THERE'S A BUG
+		int numberOfRows = listRoyalties.keySet().size();
 		Object[][] data = new Object[numberOfRows][2];
 		int count = 0;
 		for (Person p : listRoyalties.keySet()) {

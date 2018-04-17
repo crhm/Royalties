@@ -1,10 +1,8 @@
 package main;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
-import main.royalties.IRoyaltyType;
 
 /** Class representing books managed by PLP and sold via different channels.
  * <br> A book has a main title, but also a list of titles (can be varied spelling, varied length...).
@@ -31,8 +29,6 @@ public class Book implements java.io.Serializable{
 	private Set<String> identifiers = new HashSet<String>();
 	private double totalUnitsSold;
 	private final long bookNumber;
-	private HashMap<Person, IRoyaltyType> uniformRoyalties = new HashMap<Person, IRoyaltyType>();
-	private HashMap<Channel, HashMap<Person, IRoyaltyType>> channelSpecificRoyalties = new HashMap<Channel, HashMap<Person, IRoyaltyType>>();
 
 	/**Book constructor.
 	 * <br>Removes quote characters from title, and makes it the main title as well as adding it to the list of titles.
@@ -159,51 +155,11 @@ public class Book implements java.io.Serializable{
 		return listTitles;
 	}
 
-	/**
-	 * @return the uniformRoyalties
-	 */
-	public HashMap<Person, IRoyaltyType> getUniformRoyalties() {
-		return uniformRoyalties;
-	}
-
-	/**
-	 * @return the channelSpecificRoyalties
-	 */
-	public HashMap<Channel, HashMap<Person, IRoyaltyType>> getChannelSpecificRoyalties() {
-		return channelSpecificRoyalties;
-	}
-	
-	public HashMap<Person, IRoyaltyType> getRoyaltiesForChannel(Channel ch){
-		return channelSpecificRoyalties.get(ch);
-	}
-
 	public double getTotalUnitsSold() {
 		return totalUnitsSold;
 	}
 
-	//ADD METHODS
-	public void addRoyalty(Channel ch, Person royaltyHolder, IRoyaltyType royalty) {
-		if (royaltyHolder == null || royalty == null) {
-			throw new IllegalArgumentException("Error: royaltyHolder and royalty must not be null.");
-		}
-		if (ch == null) {
-			if (uniformRoyalties.containsKey(royaltyHolder)) {
-				throw new IllegalArgumentException("Error: this royalty holder already has been attributed a royalty for this book. "
-						+ "Please modify the existing royalty if you wish to change it.");
-			}
-			uniformRoyalties.put(royaltyHolder, royalty);
-		} else {
-			HashMap<Person, IRoyaltyType> channelRoyalties = channelSpecificRoyalties.get(ch);
-			if (channelRoyalties.containsKey(royaltyHolder)) {
-				throw new IllegalArgumentException("Error: this royalty holder already has been attributed a royalty for this book and this channel. "
-						+ "Please modify the existing royalty if you wish to change it.");
-			}
-			channelRoyalties.put(royaltyHolder, royalty);
-			channelSpecificRoyalties.remove(ch);
-			channelSpecificRoyalties.put(ch, channelRoyalties);
-		}
-	}
-	
+	//ADD METHODS	
 	/**Adds identifier to Book's list of identifiers
 	 * @throws IllegalArgumentException if identifier is empty or null
 	 */
@@ -230,20 +186,6 @@ public class Book implements java.io.Serializable{
 
 
 	//SET METHODS (NEEDED FOR EDITING)
-	/**
-	 * @param uniformRoyalties the uniformRoyalties to set
-	 */
-	public void setUniformRoyalties(HashMap<Person, IRoyaltyType> uniformRoyalties) {
-		this.uniformRoyalties = uniformRoyalties;
-	}
-
-	/**
-	 * @param channelSpecificRoyalties the channelSpecificRoyalties to set
-	 */
-	public void setChannelSpecificRoyalties(HashMap<Channel, HashMap<Person, IRoyaltyType>> channelSpecificRoyalties) {
-		this.channelSpecificRoyalties = channelSpecificRoyalties;
-	}
-	
 	/**
 	 * @param listTitles the listTitles to set
 	 * @throws IllegalArgumentException if any strings in listTitles are empty or null

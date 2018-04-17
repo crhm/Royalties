@@ -23,8 +23,8 @@ import gui.royalties.RoyaltyRulesDifferentPanel;
 import gui.royalties.RoyaltyRulesSamePanel;
 import gui.royaltyholders.RoyaltyHoldersPanel;
 import gui.sales.SalesPanel;
-import importing.ImportGeneralRoyalties;
 import importing.test.ImportEverything;
+import main.Book;
 import main.Person;
 import main.SalesHistory;
 
@@ -57,7 +57,6 @@ public class RoyaltiesApp extends JFrame implements Runnable, ChangeListener {
 			RoyaltiesApp test = new RoyaltiesApp();
 			Thread guiThread = new Thread(test, "Swing GUI");
 			guiThread.start();
-			ImportGeneralRoyalties.importData();
 
 			HashMap<String, Double> actualBalances = new HashMap<String, Double>();
 			try {
@@ -84,44 +83,44 @@ public class RoyaltiesApp extends JFrame implements Runnable, ChangeListener {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			System.out.println("\n\nRoyalty holders where calculations match: ");
-			for (Person p : SalesHistory.get().getListRoyaltyHolders()) {
-				if (actualBalances.containsKey(p.getName())) {
-					BigDecimal actualBalance = new BigDecimal(actualBalances.get(p.getName())).setScale(2, RoundingMode.HALF_UP);
-					double difference = p.getBalance() - actualBalance.doubleValue();
-					if (difference == 0) {
-						System.out.println(p.getName() + ": Actual Balance - " + actualBalance.doubleValue() + " vs. Balance Calculated - " 
-								+ p.getBalance());
-					}				
-				}
-			}
-			System.out.println("\nRoyalty holders where calculations almost match: ");
-			for (Person p : SalesHistory.get().getListRoyaltyHolders()) {
-				if (actualBalances.containsKey(p.getName())) {
-					BigDecimal actualBalance = new BigDecimal(actualBalances.get(p.getName())).setScale(2, RoundingMode.HALF_UP);
-					double difference = p.getBalance() - actualBalance.doubleValue();
-					BigDecimal diffBD = new BigDecimal(difference);
-					BigDecimal percentageDiff = diffBD.divide(actualBalance, 3, RoundingMode.HALF_UP);
-					if (difference > -0.5 && difference < 0.5 && difference != 0) {
-						System.out.println(p.getName() + ": Actual Balance - " + actualBalance.doubleValue() + " vs. Balance Calculated - " 
-								+ p.getBalance() 
-								+ " Difference: " + percentageDiff.doubleValue()*100 + "%");
-					}				
-				}
-			}
-			System.out.println("\nRoyalty holders where calculations don't match: ");
-			for (Person p : SalesHistory.get().getListRoyaltyHolders()) {
-				if (actualBalances.containsKey(p.getName())) {
-					BigDecimal actualBalance = new BigDecimal(actualBalances.get(p.getName())).setScale(2, RoundingMode.HALF_UP);
-					double difference = p.getBalance() - actualBalance.doubleValue();
-					BigDecimal diffBD = new BigDecimal(difference);
-					BigDecimal percentageDiff = diffBD.divide(actualBalance, 3, RoundingMode.HALF_UP);
-					if (difference < -0.5 || difference > 0.5) {
-						System.out.println(p.getName() + ": Actual Balance - " + actualBalance.doubleValue() + " vs. Balance Calculated - " 
-								+ p.getBalance() + " Difference: " + percentageDiff.doubleValue()*100 + "%");
-					}				
-				}
-			}		
+//			System.out.println("\n\nRoyalty holders where calculations match: ");
+//			for (Person p : SalesHistory.get().getListRoyaltyHolders()) {
+//				if (actualBalances.containsKey(p.getName())) {
+//					BigDecimal actualBalance = new BigDecimal(actualBalances.get(p.getName())).setScale(2, RoundingMode.HALF_UP);
+//					double difference = p.getBalance() - actualBalance.doubleValue();
+//					if (difference == 0) {
+//						System.out.println(p.getName() + ": Actual Balance - " + actualBalance.doubleValue() + " vs. Balance Calculated - " 
+//								+ p.getBalance());
+//					}				
+//				}
+//			}
+//			System.out.println("\nRoyalty holders where calculations almost match: ");
+//			for (Person p : SalesHistory.get().getListRoyaltyHolders()) {
+//				if (actualBalances.containsKey(p.getName())) {
+//					BigDecimal actualBalance = new BigDecimal(actualBalances.get(p.getName())).setScale(2, RoundingMode.HALF_UP);
+//					double difference = p.getBalance() - actualBalance.doubleValue();
+//					BigDecimal diffBD = new BigDecimal(difference);
+//					BigDecimal percentageDiff = diffBD.divide(actualBalance, 3, RoundingMode.HALF_UP);
+//					if (difference > -0.5 && difference < 0.5 && difference != 0) {
+//						System.out.println(p.getName() + ": Actual Balance - " + actualBalance.doubleValue() + " vs. Balance Calculated - " 
+//								+ p.getBalance() 
+//								+ " Difference: " + percentageDiff.doubleValue()*100 + "%");
+//					}				
+//				}
+//			}
+//			System.out.println("\nRoyalty holders where calculations don't match: ");
+//			for (Person p : SalesHistory.get().getListRoyaltyHolders()) {
+//				if (actualBalances.containsKey(p.getName())) {
+//					BigDecimal actualBalance = new BigDecimal(actualBalances.get(p.getName())).setScale(2, RoundingMode.HALF_UP);
+//					double difference = p.getBalance() - actualBalance.doubleValue();
+//					BigDecimal diffBD = new BigDecimal(difference);
+//					BigDecimal percentageDiff = diffBD.divide(actualBalance, 3, RoundingMode.HALF_UP);
+//					if (difference < -0.5 || difference > 0.5) {
+//						System.out.println(p.getName() + ": Actual Balance - " + actualBalance.doubleValue() + " vs. Balance Calculated - " 
+//								+ p.getBalance() + " Difference: " + percentageDiff.doubleValue()*100 + "%");
+//					}				
+//				}
+//			}		
 			
 		} catch (Exception e) {
 			e.printStackTrace();

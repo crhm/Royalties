@@ -209,7 +209,7 @@ public class RoyaltyRulesDifferentPanel extends JPanel implements ActionListener
 	private Object[][] getDataRoyalties(Book b, String channelName){
 		HashMap<Person, IRoyaltyType> listRoyalties = SalesHistory.get().getChannel(channelName).getListRoyalties().get(b);
 		if (listRoyalties != null) {
-			int numberOfRows = listRoyalties.keySet().size(); //THIS IS ALWAYS WHERE IT FAILS WHEN THERE'S A BUG
+			int numberOfRows = listRoyalties.keySet().size();
 			Object[][] data = new Object[numberOfRows][3];
 			int count = 0;
 			for (Person p : listRoyalties.keySet()) {
