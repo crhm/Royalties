@@ -19,8 +19,12 @@ import main.royalties.IRoyaltyType;
  * <br>-the complete list of sales, regardless of channel, as an ArrayList<Sale>, because there is no point in retrieving an 
  *  individual sale and some channels don't provide a unique identifier that could be used as a key.
  * <br>-the complete list of royalty holders, regardless of channel, as a HashMap where the keys are Person names and the values are Persons.
- * <br>-the list of books managed by PLP, as a HashMap where the keys are Book titles and the values are Books.
- * <br>-the list of channels that books are sold on, as a HashMap where the keys are Channel names and the values are Channels. 
+ * <br>-the list of books managed by PLP, as a set of books.
+ * <br>-the list of channels that books are sold on, as a set of channels. 
+ * <br>-the list of authors, as a set of persons.
+ * <br>-the list of months for which there have been sales, as a set of strings (representing the date in format MMM yyyy).
+ * <br>-the list of royalties for each book that has the same royalties across all channels.
+ * <br>-the next bookNumber and personNumber to be assigned to the next created book or person for the purposes of identification.
  *  <br><br>This class also calculates all royalties (by doing so sale by sale, see Sale.calculateRoyalties()).
  *  <br>This class allows the user to add a sale, a royalty holder, a book, or a channel to the app.
  * @author crhm
@@ -42,14 +46,13 @@ public class SalesHistory implements java.io.Serializable {
 	}
 
 	private List<Sale> salesHistory = new ArrayList<Sale>();
-	private HashMap<String, Person> listRoyaltyHolders = new HashMap<String, Person>();
+	private HashMap<String, Person> listRoyaltyHolders = new HashMap<String, Person>(); //TODO keep as a set rather than a hashMap?
 	private Set<Channel> listChannels = new HashSet<Channel>();
 	private Set<Book> listPLPBooks = new HashSet<Book>();
 	private Set<Person> listAuthors = new HashSet<Person>();
 	private Set<Person> listPersons = new HashSet<Person>();
 	private Set<String> listMonths = new HashSet<String>();
 	private HashMap<Book, HashMap<Person, IRoyaltyType>> uniformRoyalties = new HashMap<Book, HashMap<Person, IRoyaltyType>>();
-	//TODO get rid of all hashmaps and create get methods instead?
 
 	private AtomicLong nextBookID = new AtomicLong(1);
 	private AtomicLong nextPersonID = new AtomicLong(1);
@@ -127,9 +130,8 @@ public class SalesHistory implements java.io.Serializable {
 		return book;
 	}
 
-	/**
-	 * 
-	 * @param channelName
+	/**Returns the channel with that name
+	 * @param channelName String that is the name of the channel to be retrieved
 	 * @return the channel with that name, or null if there is none.
 	 */
 	public Channel getChannel(String channelName) {
@@ -192,7 +194,7 @@ public class SalesHistory implements java.io.Serializable {
 		return listAuthors;
 	}
 
-	/**
+	/** Returns the list of persons (authors or royalty holders) in SalesHistory.
 	 * @return the listPersons
 	 */
 	public Set<Person> getListPersons() {
@@ -206,8 +208,9 @@ public class SalesHistory implements java.io.Serializable {
 		return salesHistory;
 	}
 
-	/** Returns the complete list of royalty holders, regardless of channel, 
-	 * as a Set of persons. Is compiled on request.
+	/** Compiles and returns the complete list of royalty holders, regardless of channel, 
+	 * as a Set of persons.
+	 * <br>Goes through uniformRoyalties list but also royalty list of each channel.
 	 * @return the complete list of royalty holders, regardless of channel.
 	 */
 	public Set<Person> getListRoyaltyHolders() {
@@ -235,13 +238,14 @@ public class SalesHistory implements java.io.Serializable {
 		return listPLPBooks;
 	}
 
-	/**
+	/**Updates and returns the mapping of books to their royalties, if these are uniform across channels (see UniformRoyalties.check(Book b)).
 	 * @return the uniformRoyalties
 	 */
 	public HashMap<Book, HashMap<Person, IRoyaltyType>> getUniformRoyalties() {
 		for (Book b : listPLPBooks) {
 			if (UniformRoyalties.check(b)) {
-				uniformRoyalties.put(b, SalesHistory.get().getChannel("Amazon").getListRoyalties().get(b));
+				uniformRoyalties.putIfAbsent(b, SalesHistory.get().getChannel("Amazon").getListRoyalties().get(b)); 
+				//could be another channel, doesn't matter
 			}
 		}
 		return uniformRoyalties;
@@ -264,17 +268,24 @@ public class SalesHistory implements java.io.Serializable {
 		this.listPersons.add(person);
 	}
 
-	/** Adds a sale to the app.
-	 * <br>First places it in the list of all sales, then updates the book's total number of units sold appropriately.
+	/** Adds a sale to the list of sales
 	 * @param sale Sale to add to the app.
 	 */
 	public void addSale(Sale sale) {
 		this.salesHistory.add(sale);	
 	}
 
-	public void addRoyalty(Book b, String royaltyHolderName, IRoyaltyType royalty) {
-		if (royaltyHolderName.isEmpty()) {
-			throw new IllegalArgumentException("Error: royaltyHolderName cannot be empty.");
+	/**Adds the royalty passed as argument to the book passed as argument, for all channels.
+	 * <br>Will create a new person of the name passed as argument if one does not already exist.
+	 * @param b Book to which the royalty belonds
+	 * @param royaltyHolderName name of the person to whom the royalty will be owed
+	 * @param royalty royalty to be attributed.
+	 * @throws IllegalArgumentException if royaltyHolderName is empty, or any of the arguments are null, 
+	 * or the royaltyHolderName matches that of an existing royalty holder for that book.
+	 */
+	public void addUniformRoyalty(Book b, String royaltyHolderName, IRoyaltyType royalty) {
+		if (royaltyHolderName.isEmpty() || royaltyHolderName == null || b == null || royalty == null) {
+			throw new IllegalArgumentException("Error: royaltyHolderName cannot be empty, and arguments cannot be null.");
 		}
 
 		//Obtains the list of royalties for this book if one exists, or creates an empty one if not
@@ -285,18 +296,22 @@ public class SalesHistory implements java.io.Serializable {
 			listHolder = new HashMap<Person, IRoyaltyType>();
 		}
 
-		//Obtains the person with the name passed as argument from SalesHistory's list of royalty holders, 
+		//Obtains the person with the name passed as argument from SalesHistory's list of persons, 
 		//or creates one if one does not yet exist, and adds it to SalesHistory.
-		Person royaltyHolder2 = null;
+		Person royaltyHolder = null;
 		if (SalesHistory.get().getPerson(royaltyHolderName) != null) {
-			royaltyHolder2 = SalesHistory.get().getPerson(royaltyHolderName);
+			royaltyHolder = SalesHistory.get().getPerson(royaltyHolderName);
+			if (uniformRoyalties.get(b).containsKey(royaltyHolder)) {
+				throw new IllegalArgumentException("Error: that book already has a royaltyHolder with that name. "
+						+ "Edit existing royalty if you mean to change it.");
+			}
 		} else {
-			royaltyHolder2 = ObjectFactory.createPerson(royaltyHolderName);
-			SalesHistory.get().addRoyaltyHolder(royaltyHolder2);
+			royaltyHolder = ObjectFactory.createPerson(royaltyHolderName);
+			SalesHistory.get().addRoyaltyHolder(royaltyHolder);
 		}
 
 		//Adds the royalty holder + royalty combination to the list of royalties, and links the book to this list of royalties
-		listHolder.put(royaltyHolder2, royalty);
+		listHolder.put(royaltyHolder, royalty);
 		this.uniformRoyalties.put(b, listHolder);
 	}
 
@@ -412,7 +427,8 @@ public class SalesHistory implements java.io.Serializable {
 			if (newRoyalties == null) {
 				newRoyalties = new HashMap<Person, IRoyaltyType>();
 			}
-			for (Person p : oldRoyalties.keySet()) { //adding oldbook's royalties to that of newbook (unless a royalty holder already has a royalty in newBook)
+			//adding oldbook's royalties to that of newbook (unless a royalty holder already has a royalty in newBook)
+			for (Person p : oldRoyalties.keySet()) { 
 				newRoyalties.putIfAbsent(p, oldRoyalties.get(p));
 			}
 		}
@@ -493,7 +509,7 @@ public class SalesHistory implements java.io.Serializable {
 	 */
 	public void serialise() { //TODO make serialisation output be a filename with date and time? and then in deserialise choose filename with most recent date?
 		try {
-			FileOutputStream fileOut = new FileOutputStream("/tmp/data20.ser");
+			FileOutputStream fileOut = new FileOutputStream("/tmp/data21.ser");
 			ObjectOutputStream out = new ObjectOutputStream(fileOut);
 			SalesHistory.get().writeObject(out);
 			fileOut.close();
@@ -506,7 +522,7 @@ public class SalesHistory implements java.io.Serializable {
 	 */
 	public void deSerialise() {
 		try {
-			FileInputStream fileIn = new FileInputStream("/tmp/data20.ser");
+			FileInputStream fileIn = new FileInputStream("/tmp/data21.ser");
 			ObjectInputStream in = new ObjectInputStream(fileIn);
 			SalesHistory.get().readObject(in);
 			fileIn.close();

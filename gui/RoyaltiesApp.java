@@ -1,12 +1,6 @@
 package gui;
 
-import java.io.BufferedReader;
 import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
-import java.math.BigDecimal;
-import java.math.RoundingMode;
-import java.util.HashMap;
 
 import javax.swing.JFrame;
 import javax.swing.JTabbedPane;
@@ -34,9 +28,9 @@ import main.SalesHistory;
  */
 @SuppressWarnings("serial")
 public class RoyaltiesApp extends JFrame implements Runnable, ChangeListener {
-	
+
 	JTabbedPane allTabs = new JTabbedPane();        
-	
+
 	BookPanel bookPanel = new BookPanel();
 	PersonsPanel personsPanel = new PersonsPanel();
 	AuthorsPanel authorsPanel = new AuthorsPanel();
@@ -51,85 +45,20 @@ public class RoyaltiesApp extends JFrame implements Runnable, ChangeListener {
 	public static void main(String[] args) {
 		try {
 			obtainData();
-						
+
 			RoyaltiesApp test = new RoyaltiesApp();
 			Thread guiThread = new Thread(test, "Swing GUI");
-			guiThread.start();
-
-			HashMap<String, Double> actualBalances = new HashMap<String, Double>();
-			try {
-				BufferedReader br = new BufferedReader(new FileReader("Data/Balances Oct 2017.csv"));
-				StringBuilder lines = new StringBuilder();
-				String line = "";
-				while (line!= null) {
-					line = br.readLine();
-					lines.append(line + "\n");
-				}
-				br.close();
-				String temp = lines.toString();
-
-				String[] allLines = temp.split("\n");
-				int counter = 0;
-				for (String s : allLines) {
-					if (s.length() > 5 && counter > 0) { 
-						String[] values = s.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)", -1);
-						BigDecimal roundedValue = new BigDecimal(values[0]).setScale(2, RoundingMode.HALF_UP);
-						actualBalances.put(values[1], roundedValue.doubleValue());
-					}
-					counter ++;
-				} 
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-//			System.out.println("\n\nRoyalty holders where calculations match: ");
-//			for (Person p : SalesHistory.get().getListRoyaltyHolders()) {
-//				if (actualBalances.containsKey(p.getName())) {
-//					BigDecimal actualBalance = new BigDecimal(actualBalances.get(p.getName())).setScale(2, RoundingMode.HALF_UP);
-//					double difference = p.getBalance() - actualBalance.doubleValue();
-//					if (difference == 0) {
-//						System.out.println(p.getName() + ": Actual Balance - " + actualBalance.doubleValue() + " vs. Balance Calculated - " 
-//								+ p.getBalance());
-//					}				
-//				}
-//			}
-//			System.out.println("\nRoyalty holders where calculations almost match: ");
-//			for (Person p : SalesHistory.get().getListRoyaltyHolders()) {
-//				if (actualBalances.containsKey(p.getName())) {
-//					BigDecimal actualBalance = new BigDecimal(actualBalances.get(p.getName())).setScale(2, RoundingMode.HALF_UP);
-//					double difference = p.getBalance() - actualBalance.doubleValue();
-//					BigDecimal diffBD = new BigDecimal(difference);
-//					BigDecimal percentageDiff = diffBD.divide(actualBalance, 3, RoundingMode.HALF_UP);
-//					if (difference > -0.5 && difference < 0.5 && difference != 0) {
-//						System.out.println(p.getName() + ": Actual Balance - " + actualBalance.doubleValue() + " vs. Balance Calculated - " 
-//								+ p.getBalance() 
-//								+ " Difference: " + percentageDiff.doubleValue()*100 + "%");
-//					}				
-//				}
-//			}
-//			System.out.println("\nRoyalty holders where calculations don't match: ");
-//			for (Person p : SalesHistory.get().getListRoyaltyHolders()) {
-//				if (actualBalances.containsKey(p.getName())) {
-//					BigDecimal actualBalance = new BigDecimal(actualBalances.get(p.getName())).setScale(2, RoundingMode.HALF_UP);
-//					double difference = p.getBalance() - actualBalance.doubleValue();
-//					BigDecimal diffBD = new BigDecimal(difference);
-//					BigDecimal percentageDiff = diffBD.divide(actualBalance, 3, RoundingMode.HALF_UP);
-//					if (difference < -0.5 || difference > 0.5) {
-//						System.out.println(p.getName() + ": Actual Balance - " + actualBalance.doubleValue() + " vs. Balance Calculated - " 
-//								+ p.getBalance() + " Difference: " + percentageDiff.doubleValue()*100 + "%");
-//					}				
-//				}
-//			}		
-			
+			guiThread.start();		
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private void initialize() {
 		this.setExtendedState(JFrame.MAXIMIZED_BOTH);
 		this.setTitle("Royalties App");
 		this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		        
+
 		//Saves data by serialising it on close.
 		this.addWindowListener(new java.awt.event.WindowAdapter() {
 			@Override
@@ -168,7 +97,7 @@ public class RoyaltiesApp extends JFrame implements Runnable, ChangeListener {
 	 * @throws InterruptedException if a thread interrupts the import thread.
 	 */
 	private static void obtainData() throws InterruptedException {
-		File f = new File("/tmp/data20.ser");
+		File f = new File("/tmp/data21.ser");
 		if(f.exists() && !f.isDirectory()) { 
 			SalesHistory.get().deSerialise();
 		} else {
