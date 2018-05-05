@@ -43,7 +43,7 @@ public class BookPanel extends JPanel implements ActionListener, ListSelectionLi
 
 	private JTable booksTable;
 	private JButton editButton = new JButton("Edit Book");
-	private JButton addButton = new JButton("Add New Book");
+	private JButton addButton = new JButton("Create New Book");
 	private JButton deleteButton = new JButton("Delete Book");
 	private JButton mergeButton = new JButton("Merge together two books selected");
 	int selectedIndex1 = -1;
