@@ -312,47 +312,4 @@ public class RoyaltyRulesDifferentPanel extends JPanel implements ActionListener
 		
 		bookTitles.getSelectionModel().addListSelectionListener(this);
 	}
-
-//	private static Boolean royaltiesUniformAcrossChannelsCheck(Book book) {
-//		Boolean uniformity = true;
-//		//For each channel (except createspace), check that it has a royalty list for that book
-//		for (Channel ch : SalesHistory.get().getListChannels().values()) {
-//			if (!ch.getName().equals("Createspace") && ch.getListRoyalties().get(book) == null) {
-//				uniformity = false;
-//			}
-//		}
-//		if (uniformity) {
-//			HashMap<Person, IRoyaltyType> royaltiesAmazon = SalesHistory.get().getListChannels().get("Amazon").getListRoyalties().get(book);
-//			HashMap<Person, IRoyaltyType> royaltiesApple = SalesHistory.get().getListChannels().get("Apple").getListRoyalties().get(book);
-//			HashMap<Person, IRoyaltyType> royaltiesKobo = SalesHistory.get().getListChannels().get("Kobo").getListRoyalties().get(book);
-//			HashMap<Person, IRoyaltyType> royaltiesNook = SalesHistory.get().getListChannels().get("Nook").getListRoyalties().get(book);
-//
-//			if (!checkRoyaltyRules(royaltiesAmazon, royaltiesApple) || !checkRoyaltyRules(royaltiesAmazon, royaltiesKobo)
-//					|| !checkRoyaltyRules(royaltiesAmazon, royaltiesNook)) {
-//				uniformity = false;
-//			}
-//		}
-//		return uniformity;
-//	}
-//
-//	private static Boolean checkRoyaltyRules(HashMap<Person, IRoyaltyType> channel1, HashMap<Person, IRoyaltyType> channel2) {
-//		Boolean same = true;
-//
-//		for (Person p : channel1.keySet()) {
-//			if (!channel2.keySet().contains(p)) {
-//				same = false;
-//			}
-//		}
-//		if (same) {
-//			for (Person p : channel1.keySet()) {
-//				if (((RoyaltyPercentage) channel1.get(p)).getPercentage() != ((RoyaltyPercentage) channel2.get(p)).getPercentage()) {
-//					same = false;
-//				}
-//			}
-//		}
-//
-//
-//		return same;
-//	}
-
 }
