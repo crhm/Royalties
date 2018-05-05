@@ -140,8 +140,8 @@ public class RoyaltyRulesSamePanel extends JPanel implements ActionListener, Lis
 				bookTitles.repaint(); //Without this the change in selection occurs but does not show visually...
 				editButton.setEnabled(false);
 				deleteButton.setEnabled(false);
-				int tableRow = bookTitles.getSelectedRow();
-				Long bookNumber = (Long) bookTitles.getValueAt(tableRow, 0);
+				int tableRow = bookTitles.convertRowIndexToModel(bookTitles.getSelectedRow());
+				Long bookNumber = (Long) bookTitles.getModel().getValueAt(tableRow, 0);
 				Book book = SalesHistory.get().getBookWithNumber(bookNumber);
 				if (royaltiesTable != null && royaltiesTable.isShowing()) {
 					royaltiesTable.getSelectionModel().removeListSelectionListener(this);
@@ -161,14 +161,14 @@ public class RoyaltyRulesSamePanel extends JPanel implements ActionListener, Lis
 				royaltyDetailsPanel.revalidate();
 				royaltyDetailsPanel.repaint();
 
-				currentBook = (String) bookTitles.getValueAt(tableRow, 1); 
+				currentBook = (String) bookTitles.getModel().getValueAt(tableRow, 1); 
 			}	
 		} else if (e.getSource() == royaltiesTable.getSelectionModel()) {
 			if (royaltiesTable.getSelectedRow() != -1) {
 				deleteButton.setEnabled(true);
 				editButton.setEnabled(true);
 				int row = royaltiesTable.convertRowIndexToModel(royaltiesTable.getSelectedRow());
-				currentPerson = (String) royaltiesTable.getValueAt(row, 1);
+				currentPerson = (String) royaltiesTable.getModel().getValueAt(row, 1);
 			} else {
 				deleteButton.setEnabled(false);
 				editButton.setEnabled(false);
@@ -265,13 +265,13 @@ public class RoyaltyRulesSamePanel extends JPanel implements ActionListener, Lis
 	private void setTableSettings(JTable table) {
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		
-		table.getColumnModel().getColumn(0).setMaxWidth(100);
+		table.getColumnModel().removeColumn(table.getColumnModel().getColumn(0));
 
 		//Sort the table by the second column 
 		TableRowSorter<TableModel> sorter = new TableRowSorter<>(table.getModel());
 		table.setRowSorter(sorter);
 		List<RowSorter.SortKey> sortKeys = new ArrayList<>();
-		int columnIndexToSort = 1;
+		int columnIndexToSort = 1; //because though column 0 is removed from columnModel and hence view, it is still in the table model
 		sortKeys.add(new RowSorter.SortKey(columnIndexToSort, SortOrder.ASCENDING));
 		sorter.setSortKeys(sortKeys);
 		sorter.sort();	
@@ -306,47 +306,4 @@ public class RoyaltyRulesSamePanel extends JPanel implements ActionListener, Lis
 		//Reinstate list selection listener so that royalty details can be obtained for this new list
 		bookTitles.getSelectionModel().addListSelectionListener(this);
 	}
-
-//	private static Boolean royaltiesUniformAcrossChannelsCheck(Book book) {
-//		Boolean uniformity = true;
-//		//For each channel (except createspace), check that it has a royalty list for that book
-//		for (Channel ch : SalesHistory.get().getListChannels().values()) {
-//			if (!ch.getName().equals("Createspace") && ch.getListRoyalties().get(book) == null) {
-//				uniformity = false;
-//			}
-//		}
-//		if (uniformity) {
-//			HashMap<Person, IRoyaltyType> royaltiesAmazon = SalesHistory.get().getListChannels().get("Amazon").getListRoyalties().get(book);
-//			HashMap<Person, IRoyaltyType> royaltiesApple = SalesHistory.get().getListChannels().get("Apple").getListRoyalties().get(book);
-//			HashMap<Person, IRoyaltyType> royaltiesKobo = SalesHistory.get().getListChannels().get("Kobo").getListRoyalties().get(book);
-//			HashMap<Person, IRoyaltyType> royaltiesNook = SalesHistory.get().getListChannels().get("Nook").getListRoyalties().get(book);
-//
-//			if (!checkRoyaltyRules(royaltiesAmazon, royaltiesApple) || !checkRoyaltyRules(royaltiesAmazon, royaltiesKobo)
-//					|| !checkRoyaltyRules(royaltiesAmazon, royaltiesNook)) {
-//				uniformity = false;
-//			}
-//		}
-//		return uniformity;
-//	}
-//
-//	private static Boolean checkRoyaltyRules(HashMap<Person, IRoyaltyType> channel1, HashMap<Person, IRoyaltyType> channel2) {
-//		Boolean same = true;
-//
-//		for (Person p : channel1.keySet()) {
-//			if (!channel2.keySet().contains(p)) {
-//				same = false;
-//			}
-//		}
-//		if (same) {
-//			for (Person p : channel1.keySet()) {
-//				if (((RoyaltyPercentage) channel1.get(p)).getPercentage() != ((RoyaltyPercentage) channel2.get(p)).getPercentage()) {
-//					same = false;
-//				}
-//			}
-//		}
-//
-//
-//		return same;
-//	}
-
 }
