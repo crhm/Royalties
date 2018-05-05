@@ -101,6 +101,8 @@ public class PersonsPanel extends JPanel implements ActionListener, ListSelectio
 		//Renders last column as currency yet allows it to be sorted as a double
 		TableColumnModel columnModel = table.getColumnModel();
 		columnModel.getColumn(1).setCellRenderer(NumberRenderer.getCurrencyRenderer());
+		//Hides person number column from user while keeping it in the table and the table model so data can be retrieved.
+		columnModel.removeColumn(columnModel.getColumn(2));
 
 		//Sorts the table by person name
 		TableRowSorter<TableModel> sorter = new TableRowSorter<>(table.getModel());
