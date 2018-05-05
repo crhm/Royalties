@@ -43,10 +43,10 @@ public class RoyaltyRulesSamePanel extends JPanel implements ActionListener, Lis
 
 	//TODO add button should be dynamic; if only no particular royalty is selected, it should be disabled.
 
-	private JPanel buttonPanel = new JPanel(new GridLayout(1, 5));
-	private JButton editButton = new JButton("Edit");
-	private JButton addButton = new JButton("Add");
-	private JButton deleteButton = new JButton("Delete");
+	private JPanel buttonPanel = new JPanel(new GridLayout(1, 3));
+	private JButton editButton = new JButton("Edit Selected Royalty");
+	private JButton addButton = new JButton("Create New Royalty For Selected Book (All Channels)");
+	private JButton deleteButton = new JButton("Delete Selected Royalty");
 
 	private JPanel containerPanel = new JPanel(new GridLayout(1, 2, 5, 0));
 
@@ -86,18 +86,17 @@ public class RoyaltyRulesSamePanel extends JPanel implements ActionListener, Lis
 		//Because no royalty is selected to start with
 		deleteButton.setEnabled(false);
 		editButton.setEnabled(false);
+		addButton.setEnabled(false);
 
 		//Adding ActionListener to buttons
+		editButton.addActionListener(this);
 		deleteButton.addActionListener(this);
 		addButton.addActionListener(this);
-		editButton.addActionListener(this);
 
 		//Set up buttonPanel
-		buttonPanel.add(new JLabel());
-		buttonPanel.add(new JLabel());
 		buttonPanel.add(addButton);
-		buttonPanel.add(deleteButton);
 		buttonPanel.add(editButton);
+		buttonPanel.add(deleteButton);
 
 		//Add both containerPanel and ButtonPanel to main Panel
 		this.add(buttonPanel, BorderLayout.NORTH);
@@ -140,6 +139,7 @@ public class RoyaltyRulesSamePanel extends JPanel implements ActionListener, Lis
 				bookTitles.repaint(); //Without this the change in selection occurs but does not show visually...
 				editButton.setEnabled(false);
 				deleteButton.setEnabled(false);
+				addButton.setEnabled(true);
 				int tableRow = bookTitles.convertRowIndexToModel(bookTitles.getSelectedRow());
 				Long bookNumber = (Long) bookTitles.getModel().getValueAt(tableRow, 0);
 				Book book = SalesHistory.get().getBookWithNumber(bookNumber);
@@ -283,6 +283,11 @@ public class RoyaltyRulesSamePanel extends JPanel implements ActionListener, Lis
 	 *  more specifically bookTitles is updated and royaltyDetailsPanel is emptied since no book will be selected
 	 */
 	public void updateData() {
+		//Disabling buttons since selection is going to empty
+		addButton.setEnabled(false);
+		editButton.setEnabled(false);
+		deleteButton.setEnabled(false);
+		
 		//Empty and erase royalty details panel
 		if (royaltiesTable != null && royaltiesTable.isShowing()) {
 			royaltiesTable.getSelectionModel().removeListSelectionListener(this);

@@ -35,10 +35,10 @@ public class RoyaltyRulesDifferentPanel extends JPanel implements ActionListener
 	//and first add a book (from list of books - books already with a royalty for this channel, or create a new one) and then add a royalty to it. 
 	//If one is selected, it should read 'add royalty to this book' and perform that action only.
 
-	private JPanel buttonPanel = new JPanel(new GridLayout(1, 5));
-	private JButton editButton = new JButton("Edit");
-	private JButton addButton = new JButton("Add");
-	private JButton deleteButton = new JButton("Delete");
+	private JPanel buttonPanel = new JPanel(new GridLayout(1, 3));
+	private JButton editButton = new JButton("Edit Selected Royalty");
+	private JButton addButton = new JButton("Create New Royalty For Selected Book");
+	private JButton deleteButton = new JButton("Delete Selected Royalty");
 
 	private JPanel containerPanel = new JPanel(new GridLayout(1, 2, 5, 0));
 
@@ -47,6 +47,11 @@ public class RoyaltyRulesDifferentPanel extends JPanel implements ActionListener
 
 	//Displays the details of the royalties for the book selected amongst the book titles. If none are selected, no details are shown
 	private JPanel royaltyDetailsPanel = new JPanel(new GridLayout(5, 1, 0, 5)); 
+	private JTable royaltiesAmazon;
+	private JTable royaltiesKobo;
+	private JTable royaltiesNook;
+	private JTable royaltiesApple;
+	private JTable royaltiesCreatespace;
 
 	//Holds the index of selected book title so that in case of sorting the selection can be maintained despite index change
 	private int selectionIndexBeforeSort = 0;
@@ -72,6 +77,7 @@ public class RoyaltyRulesDifferentPanel extends JPanel implements ActionListener
 		//Because no royalty is selected to start with
 		deleteButton.setEnabled(false);
 		editButton.setEnabled(false);
+		addButton.setEnabled(false);
 
 		//Adding ActionListener to buttons
 		deleteButton.addActionListener(this);
@@ -79,11 +85,9 @@ public class RoyaltyRulesDifferentPanel extends JPanel implements ActionListener
 		editButton.addActionListener(this);
 
 		//Set up buttonPanel
-		buttonPanel.add(new JLabel());
-		buttonPanel.add(new JLabel());
 		buttonPanel.add(addButton);
-		buttonPanel.add(deleteButton);
 		buttonPanel.add(editButton);
+		buttonPanel.add(deleteButton);
 
 		//Add both containerPanel and ButtonPanel to main Panel
 		this.add(buttonPanel, BorderLayout.NORTH);
@@ -126,38 +130,44 @@ public class RoyaltyRulesDifferentPanel extends JPanel implements ActionListener
 				bookTitles.repaint(); //Without this the change in selection occurs but does not show visually...
 				editButton.setEnabled(false);
 				deleteButton.setEnabled(false);
+				addButton.setEnabled(true);
 				royaltyDetailsPanel.removeAll();
 				royaltyDetailsPanel.revalidate();
 				int tableRow = bookTitles.convertRowIndexToModel(bookTitles.getSelectedRow());
 				Long bookNumber = (Long) bookTitles.getModel().getValueAt(tableRow, 0);
 				Book book = SalesHistory.get().getBookWithNumber(bookNumber);
-				JTable royaltiesAmazon = getTableRoyalties(book, "Amazon");
-				JTable royaltiesApple = getTableRoyalties(book, "Apple");
-				JTable royaltiesKobo = getTableRoyalties(book, "Kobo");
-				JTable royaltiesNook = getTableRoyalties(book, "Nook");
-				JTable royaltiesCreatespace = getTableRoyalties(book, "Createspace");
+				royaltiesAmazon = getTableRoyalties(book, "Amazon");
+				royaltiesApple = getTableRoyalties(book, "Apple");
+				royaltiesKobo = getTableRoyalties(book, "Kobo");
+				royaltiesNook = getTableRoyalties(book, "Nook");
+				royaltiesCreatespace = getTableRoyalties(book, "Createspace");
 				if (royaltiesAmazon != null) {
 					royaltyDetailsPanel.add(royaltiesAmazon);
+					royaltiesAmazon.getSelectionModel().addListSelectionListener(this);
 				} else {
 					royaltyDetailsPanel.add(new JLabel("No royalties found for Amazon"));
 				}
 				if (royaltiesApple != null) {
 					royaltyDetailsPanel.add(royaltiesApple);
+					royaltiesApple.getSelectionModel().addListSelectionListener(this);
 				} else {
 					royaltyDetailsPanel.add(new JLabel("No royalties found for Apple"));
 				}
 				if (royaltiesKobo != null) {
 					royaltyDetailsPanel.add(royaltiesKobo);
+					royaltiesKobo.getSelectionModel().addListSelectionListener(this);
 				} else {
 					royaltyDetailsPanel.add(new JLabel("No royalties found for Kobo"));
 				}
 				if (royaltiesNook != null) {
 					royaltyDetailsPanel.add(royaltiesNook);
+					royaltiesNook.getSelectionModel().addListSelectionListener(this);
 				} else {
 					royaltyDetailsPanel.add(new JLabel("No royalties found for Nook"));
 				}
 				if (royaltiesCreatespace != null) {
 					royaltyDetailsPanel.add(royaltiesCreatespace);
+					royaltiesCreatespace.getSelectionModel().addListSelectionListener(this);
 				} else {
 					royaltyDetailsPanel.add(new JLabel("No royalties found for Createspace"));
 				}
@@ -167,8 +177,11 @@ public class RoyaltyRulesDifferentPanel extends JPanel implements ActionListener
 
 				currentBook = (String) bookTitles.getModel().getValueAt(tableRow, 1); 
 			}	
-		} else {
-			//TODO
+		} else if (e.getSource() == royaltiesAmazon.getSelectionModel() || e.getSource() == royaltiesApple.getSelectionModel() 
+				|| e.getSource() == royaltiesNook.getSelectionModel() || e.getSource() == royaltiesKobo.getSelectionModel()
+				|| e.getSource() == royaltiesCreatespace.getSelectionModel()){
+			editButton.setEnabled(true);
+			deleteButton.setEnabled(true);
 		}
 	}
 

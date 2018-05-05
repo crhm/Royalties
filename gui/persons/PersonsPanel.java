@@ -59,7 +59,7 @@ public class PersonsPanel extends JPanel implements ActionListener, ListSelectio
 		deleteButton.addActionListener(this);
 		buttonPanel.add(deleteButton);
 		
-		mergeButton = new JButton("Merge two persons selected");
+		mergeButton = new JButton("Merge Together Two Persons Selected");
 		mergeButton.setEnabled(false);
 		mergeButton.addActionListener(this);
 		buttonPanel.add(mergeButton);
