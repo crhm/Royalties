@@ -270,7 +270,6 @@ public class BookPanel extends JPanel implements ActionListener, ListSelectionLi
 		widthCol1 = model.getColumn(1).getWidth();
 		widthCol2 = model.getColumn(2).getWidth();
 		widthCol3 = model.getColumn(3).getWidth();
-		//		widthCol4 = model.getColumn(4).getWidth();		
 	}
 
 	@Override
