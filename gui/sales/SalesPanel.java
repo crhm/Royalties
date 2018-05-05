@@ -210,6 +210,20 @@ public class SalesPanel extends JPanel implements ActionListener, TableColumnMod
 		salesTable.setModel(model);
 		setTableSettings(salesTable);
 		salesTable.getColumnModel().addColumnModelListener(this);
+		
+		Boolean noMoreRoyalties = true;
+		for (Sale s : SalesHistory.get().getSalesHistory()) {
+			if (!s.getRoyaltyHasBeenCalculated()) {
+				noMoreRoyalties = false;
+			}
+		}
+		if (noMoreRoyalties) {
+			bttnCalculateRoyalties.setEnabled(false);
+			bttnCalculateRoyalties.setToolTipText("All royalties have been calculated");
+		} else {
+			bttnCalculateRoyalties.setEnabled(true);
+			bttnCalculateRoyalties.setToolTipText("Calculate royalties owed by PLP for sales where it has not been done yet.");	
+		}
 	}
 
 	@Override
