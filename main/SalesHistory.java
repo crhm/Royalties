@@ -237,17 +237,19 @@ public class SalesHistory implements java.io.Serializable {
 	public Set<Book> getListPLPBooks() {
 		return listPLPBooks;
 	}
-
-	/**Updates and returns the mapping of books to their royalties, if these are uniform across channels (see UniformRoyalties.check(Book b)).
+	
+	/**Calls UniformRoyalties.check(Book b) on all books, to see if they have royalties that are the same across channels, and returns
+	 *  the mapping of those books to their royalties (and sets uniformRoyalties to it).
 	 * @return the uniformRoyalties
 	 */
-	public HashMap<Book, HashMap<Person, IRoyaltyType>> getUniformRoyalties() {
+	public HashMap<Book, HashMap<Person, IRoyaltyType>> getUniformRoyalties(){
+		HashMap<Book, HashMap<Person, IRoyaltyType>> uniformRoyalties = new HashMap<Book, HashMap<Person, IRoyaltyType>>();
 		for (Book b : listPLPBooks) {
 			if (UniformRoyalties.check(b)) {
-				uniformRoyalties.putIfAbsent(b, SalesHistory.get().getChannel("Amazon").getListRoyalties().get(b)); 
-				//could be another channel, doesn't matter
+				uniformRoyalties.put(b, SalesHistory.get().getChannel("Amazon").getListRoyalties().get(b));
 			}
 		}
+		this.uniformRoyalties = uniformRoyalties;
 		return uniformRoyalties;
 	}
 
@@ -504,10 +506,12 @@ public class SalesHistory implements java.io.Serializable {
 			c.printStackTrace();
 		}
 	}
+	
+	//TODO make serialisation output be a filename with date and time? and then in deserialise choose filename with most recent date?
 
 	/**Serialises SalesHistory by calling its custom writeObject() method, and outputs it to a file called "/tmp/data.ser"
 	 */
-	public void serialise() { //TODO make serialisation output be a filename with date and time? and then in deserialise choose filename with most recent date?
+	public void serialise() { 
 		try {
 			FileOutputStream fileOut = new FileOutputStream("/tmp/data21.ser");
 			ObjectOutputStream out = new ObjectOutputStream(fileOut);
