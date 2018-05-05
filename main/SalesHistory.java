@@ -174,6 +174,7 @@ public class SalesHistory implements java.io.Serializable {
 	 * @return A list of string names of authors
 	 */
 	public Set<Person> getListAuthors(){
+		Set<Person> listAuthors = new HashSet<Person>();
 		for (Book b : listPLPBooks) {
 			if (b.getAuthor1() != null && !listAuthors.contains(b.getAuthor1())) {
 				listAuthors.add(b.getAuthor1());
@@ -191,6 +192,7 @@ public class SalesHistory implements java.io.Serializable {
 				listAuthors.add(b.getAfterwordAuthor());
 			}	
 		}
+		this.listAuthors = listAuthors;
 		return listAuthors;
 	}
 
