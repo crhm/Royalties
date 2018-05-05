@@ -128,8 +128,8 @@ public class RoyaltyRulesDifferentPanel extends JPanel implements ActionListener
 				deleteButton.setEnabled(false);
 				royaltyDetailsPanel.removeAll();
 				royaltyDetailsPanel.revalidate();
-				int tableRow = bookTitles.getSelectedRow();
-				Long bookNumber = (Long) bookTitles.getValueAt(tableRow, 0);
+				int tableRow = bookTitles.convertRowIndexToModel(bookTitles.getSelectedRow());
+				Long bookNumber = (Long) bookTitles.getModel().getValueAt(tableRow, 0);
 				Book book = SalesHistory.get().getBookWithNumber(bookNumber);
 				JTable royaltiesAmazon = getTableRoyalties(book, "Amazon");
 				JTable royaltiesApple = getTableRoyalties(book, "Apple");
@@ -165,7 +165,7 @@ public class RoyaltyRulesDifferentPanel extends JPanel implements ActionListener
 				royaltyDetailsPanel.revalidate();
 				royaltyDetailsPanel.repaint();
 
-				currentBook = (String) bookTitles.getValueAt(tableRow, 1); 
+				currentBook = (String) bookTitles.getModel().getValueAt(tableRow, 1); 
 			}	
 		} else {
 			//TODO
@@ -278,13 +278,13 @@ public class RoyaltyRulesDifferentPanel extends JPanel implements ActionListener
 	private void setTableSettings(JTable table) {
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		
-		table.getColumnModel().getColumn(0).setMaxWidth(100);
+		table.getColumnModel().removeColumn(table.getColumnModel().getColumn(0));
 
 		//Sort the table by the second column 
 		TableRowSorter<TableModel> sorter = new TableRowSorter<>(table.getModel());
 		table.setRowSorter(sorter);
 		List<RowSorter.SortKey> sortKeys = new ArrayList<>();
-		int columnIndexToSort = 1;
+		int columnIndexToSort = 1; //because though column 0 is removed from columnModel and hence view, it is still in the table model
 		sortKeys.add(new RowSorter.SortKey(columnIndexToSort, SortOrder.ASCENDING));
 		sorter.setSortKeys(sortKeys);
 		sorter.sort();	
