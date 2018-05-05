@@ -15,6 +15,10 @@ import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.RowSorter;
 import javax.swing.SortOrder;
+import javax.swing.event.ChangeEvent;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.TableColumnModelEvent;
+import javax.swing.event.TableColumnModelListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableColumnModel;
 import javax.swing.table.TableModel;
@@ -43,11 +47,24 @@ import main.SalesHistory;
  *
  */
 @SuppressWarnings("serial")
-public class SalesPanel extends JPanel implements ActionListener {
+public class SalesPanel extends JPanel implements ActionListener, TableColumnModelListener {
 	JTable salesTable;
 	JPanel tablePanel = new JPanel(new BorderLayout());
 	JPanel buttonPanel = new JPanel(new GridLayout(1, 4, 0, 0));
 	JButton bttnCalculateRoyalties = new JButton("Calculate Royalties");
+	
+	int widthCol0 = 75;
+	int widthCol1 = 50;
+	int widthCol2 = 70;
+	int widthCol3 = 350;
+	int widthCol4 = 120;
+	int widthCol5 = 80;
+	int widthCol6 = 80;
+	int widthCol7 = 65;
+	int widthCol8 = 80;
+	int widthCol9 = 100;
+	int widthCol10 = 100;
+
 	
 	public SalesPanel() {
 		super();
@@ -55,6 +72,7 @@ public class SalesPanel extends JPanel implements ActionListener {
 		this.setLayout(new BorderLayout());
 		this.setOpaque(true);
 		salesTable = getTable();
+		salesTable.getColumnModel().addColumnModelListener(this);
 		JScrollPane salesScrollPane = new JScrollPane(salesTable);
 		tablePanel.add(salesScrollPane, BorderLayout.CENTER);
 		
@@ -140,16 +158,27 @@ public class SalesPanel extends JPanel implements ActionListener {
 	 */
 	private void setTableSettings(JTable table) {
 		TableColumnModel columnModel = table.getColumnModel();
+		columnModel.getColumn(0).setPreferredWidth(widthCol0);
 		columnModel.getColumn(0).setMaxWidth(100);
+		columnModel.getColumn(1).setPreferredWidth(widthCol1);
 		columnModel.getColumn(1).setMaxWidth(60);
+		columnModel.getColumn(2).setPreferredWidth(widthCol2);
 		columnModel.getColumn(2).setMaxWidth(65);
+		columnModel.getColumn(3).setPreferredWidth(widthCol3);
 		columnModel.getColumn(3).setMaxWidth(400);
+		columnModel.getColumn(4).setPreferredWidth(widthCol4);
 		columnModel.getColumn(4).setMaxWidth(150);
+		columnModel.getColumn(5).setPreferredWidth(widthCol5);
 		columnModel.getColumn(5).setMaxWidth(110);
+		columnModel.getColumn(6).setPreferredWidth(widthCol6);
 		columnModel.getColumn(6).setMaxWidth(110);
+		columnModel.getColumn(7).setPreferredWidth(widthCol7);
 		columnModel.getColumn(7).setMaxWidth(80);
+		columnModel.getColumn(8).setPreferredWidth(widthCol8);
 		columnModel.getColumn(8).setMaxWidth(110);
+		columnModel.getColumn(9).setPreferredWidth(widthCol9);
 		columnModel.getColumn(9).setMaxWidth(110);
+		columnModel.getColumn(10).setPreferredWidth(widthCol10);
 		columnModel.getColumn(10).setMaxWidth(110);
 		
 		columnModel.getColumn(9).setCellRenderer(NumberRenderer.getCurrencyRenderer());
@@ -176,9 +205,11 @@ public class SalesPanel extends JPanel implements ActionListener {
 	/**Method to call when the data may have changed and the table needs to be updated.
 	 */
 	public void updateData() {
+		salesTable.getColumnModel().removeColumnModelListener(this);
 		TableModel model = getTable().getModel();
 		salesTable.setModel(model);
 		setTableSettings(salesTable);
+		salesTable.getColumnModel().addColumnModelListener(this);
 	}
 
 	@Override
@@ -187,5 +218,37 @@ public class SalesPanel extends JPanel implements ActionListener {
 			SalesHistory.get().calculateAllRoyalies();
 			updateData();
 		}
+	}
+
+	@Override
+	public void columnMarginChanged(ChangeEvent e) {
+		TableColumnModel model = salesTable.getColumnModel();
+		widthCol0 = model.getColumn(0).getWidth();
+		widthCol1 = model.getColumn(1).getWidth();
+		widthCol2 = model.getColumn(2).getWidth();
+		widthCol3 = model.getColumn(3).getWidth();
+		widthCol4 = model.getColumn(4).getWidth();
+		widthCol5 = model.getColumn(5).getWidth();
+		widthCol6 = model.getColumn(6).getWidth();
+		widthCol7 = model.getColumn(7).getWidth();
+		widthCol8 = model.getColumn(8).getWidth();
+		widthCol9 = model.getColumn(9).getWidth();
+		widthCol10 = model.getColumn(10).getWidth();
+	}
+	
+	@Override
+	public void columnAdded(TableColumnModelEvent e) {
+	}
+
+	@Override
+	public void columnRemoved(TableColumnModelEvent e) {
+	}
+
+	@Override
+	public void columnMoved(TableColumnModelEvent e) {
+	}
+
+	@Override
+	public void columnSelectionChanged(ListSelectionEvent e) {
 	}
 }
