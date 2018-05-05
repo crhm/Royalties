@@ -4,12 +4,14 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
 import javax.swing.JButton;
-import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
@@ -23,6 +25,7 @@ import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
 import main.Book;
+import main.Channel;
 import main.Person;
 import main.SalesHistory;
 import main.royalties.IRoyaltyType;
@@ -61,12 +64,6 @@ public class RoyaltyRulesSamePanel extends JPanel implements ActionListener, Lis
 
 	//Holds the index of selected book title so that in case of sorting the selection can be maintained despite index change
 	private int selectionIndexBeforeSort = 0;
-
-	//Holds the name of the royalty holder that is currently selected
-	private String currentPerson = null;
-
-	//Holds the title of the book that is currently selected
-	private String currentBook = null;
 
 	public RoyaltyRulesSamePanel() {
 		super();
@@ -109,12 +106,33 @@ public class RoyaltyRulesSamePanel extends JPanel implements ActionListener, Lis
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == deleteButton) {
-			if (bookTitles.getSelectedRow() != -1) {
-				//TODO
+			if (bookTitles.getSelectedRow() != -1 && royaltiesTable.getSelectedRow() != -1) {
+				int userChoice = JOptionPane.showConfirmDialog(null, "Please confirm that you want to delete this royalty. ",
+						"Confirmation Required", JOptionPane.OK_CANCEL_OPTION);
+				if (userChoice == JOptionPane.OK_OPTION) {
+					int bookRow = bookTitles.convertRowIndexToModel(bookTitles.getSelectedRow());
+					Long bookNumber = (Long) bookTitles.getModel().getValueAt(bookRow, 0);
+					Book book = SalesHistory.get().getBookWithNumber(bookNumber);
+
+					int royaltiesRow = royaltiesTable.convertRowIndexToModel(royaltiesTable.getSelectedRow());
+					Long personNumber = (Long) royaltiesTable.getModel().getValueAt(royaltiesRow, 0);
+					Person person = SalesHistory.get().getPersonWithNumber(personNumber);
+
+					for (Channel ch : SalesHistory.get().getListChannels()) {
+						ch.deleteRoyalty(book, person);
+					}
+				}
+
 			}
 		} else if (e.getSource() == addButton) {
 			if (bookTitles.getSelectedRow() != -1) {
-				//TODO
+				AddRoyaltyDialog addRoyaltyDialog = new AddRoyaltyDialog();
+				addRoyaltyDialog.addWindowListener(new WindowAdapter() {
+					@Override
+					public void windowClosed(WindowEvent e) { //update and repaint table on close of addRoyaltyDialog
+						updateData();
+					}				
+				});
 			}
 		} else if (e.getSource() == editButton) {
 			//new EditRoyaltyDialog(currentChannel, currentBook, currentPerson);
@@ -151,24 +169,22 @@ public class RoyaltyRulesSamePanel extends JPanel implements ActionListener, Lis
 				if (royaltiesTable != null) {
 					TableModel model = getTableRoyalties(book).getModel(); 
 					royaltiesTable.setModel(model);
+					royaltiesTable.getColumnModel().removeColumn(royaltiesTable.getColumnModel().getColumn(0));
 					royaltiesTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 				} else {
 					royaltiesTable = getTableRoyalties(book);
+					royaltiesTable.getColumnModel().removeColumn(royaltiesTable.getColumnModel().getColumn(0));
 					royaltiesTable.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 				}
 				royaltiesTable.getSelectionModel().addListSelectionListener(this);
 				royaltyDetailsPanel.add(new JScrollPane(royaltiesTable), BorderLayout.CENTER);
 				royaltyDetailsPanel.revalidate();
 				royaltyDetailsPanel.repaint();
-
-				currentBook = (String) bookTitles.getModel().getValueAt(tableRow, 1); 
 			}	
-		} else if (e.getSource() == royaltiesTable.getSelectionModel()) {
+		} else if (e.getSource() == royaltiesTable.getSelectionModel()) { //Change in selection within royaltiesTable
 			if (royaltiesTable.getSelectedRow() != -1) {
 				deleteButton.setEnabled(true);
 				editButton.setEnabled(true);
-				int row = royaltiesTable.convertRowIndexToModel(royaltiesTable.getSelectedRow());
-				currentPerson = (String) royaltiesTable.getModel().getValueAt(row, 1);
 			} else {
 				deleteButton.setEnabled(false);
 				editButton.setEnabled(false);
@@ -181,11 +197,12 @@ public class RoyaltyRulesSamePanel extends JPanel implements ActionListener, Lis
 	 * @return a JTable (not sortable, not editable) containing royalties data for that book
 	 */
 	private JTable getTableRoyalties(Book b) {
-		String[] columnNames = {"Royalty Holder", "Royalty"};
+		String[] columnNames = {"Person Number", "Royalty Holder", "Royalty"};
 		DefaultTableModel model = new DefaultTableModel(getDataRoyalties(b), columnNames) {
 			@Override
 			public Class<?> getColumnClass(int column) {
 				switch (column ) {
+				case 0 : return Long.class;
 				default : return String.class;
 				}
 			}
@@ -209,11 +226,12 @@ public class RoyaltyRulesSamePanel extends JPanel implements ActionListener, Lis
 	private Object[][] getDataRoyalties(Book b){
 		HashMap<Person, IRoyaltyType> listRoyalties = SalesHistory.get().getUniformRoyalties().get(b);
 		int numberOfRows = listRoyalties.keySet().size();
-		Object[][] data = new Object[numberOfRows][2];
+		Object[][] data = new Object[numberOfRows][3];
 		int count = 0;
 		for (Person p : listRoyalties.keySet()) {
-			data[count][0] = p.getName();
-			data[count][1] = listRoyalties.get(p).toString();
+			data[count][0] = p.getPersonNumber();
+			data[count][1] = p.getName();
+			data[count][2] = listRoyalties.get(p).toString();
 			count++;
 		}
 		return data;

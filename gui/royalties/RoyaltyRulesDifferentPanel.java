@@ -24,7 +24,6 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
-import javafx.scene.control.SelectionMode;
 import main.Book;
 import main.Person;
 import main.SalesHistory;
@@ -57,9 +56,6 @@ public class RoyaltyRulesDifferentPanel extends JPanel implements ActionListener
 
 	//Holds the index of selected book title so that in case of sorting the selection can be maintained despite index change
 	private int selectionIndexBeforeSort = 0;
-
-	//Holds the title of the book that is currently selected
-	private String currentBook = null;
 
 	//Reflects whether a royalty is already selected in another table
 	private Boolean isAnotherRoyaltySelected = false;
@@ -155,7 +151,7 @@ public class RoyaltyRulesDifferentPanel extends JPanel implements ActionListener
 				setUpRoyaltiesTable(royaltiesCreatespace, "Createspace");
 				royaltyDetailsPanel.revalidate();
 				royaltyDetailsPanel.repaint();
-				currentBook = (String) bookTitles.getModel().getValueAt(tableRow, 1); 
+//				currentBook = (String) bookTitles.getModel().getValueAt(tableRow, 1); 
 			}	
 		} else if (listRoyaltiesTables.contains((ListSelectionModel) e.getSource()) 
 				&& !((ListSelectionModel) e.getSource()).isSelectionEmpty()) { //Change comes from royalty details, and is not one fired by clearSelection
@@ -314,7 +310,6 @@ public class RoyaltyRulesDifferentPanel extends JPanel implements ActionListener
 	 */
 	public void updateData() {
 		bookTitles.getSelectionModel().removeListSelectionListener(this);
-		currentBook = null;
 		selectionIndexBeforeSort = 0;
 		editButton.setEnabled(false);
 		addButton.setEnabled(false);

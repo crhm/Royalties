@@ -23,7 +23,7 @@ import main.royalties.IRoyaltyType;
  *
  */
 public class Channel implements java.io.Serializable {
-	
+
 	private static final long serialVersionUID = 6186357366182288547L;
 	private FileFormat fileFormat;
 	private final String name;
@@ -102,7 +102,7 @@ public class Channel implements java.io.Serializable {
 		if (royaltyHolderName.isEmpty()) {
 			throw new IllegalArgumentException("Error: royaltyHolderName cannot be empty.");
 		}
-				
+
 		//Obtains the list of royalties for this book if one exists, or creates an empty one if not
 		HashMap<Person, IRoyaltyType> listHolder = null;
 		if (listRoyalties.containsKey(b)) {
@@ -110,7 +110,7 @@ public class Channel implements java.io.Serializable {
 		} else {
 			listHolder = new HashMap<Person, IRoyaltyType>();
 		}
-		
+
 		//Obtains the person with the name passed as argument from SalesHistory's list of royalty holders, 
 		//or creates one if one does not yet exist, and adds it to SalesHistory.
 		Person royaltyHolder2 = null;
@@ -120,7 +120,7 @@ public class Channel implements java.io.Serializable {
 			royaltyHolder2 = ObjectFactory.createPerson(royaltyHolderName);
 			SalesHistory.get().addRoyaltyHolder(royaltyHolder2);
 		}
-		
+
 		//Adds the royalty holder + royalty combination to the list of royalties, and links the book to this list of royalties
 		listHolder.put(royaltyHolder2, royalty);
 		this.listRoyalties.put(b, listHolder);
@@ -147,7 +147,7 @@ public class Channel implements java.io.Serializable {
 		validateListForex(listForex);
 		this.historicalForex.put(monthAndYear, listForex);
 	}
-	
+
 	/**Replaces one royalty holder by another (keeping the same royalties)
 	 * @param oldPerson
 	 * @param newPerson
@@ -177,7 +177,7 @@ public class Channel implements java.io.Serializable {
 			listRoyalties.put(b, booksToUpdate.get(b));
 		}
 	}
-	
+
 	/**Removes the mapping of royalties for oldBook, and adds its royalties to the list mapped by newBook, unless the royaltyHolder preexists there, 
 	 * in which case it does not add it (thus keeping the royalty as it was for newBook originally)
 	 * @param oldBook
@@ -202,10 +202,22 @@ public class Channel implements java.io.Serializable {
 		}
 	}
 
+	/**Removes the royalty mapping for the person passed as argument for the book passed as argument.
+	 * 
+	 * @param book
+	 * @param person
+	 */
+	public void deleteRoyalty(Book book, Person person) {
+		HashMap<Person, IRoyaltyType> newRoyaltiesMapping = listRoyalties.get(book);
+		newRoyaltiesMapping.remove(person);
+		listRoyalties.replace(book, newRoyaltiesMapping);
+	}
+
 	@Override
 	public String toString() {
 		return "Channel [name=" + name + "]";
 	}
+
 
 	/**Channel name must be non empty and non null, and another channel with the same name must not already exist in SalesHistory.
 	 * @throws IllegalArgumentException if field takes an unpermitted value.
@@ -215,13 +227,13 @@ public class Channel implements java.io.Serializable {
 		if (SalesHistory.get().getChannel(name) != null) {
 			throw new IllegalArgumentException("Error: another channel with that name already exists.");
 		}
-		
+
 		boolean nameHasContent = (name != null) && (!name.equals(""));
 		if (!nameHasContent){
 			throw new IllegalArgumentException("Names must be non-null and non-empty.");
 		}
 	}
-	
+
 	/**Checks that monthAndYear is a string representing a valid date of the format 'Oct 2018', and is 
 	 * neither null nor empty.
 	 * @param monthAndYear
@@ -240,7 +252,7 @@ public class Channel implements java.io.Serializable {
 			throw new IllegalArgumentException("Error: Date (monthAndYear) must be of the following format: Oct 2018, Jan 2009, ...");
 		}
 	}
-	
+
 	/**Checks that the HashMap is not empty or null, that keys are valid currency codes, and that no exchange rate is 0.
 	 * 
 	 * @param listForex
@@ -266,7 +278,7 @@ public class Channel implements java.io.Serializable {
 			}
 		}
 	}
-	
+
 	/**Checks that book is not null nor has an empty title
 	 * 
 	 * @param b
