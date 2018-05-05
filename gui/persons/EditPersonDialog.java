@@ -2,6 +2,7 @@ package gui.persons;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.HashSet;
 
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -9,11 +10,17 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import javax.swing.JButton;
 import javax.swing.JLabel;
+import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
 import main.Person;
 
+/**Class intended to create/display a dialog for editing a person's info
+ * 
+ * @author crhm
+ *
+ */
 @SuppressWarnings("serial")
 public class EditPersonDialog extends JFrame implements ActionListener {
 	private JTextField tfName;
@@ -38,8 +45,8 @@ public class EditPersonDialog extends JFrame implements ActionListener {
 		panelDataEntry.add(lblName);
 
 		tfName = new JTextField(person.getName());
+		tfName.setToolTipText("Cannot be empty");
 		panelDataEntry.add(tfName);
-		tfName.setColumns(10);
 
 		JLabel lblOtherNames = new JLabel("Name Variations:");
 		lblOtherNames.setHorizontalAlignment(SwingConstants.CENTER);
@@ -59,7 +66,6 @@ public class EditPersonDialog extends JFrame implements ActionListener {
 		}
 		tfOtherNames = new JTextField(otherNames);
 		panelDataEntry.add(tfOtherNames);
-		tfOtherNames.setColumns(10);
 
 		JLabel lblBalance = new JLabel("Balance (USD):");
 		lblBalance.setHorizontalAlignment(SwingConstants.CENTER);
@@ -73,9 +79,11 @@ public class EditPersonDialog extends JFrame implements ActionListener {
 		panelButtons.setLayout(new GridLayout(1, 2, 0, 0));
 
 		btnCancel = new JButton("Cancel");
+		btnCancel.addActionListener(this);
 		panelButtons.add(btnCancel);
 
 		btnConfirm = new JButton("Save Changes");
+		btnConfirm.addActionListener(this);
 		panelButtons.add(btnConfirm);
 
 		this.pack();
@@ -86,8 +94,33 @@ public class EditPersonDialog extends JFrame implements ActionListener {
 
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		// TODO Auto-generated method stub
-
+		if (e.getSource() == btnCancel) { //User cancels, window closes
+			this.dispose();
+		} else if (e.getSource() == btnConfirm) { //User confirms changes, new details are applied to the person
+			String name = tfName.getText();
+			String otherNames = tfOtherNames.getText();
+			
+			if (name == null || name.isEmpty()) {
+				JOptionPane.showMessageDialog(this, "Error: A name is required for a person. Please input a person name.", 
+						"Error", JOptionPane.ERROR_MESSAGE);
+				return; //stop here and don't do anything below since there is no name
+			}
+			
+			person.setName(name.trim());
+			person.setListNames(new HashSet<String>());
+			person.addName(name.trim());
+			String[] otherNamesSeparated = null;
+			if (otherNames.contains(",") ) {
+				otherNamesSeparated = otherNames.split(",");
+				for (String s : otherNamesSeparated) {
+					person.addName(s.trim());
+				}
+			} else if (otherNames != null && !otherNames.isEmpty()) {
+				person.addName(otherNames.trim());
+			}
+			
+			this.dispose();
+		}
 	}
 
 }

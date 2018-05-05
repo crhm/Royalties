@@ -1,6 +1,8 @@
 package gui.authors;
 
 import javax.swing.*;
+import javax.swing.event.ListSelectionEvent;
+import javax.swing.event.ListSelectionListener;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
@@ -14,7 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @SuppressWarnings("serial")
-public class AuthorsPanel extends JPanel {
+public class AuthorsPanel extends JPanel implements ListSelectionListener {
 	private JTable listAuthors;
 	
 	public AuthorsPanel() {
@@ -40,6 +42,7 @@ public class AuthorsPanel extends JPanel {
 		add(scrollPane, BorderLayout.CENTER);
 		
 		listAuthors = getTable();
+		listAuthors.getSelectionModel().addListSelectionListener(this);
 		scrollPane.setViewportView(listAuthors);
 	}
 	
@@ -102,9 +105,16 @@ public class AuthorsPanel extends JPanel {
 	/**Updates the data in the table of authors
 	 */
 	public void updateData() {
+		listAuthors.getSelectionModel().removeListSelectionListener(this);
 		TableModel model = getTable().getModel();
 		listAuthors.setModel(model);
 		setTableSettings(listAuthors);
+		listAuthors.getSelectionModel().addListSelectionListener(this);
+	}
+
+	@Override
+	public void valueChanged(ListSelectionEvent e) {
+		//TODO
 	}
 
 }

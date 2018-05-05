@@ -30,9 +30,10 @@ import main.SalesHistory;
 @SuppressWarnings("serial")
 public class PersonsPanel extends JPanel implements ActionListener, ListSelectionListener {
 	JTable royaltyHoldersTable;
-	JButton mergeButton;
 	JButton addButton;
 	JButton editButton;
+	JButton deleteButton;
+	JButton mergeButton;
 	int selectedIndex1 = -1;
 	int selectedIndex2 = -1;
 
@@ -42,16 +43,21 @@ public class PersonsPanel extends JPanel implements ActionListener, ListSelectio
 		
 		//Setting up buttons
 		JPanel buttonPanel = new JPanel();
-		buttonPanel.setLayout(new GridLayout(1, 3, 0, 0));
+		buttonPanel.setLayout(new GridLayout(1, 4, 0, 0));
 		
+		addButton = new JButton("Create New Person");
+		addButton.addActionListener(this);
+		buttonPanel.add(addButton);
+
 		editButton = new JButton("Edit Selected Person");
 		editButton.setEnabled(false);
 		editButton.addActionListener(this);
 		buttonPanel.add(editButton);
 		
-		addButton = new JButton("Create New Person");
-		addButton.addActionListener(this);
-		buttonPanel.add(addButton);
+		deleteButton = new JButton("Delete Selected Person");
+		deleteButton.setEnabled(false);
+		deleteButton.addActionListener(this);
+		buttonPanel.add(deleteButton);
 		
 		mergeButton = new JButton("Merge two persons selected");
 		mergeButton.setEnabled(false);
@@ -175,6 +181,18 @@ public class PersonsPanel extends JPanel implements ActionListener, ListSelectio
 					updateData();
 				}				
 			});
+		} else if (e.getSource() == deleteButton) { //Delete selected person is clicked
+			int option = JOptionPane.showConfirmDialog(this, "Please confirm you want to delete this person.", "Warning!", 
+					JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+			if (option == 0) { //If user clicks OK
+				int row1 = royaltyHoldersTable.convertRowIndexToModel(selectedIndex1);
+				long personNumber1 = (long) royaltyHoldersTable.getModel().getValueAt(row1, 2);
+				Person person1 = SalesHistory.get().getPersonWithNumber(personNumber1);
+
+				SalesHistory.get().removePerson(person1);
+				updateData();
+			}
+
 		}
 	}
 
@@ -186,12 +204,15 @@ public class PersonsPanel extends JPanel implements ActionListener, ListSelectio
 		if (royaltyHoldersTable.getSelectedRows().length == 2) {
 			mergeButton.setEnabled(true);
 			editButton.setEnabled(false);
+			deleteButton.setEnabled(false);
 		} else {
 			mergeButton.setEnabled(false);
 			if (royaltyHoldersTable.getSelectedRows().length == 1) {
 				editButton.setEnabled(true);
+				deleteButton.setEnabled(true);
 			} else {
 				editButton.setEnabled(false);
+				deleteButton.setEnabled(false);
 			}
 		}
 	}

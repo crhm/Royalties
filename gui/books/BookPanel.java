@@ -71,10 +71,10 @@ public class BookPanel extends JPanel implements ActionListener, ListSelectionLi
 
 		//Setting up button Panel
 		JPanel buttonPanel = new JPanel(new GridLayout(1, 5));
-		buttonPanel.add(mergeButton);
 		buttonPanel.add(addButton);
-		buttonPanel.add(deleteButton);
 		buttonPanel.add(editButton);
+		buttonPanel.add(deleteButton);
+		buttonPanel.add(mergeButton);
 
 		//Setting up JTable and selection behavior
 		this.booksTable = getTable();
@@ -165,7 +165,8 @@ public class BookPanel extends JPanel implements ActionListener, ListSelectionLi
 			//TODO figure out stuff below
 			// What should the consequences be for existing sales of that book?
 			// What should the consequences be if it is in royalty lists?
-			int option = JOptionPane.showConfirmDialog(this, "Please confirm you want to delete this book.", "Warning!", JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
+			int option = JOptionPane.showConfirmDialog(this, "Please confirm you want to delete this book.", "Warning!", 
+					JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
 			if (option == 0) { //If user clicks OK
 				int row = booksTable.convertRowIndexToModel(booksTable.getSelectedRow());
 				Long bookNumber = (Long) booksTable.getModel().getValueAt(row, 0);
