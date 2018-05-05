@@ -42,9 +42,9 @@ import main.SalesHistory;
 public class BookPanel extends JPanel implements ActionListener, ListSelectionListener, TableColumnModelListener {
 
 	private JTable booksTable;
-	private JButton editButton = new JButton("Edit Book");
 	private JButton addButton = new JButton("Create New Book");
-	private JButton deleteButton = new JButton("Delete Book");
+	private JButton editButton = new JButton("Edit Selected Book");
+	private JButton deleteButton = new JButton("Delete Selected Book");
 	private JButton mergeButton = new JButton("Merge together two books selected");
 	int selectedIndex1 = -1;
 	int selectedIndex2 = -1;
