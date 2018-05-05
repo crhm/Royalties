@@ -24,6 +24,7 @@ import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
 import javax.swing.table.TableRowSorter;
 
+import javafx.scene.control.SelectionMode;
 import main.Book;
 import main.Person;
 import main.SalesHistory;
@@ -52,12 +53,16 @@ public class RoyaltyRulesDifferentPanel extends JPanel implements ActionListener
 	private JTable royaltiesNook;
 	private JTable royaltiesApple;
 	private JTable royaltiesCreatespace;
+	private Set<ListSelectionModel> listRoyaltiesTables;
 
 	//Holds the index of selected book title so that in case of sorting the selection can be maintained despite index change
 	private int selectionIndexBeforeSort = 0;
 
 	//Holds the title of the book that is currently selected
 	private String currentBook = null;
+
+	//Reflects whether a royalty is already selected in another table
+	private Boolean isAnotherRoyaltySelected = false;
 
 	public RoyaltyRulesDifferentPanel() {
 		super();
@@ -131,6 +136,7 @@ public class RoyaltyRulesDifferentPanel extends JPanel implements ActionListener
 				editButton.setEnabled(false);
 				deleteButton.setEnabled(false);
 				addButton.setEnabled(true);
+				isAnotherRoyaltySelected = false;
 				royaltyDetailsPanel.removeAll();
 				royaltyDetailsPanel.revalidate();
 				int tableRow = bookTitles.convertRowIndexToModel(bookTitles.getSelectedRow());
@@ -141,47 +147,45 @@ public class RoyaltyRulesDifferentPanel extends JPanel implements ActionListener
 				royaltiesKobo = getTableRoyalties(book, "Kobo");
 				royaltiesNook = getTableRoyalties(book, "Nook");
 				royaltiesCreatespace = getTableRoyalties(book, "Createspace");
-				if (royaltiesAmazon != null) {
-					royaltyDetailsPanel.add(royaltiesAmazon);
-					royaltiesAmazon.getSelectionModel().addListSelectionListener(this);
-				} else {
-					royaltyDetailsPanel.add(new JLabel("No royalties found for Amazon"));
-				}
-				if (royaltiesApple != null) {
-					royaltyDetailsPanel.add(royaltiesApple);
-					royaltiesApple.getSelectionModel().addListSelectionListener(this);
-				} else {
-					royaltyDetailsPanel.add(new JLabel("No royalties found for Apple"));
-				}
-				if (royaltiesKobo != null) {
-					royaltyDetailsPanel.add(royaltiesKobo);
-					royaltiesKobo.getSelectionModel().addListSelectionListener(this);
-				} else {
-					royaltyDetailsPanel.add(new JLabel("No royalties found for Kobo"));
-				}
-				if (royaltiesNook != null) {
-					royaltyDetailsPanel.add(royaltiesNook);
-					royaltiesNook.getSelectionModel().addListSelectionListener(this);
-				} else {
-					royaltyDetailsPanel.add(new JLabel("No royalties found for Nook"));
-				}
-				if (royaltiesCreatespace != null) {
-					royaltyDetailsPanel.add(royaltiesCreatespace);
-					royaltiesCreatespace.getSelectionModel().addListSelectionListener(this);
-				} else {
-					royaltyDetailsPanel.add(new JLabel("No royalties found for Createspace"));
-				}
-
+				listRoyaltiesTables = new HashSet<ListSelectionModel>();
+				setUpRoyaltiesTable(royaltiesAmazon, "Amazon");
+				setUpRoyaltiesTable(royaltiesApple, "Apple");
+				setUpRoyaltiesTable(royaltiesKobo, "Kobo");
+				setUpRoyaltiesTable(royaltiesNook, "Nook");
+				setUpRoyaltiesTable(royaltiesCreatespace, "Createspace");
 				royaltyDetailsPanel.revalidate();
 				royaltyDetailsPanel.repaint();
-
 				currentBook = (String) bookTitles.getModel().getValueAt(tableRow, 1); 
 			}	
-		} else if (e.getSource() == royaltiesAmazon.getSelectionModel() || e.getSource() == royaltiesApple.getSelectionModel() 
-				|| e.getSource() == royaltiesNook.getSelectionModel() || e.getSource() == royaltiesKobo.getSelectionModel()
-				|| e.getSource() == royaltiesCreatespace.getSelectionModel()){
+		} else if (listRoyaltiesTables.contains((ListSelectionModel) e.getSource()) 
+				&& !((ListSelectionModel) e.getSource()).isSelectionEmpty()) { //Change comes from royalty details, and is not one fired by clearSelection
 			editButton.setEnabled(true);
 			deleteButton.setEnabled(true);
+			if (isAnotherRoyaltySelected) { //clear previous selection if there is one
+				for (ListSelectionModel m : listRoyaltiesTables) {
+					if (m != (ListSelectionModel) e.getSource()) {
+						m.clearSelection();
+					}
+				}
+			}
+			isAnotherRoyaltySelected = true;
+		}
+	}
+	
+	/**If the table isn't null (aka there are royalties for that channel), set selection mode to single selection, add it to 
+	 * royaltyDetails panel, add a listSelectionListener to its SelectionModel (which is added to listRoyaltiesTable).
+	 * <br>If the table is null, instead add to royaltyDetailsPanel  a label saying there were no royalties found for that channel.
+	 * @param table table of royalties for that channel (may be null)
+	 * @param channelName name of channel
+	 */
+	private void setUpRoyaltiesTable(JTable table, String channelName) {
+		if (table != null) {
+			table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
+			royaltyDetailsPanel.add(table);
+			table.getSelectionModel().addListSelectionListener(this);
+			listRoyaltiesTables.add(table.getSelectionModel());
+		} else {
+			royaltyDetailsPanel.add(new JLabel("No royalties found for " + channelName));
 		}
 	}
 
@@ -275,7 +279,7 @@ public class RoyaltyRulesDifferentPanel extends JPanel implements ActionListener
 		int numberOfRows = listBooks.size();
 		Object[][] data = new Object[numberOfRows][2];
 		int count = 0;
-		
+
 		for (Book b : listBooks) {
 			data[count][0] = b.getBookNumber();
 			data[count][1] = b.getTitle();
@@ -283,14 +287,14 @@ public class RoyaltyRulesDifferentPanel extends JPanel implements ActionListener
 		}
 		return data;
 	}
-	
+
 	/**Makes sure the table is in single selection mode, that columns cannot be reordered by the user,
 	 *  and that the table is sorted by its second column.
 	 * @param table
 	 */
 	private void setTableSettings(JTable table) {
 		table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-		
+
 		table.getColumnModel().removeColumn(table.getColumnModel().getColumn(0));
 
 		//Sort the table by the second column 
@@ -301,7 +305,7 @@ public class RoyaltyRulesDifferentPanel extends JPanel implements ActionListener
 		sortKeys.add(new RowSorter.SortKey(columnIndexToSort, SortOrder.ASCENDING));
 		sorter.setSortKeys(sortKeys);
 		sorter.sort();	
-		
+
 		table.getTableHeader().setReorderingAllowed(false);
 	}
 
@@ -315,14 +319,14 @@ public class RoyaltyRulesDifferentPanel extends JPanel implements ActionListener
 		editButton.setEnabled(false);
 		addButton.setEnabled(false);
 		deleteButton.setEnabled(false);
-		
+
 		royaltyDetailsPanel.removeAll();
 		royaltyDetailsPanel.revalidate();
-		
+
 		TableModel model = getTableBooks().getModel();
 		bookTitles.setModel(model);
 		setTableSettings(bookTitles);
-		
+
 		bookTitles.getSelectionModel().addListSelectionListener(this);
 	}
 }
