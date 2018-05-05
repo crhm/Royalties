@@ -40,7 +40,7 @@ import main.SalesHistory;
  */
 @SuppressWarnings("serial")
 public class BookPanel extends JPanel implements ActionListener, ListSelectionListener, TableColumnModelListener {
-	
+
 	private JTable booksTable;
 	private JButton editButton = new JButton("Edit Book");
 	private JButton addButton = new JButton("Add New Book");
@@ -61,26 +61,26 @@ public class BookPanel extends JPanel implements ActionListener, ListSelectionLi
 		//Because no book is selected initially 
 		editButton.setEnabled(false);
 		deleteButton.setEnabled(false);
-		
+
 		//Adding behavior to buttons
 		editButton.addActionListener(this);
 		addButton.addActionListener(this);
 		deleteButton.addActionListener(this);
 		mergeButton.addActionListener(this);
 		mergeButton.setEnabled(false);
-		
+
 		//Setting up button Panel
 		JPanel buttonPanel = new JPanel(new GridLayout(1, 5));
 		buttonPanel.add(mergeButton);
 		buttonPanel.add(addButton);
 		buttonPanel.add(deleteButton);
 		buttonPanel.add(editButton);
-		
+
 		//Setting up JTable and selection behavior
 		this.booksTable = getTable();
 		this.booksTable.getSelectionModel().addListSelectionListener(this);
 		this.booksTable.getColumnModel().addColumnModelListener(this);
-		
+
 		//Setting up container Panel
 		this.add(buttonPanel, BorderLayout.NORTH);
 		this.add(new JScrollPane(this.booksTable), BorderLayout.CENTER);
@@ -142,11 +142,11 @@ public class BookPanel extends JPanel implements ActionListener, ListSelectionLi
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == editButton) {
-				int row = booksTable.convertRowIndexToModel(booksTable.getSelectedRow());
-				Long bookNumber = (Long) booksTable.getModel().getValueAt(row, 0);
-				Book book = SalesHistory.get().getBookWithNumber(bookNumber);
-				EditBookDialog editBookDialog = new EditBookDialog(book);
-				editBookDialog.addWindowListener(new WindowAdapter() {
+			int row = booksTable.convertRowIndexToModel(booksTable.getSelectedRow());
+			Long bookNumber = (Long) booksTable.getModel().getValueAt(row, 0);
+			Book book = SalesHistory.get().getBookWithNumber(bookNumber);
+			EditBookDialog editBookDialog = new EditBookDialog(book);
+			editBookDialog.addWindowListener(new WindowAdapter() {
 				@Override
 				public void windowClosed(WindowEvent e) { //update and repaint table on close of editBookDialog
 					updateData();
@@ -211,35 +211,36 @@ public class BookPanel extends JPanel implements ActionListener, ListSelectionLi
 			editButton.setEnabled(false);
 		}
 	}
-	
+
 	/**Ensures the table has a max width for its fourth column, that it is sorted by its first, and 
 	 * that the reordering of columns by the user is disabled.
 	 * @param table
 	 */
 	private void setTableSettings(JTable table) {
 		TableColumnModel columnModel = table.getColumnModel();
+		//Hiding the book number column, hence offsetting column indexes but just for the columnModel!
+		//This allows the book number data to be retrieved from the model while not being displayed to user.
+		columnModel.removeColumn(columnModel.getColumn(0));
 		columnModel.getColumn(0).setPreferredWidth(widthCol0);
-		columnModel.getColumn(0).setMaxWidth(85);
 		columnModel.getColumn(1).setPreferredWidth(widthCol1);
+		columnModel.getColumn(1).setMaxWidth(160);
 		columnModel.getColumn(2).setPreferredWidth(widthCol2);
-		columnModel.getColumn(2).setMaxWidth(160);
 		columnModel.getColumn(3).setPreferredWidth(widthCol3);
-		columnModel.getColumn(4).setPreferredWidth(widthCol4);
-		columnModel.getColumn(4).setMaxWidth(85);
+		columnModel.getColumn(3).setMaxWidth(85);
 
 		//Sets up sorting by book title
 		TableRowSorter<TableModel> sorter = new TableRowSorter<>(table.getModel());
 		table.setRowSorter(sorter);
 		List<RowSorter.SortKey> sortKeys = new ArrayList<>();
-		int columnIndexToSort = 1;
+		int columnIndexToSort = 1; //this is the table, not the table column model, hence it still is column 1 and not 0.
 		sortKeys.add(new RowSorter.SortKey(columnIndexToSort, SortOrder.ASCENDING));
 		sorter.setSortKeys(sortKeys);
 		sorter.sort();
-		
+
 		//Disables the user-reordering table columns
 		table.getTableHeader().setReorderingAllowed(false);
 	}
-	
+
 	/**Method to be called when the data of the list of books in SalesHistory has changed, and thus the table needs 
 	 * to updated.
 	 */
@@ -247,7 +248,7 @@ public class BookPanel extends JPanel implements ActionListener, ListSelectionLi
 		//To avoid crashes while it is being reworked
 		booksTable.getSelectionModel().removeListSelectionListener(this);
 		booksTable.getColumnModel().removeColumnModelListener(this); ;
-		
+
 		//Update data by updating model
 		TableModel model = getTable().getModel();
 		booksTable.setModel(model);
@@ -269,13 +270,13 @@ public class BookPanel extends JPanel implements ActionListener, ListSelectionLi
 		widthCol1 = model.getColumn(1).getWidth();
 		widthCol2 = model.getColumn(2).getWidth();
 		widthCol3 = model.getColumn(3).getWidth();
-		widthCol4 = model.getColumn(4).getWidth();		
+		//		widthCol4 = model.getColumn(4).getWidth();		
 	}
 
 	@Override
 	public void columnSelectionChanged(ListSelectionEvent e) {
 	}
-	
+
 	@Override
 	public void columnAdded(TableColumnModelEvent e) {
 	}
