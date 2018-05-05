@@ -4,11 +4,12 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.List;
 
 import javax.swing.JButton;
-import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
@@ -30,21 +31,36 @@ import main.SalesHistory;
 public class PersonsPanel extends JPanel implements ActionListener, ListSelectionListener {
 	JTable royaltyHoldersTable;
 	JButton mergeButton;
+	JButton addButton;
+	JButton editButton;
 	int selectedIndex1 = -1;
 	int selectedIndex2 = -1;
 
 	public PersonsPanel() {
 		super();
 		this.setLayout(new BorderLayout());
+		
+		//Setting up buttons
 		JPanel buttonPanel = new JPanel();
 		buttonPanel.setLayout(new GridLayout(1, 3, 0, 0));
-		buttonPanel.add(new JLabel());
-		buttonPanel.add(new JLabel());
+		
+		editButton = new JButton("Edit Selected Person");
+		editButton.setEnabled(false);
+		editButton.addActionListener(this);
+		buttonPanel.add(editButton);
+		
+		addButton = new JButton("Create New Person");
+		addButton.addActionListener(this);
+		buttonPanel.add(addButton);
+		
 		mergeButton = new JButton("Merge two persons selected");
 		mergeButton.setEnabled(false);
 		mergeButton.addActionListener(this);
 		buttonPanel.add(mergeButton);
+		
 		this.add(buttonPanel, BorderLayout.NORTH);
+		
+		//Setting up table
 		royaltyHoldersTable = getTable();
 		royaltyHoldersTable.getSelectionModel().addListSelectionListener(this);
 		this.add(new JScrollPane(royaltyHoldersTable), BorderLayout.CENTER);
@@ -139,7 +155,27 @@ public class PersonsPanel extends JPanel implements ActionListener, ListSelectio
 				person1.merge(person2);
 				updateData();
 			}
-		}	
+		} else if (e.getSource() == addButton) { //Create new Person is clicked
+			AddPersonDialog dialog = new AddPersonDialog();
+			dialog.addWindowListener(new WindowAdapter() {
+				@Override
+				public void windowClosed(WindowEvent e) { //update and repaint table on close of addPersonDialog
+					updateData();
+				}				
+			});
+		} else if (e.getSource() == editButton) { //Edit selected person is clicked
+			int row1 = royaltyHoldersTable.convertRowIndexToModel(selectedIndex1);
+			long personNumber1 = (long) royaltyHoldersTable.getModel().getValueAt(row1, 2);
+			Person person1 = SalesHistory.get().getPersonWithNumber(personNumber1);
+
+			EditPersonDialog dialog = new EditPersonDialog(person1);
+			dialog.addWindowListener(new WindowAdapter() {
+				@Override
+				public void windowClosed(WindowEvent e) { //update and repaint table on close of editPersonDialog
+					updateData();
+				}				
+			});
+		}
 	}
 
 	@Override
@@ -149,8 +185,14 @@ public class PersonsPanel extends JPanel implements ActionListener, ListSelectio
 
 		if (royaltyHoldersTable.getSelectedRows().length == 2) {
 			mergeButton.setEnabled(true);
+			editButton.setEnabled(false);
 		} else {
 			mergeButton.setEnabled(false);
+			if (royaltyHoldersTable.getSelectedRows().length == 1) {
+				editButton.setEnabled(true);
+			} else {
+				editButton.setEnabled(false);
+			}
 		}
 	}
 
