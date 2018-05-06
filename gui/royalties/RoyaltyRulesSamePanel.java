@@ -44,11 +44,10 @@ import main.royalties.IRoyaltyType;
 @SuppressWarnings("serial")
 public class RoyaltyRulesSamePanel extends JPanel implements ActionListener, ListSelectionListener{
 
-	//TODO add button should be dynamic; if only no particular royalty is selected, it should be disabled.
-
-	private JPanel buttonPanel = new JPanel(new GridLayout(1, 3));
+	private JPanel buttonPanel = new JPanel(new GridLayout(1, 4));
 	private JButton editButton = new JButton("Edit Selected Royalty");
-	private JButton addButton = new JButton("Create New Royalty For Selected Book (All Channels)");
+	private JButton addAllButton = new JButton("Add Royalty to Selected Book (All Channels)");
+	private JButton addOneButton = new JButton("Add Royalty to Selected Book (One Channel)");
 	private JButton deleteButton = new JButton("Delete Selected Royalty");
 
 	private JPanel containerPanel = new JPanel(new GridLayout(1, 2, 5, 0));
@@ -83,15 +82,18 @@ public class RoyaltyRulesSamePanel extends JPanel implements ActionListener, Lis
 		//Because no royalty is selected to start with
 		deleteButton.setEnabled(false);
 		editButton.setEnabled(false);
-		addButton.setEnabled(false);
+		addAllButton.setEnabled(false);
+		addOneButton.setEnabled(false);
 
 		//Adding ActionListener to buttons
 		editButton.addActionListener(this);
 		deleteButton.addActionListener(this);
-		addButton.addActionListener(this);
+		addAllButton.addActionListener(this);
+		addOneButton.addActionListener(this);
 
 		//Set up buttonPanel
-		buttonPanel.add(addButton);
+		buttonPanel.add(addOneButton);
+		buttonPanel.add(addAllButton);
 		buttonPanel.add(editButton);
 		buttonPanel.add(deleteButton);
 
@@ -124,7 +126,7 @@ public class RoyaltyRulesSamePanel extends JPanel implements ActionListener, Lis
 				}
 				updateData();
 			}
-		} else if (e.getSource() == addButton) {
+		} else if (e.getSource() == addAllButton) {
 			if (bookTitles.getSelectedRow() != -1) {
 				int bookRow = bookTitles.convertRowIndexToModel(bookTitles.getSelectedRow());
 				Long bookNumber = (Long) bookTitles.getModel().getValueAt(bookRow, 0);
@@ -138,7 +140,21 @@ public class RoyaltyRulesSamePanel extends JPanel implements ActionListener, Lis
 					}				
 				});
 			}
-		} else if (e.getSource() == editButton) {
+		} else if (e.getSource() == addOneButton) {
+			if (bookTitles.getSelectedRow() != -1) {
+				int bookRow = bookTitles.convertRowIndexToModel(bookTitles.getSelectedRow());
+				Long bookNumber = (Long) bookTitles.getModel().getValueAt(bookRow, 0);
+				Book book = SalesHistory.get().getBookWithNumber(bookNumber);
+
+				AddRoyaltyDialogOneChannel addRoyaltyDialog = new AddRoyaltyDialogOneChannel(book);
+				addRoyaltyDialog.addWindowListener(new WindowAdapter() {
+					@Override
+					public void windowClosed(WindowEvent e) { //update and repaint table on close of addRoyaltyDialog
+						updateData();
+					}				
+				});
+			}
+		}else if (e.getSource() == editButton) {
 			//new EditRoyaltyDialog(currentChannel, currentBook, currentPerson);
 			//TODO
 		}
@@ -161,7 +177,8 @@ public class RoyaltyRulesSamePanel extends JPanel implements ActionListener, Lis
 				bookTitles.repaint(); //Without this the change in selection occurs but does not show visually...
 				editButton.setEnabled(false);
 				deleteButton.setEnabled(false);
-				addButton.setEnabled(true);
+				addAllButton.setEnabled(true);
+				addOneButton.setEnabled(true);
 				int tableRow = bookTitles.convertRowIndexToModel(bookTitles.getSelectedRow());
 				Long bookNumber = (Long) bookTitles.getModel().getValueAt(tableRow, 0);
 				Book book = SalesHistory.get().getBookWithNumber(bookNumber);
@@ -306,7 +323,8 @@ public class RoyaltyRulesSamePanel extends JPanel implements ActionListener, Lis
 	 */
 	public void updateData() {
 		//Disabling buttons since selection is going to empty
-		addButton.setEnabled(false);
+		addAllButton.setEnabled(false);
+		addOneButton.setEnabled(false);
 		editButton.setEnabled(false);
 		deleteButton.setEnabled(false);
 		

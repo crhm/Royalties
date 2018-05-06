@@ -33,9 +33,6 @@ import main.royalties.IRoyaltyType;
 
 @SuppressWarnings("serial")
 public class RoyaltyRulesDifferentPanel extends JPanel implements ActionListener, ListSelectionListener {
-	//TODO add button should be dynamic; if only no particular royalty is selected, it should read 'add book to list of books with royalties...'
-	//and first add a book (from list of books - books already with a royalty for this channel, or create a new one) and then add a royalty to it. 
-	//If one is selected, it should read 'add royalty to this book' and perform that action only.
 
 	private JPanel buttonPanel = new JPanel(new GridLayout(1, 3));
 	private JButton editButton = new JButton("Edit Selected Royalty");
