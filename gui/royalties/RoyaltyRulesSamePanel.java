@@ -77,7 +77,7 @@ public class RoyaltyRulesSamePanel extends JPanel implements ActionListener, Lis
 
 		//Adds components to the main container panel
 		containerPanel.add(new JScrollPane(bookTitles));
-		containerPanel.add(royaltyDetailsPanel);
+		containerPanel.add(new JScrollPane(royaltyDetailsPanel));
 
 		//Because no royalty is selected to start with
 		deleteButton.setEnabled(false);
@@ -350,5 +350,8 @@ public class RoyaltyRulesSamePanel extends JPanel implements ActionListener, Lis
 
 		//Reinstate list selection listener so that royalty details can be obtained for this new list
 		bookTitles.getSelectionModel().addListSelectionListener(this);
+		
+		this.revalidate();
+		this.repaint();
 	}
 }

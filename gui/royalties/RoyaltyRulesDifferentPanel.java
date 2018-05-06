@@ -124,7 +124,7 @@ public class RoyaltyRulesDifferentPanel extends JPanel implements ActionListener
 				Channel channel = SalesHistory.get().getChannel((String) selectedTable.getModel().getValueAt(royaltiesRow, 1)); 
 				
 				channel.deleteRoyalty(book, person);
-				paintRoyaltiesTable();
+				updateData();
 			}
 		} else if (e.getSource() == addOneButton) {
 			if (bookTitles.getSelectedRow() != -1) {
@@ -179,7 +179,26 @@ public class RoyaltyRulesDifferentPanel extends JPanel implements ActionListener
 				deleteButton.setEnabled(false);
 				addOneButton.setEnabled(true);
 				addAllButton.setEnabled(true);
-				paintRoyaltiesTable();
+				isAnotherRoyaltySelected = false;
+				royaltyDetailsPanel.removeAll();
+				royaltyDetailsPanel.revalidate();
+				int tableRow = bookTitles.convertRowIndexToModel(bookTitles.getSelectedRow());
+				Long bookNumber = (Long) bookTitles.getModel().getValueAt(tableRow, 0);
+				Book book = SalesHistory.get().getBookWithNumber(bookNumber);
+				royaltiesAmazon = getTableRoyalties(book, "Amazon");
+				royaltiesApple = getTableRoyalties(book, "Apple");
+				royaltiesKobo = getTableRoyalties(book, "Kobo");
+				royaltiesNook = getTableRoyalties(book, "Nook");
+				royaltiesCreatespace = getTableRoyalties(book, "Createspace");
+				listRoyaltiesTablesSelectionModel = new HashSet<ListSelectionModel>();
+				listRoyaltiesTables = new HashSet<JTable>();
+				setUpRoyaltiesTable(royaltiesAmazon, "Amazon");
+				setUpRoyaltiesTable(royaltiesApple, "Apple");
+				setUpRoyaltiesTable(royaltiesKobo, "Kobo");
+				setUpRoyaltiesTable(royaltiesNook, "Nook");
+				setUpRoyaltiesTable(royaltiesCreatespace, "Createspace");
+				royaltyDetailsPanel.revalidate();
+				royaltyDetailsPanel.repaint();
 			}	
 		} else if (listRoyaltiesTablesSelectionModel.contains((ListSelectionModel) e.getSource()) 
 				&& !((ListSelectionModel) e.getSource()).isSelectionEmpty()) { //Change comes from royalty details, and is not one fired by clearSelection
@@ -196,28 +215,6 @@ public class RoyaltyRulesDifferentPanel extends JPanel implements ActionListener
 		}
 	}
 	
-	private void paintRoyaltiesTable() {
-		isAnotherRoyaltySelected = false;
-		royaltyDetailsPanel.removeAll();
-		royaltyDetailsPanel.revalidate();
-		int tableRow = bookTitles.convertRowIndexToModel(bookTitles.getSelectedRow());
-		Long bookNumber = (Long) bookTitles.getModel().getValueAt(tableRow, 0);
-		Book book = SalesHistory.get().getBookWithNumber(bookNumber);
-		royaltiesAmazon = getTableRoyalties(book, "Amazon");
-		royaltiesApple = getTableRoyalties(book, "Apple");
-		royaltiesKobo = getTableRoyalties(book, "Kobo");
-		royaltiesNook = getTableRoyalties(book, "Nook");
-		royaltiesCreatespace = getTableRoyalties(book, "Createspace");
-		listRoyaltiesTablesSelectionModel = new HashSet<ListSelectionModel>();
-		listRoyaltiesTables = new HashSet<JTable>();
-		setUpRoyaltiesTable(royaltiesAmazon, "Amazon");
-		setUpRoyaltiesTable(royaltiesApple, "Apple");
-		setUpRoyaltiesTable(royaltiesKobo, "Kobo");
-		setUpRoyaltiesTable(royaltiesNook, "Nook");
-		setUpRoyaltiesTable(royaltiesCreatespace, "Createspace");
-		royaltyDetailsPanel.revalidate();
-		royaltyDetailsPanel.repaint();
-	}
 	
 	/**If the table isn't null (aka there are royalties for that channel), set selection mode to single selection, add it to 
 	 * royaltyDetails panel, add a listSelectionListener to its SelectionModel (which is added to listRoyaltiesTable).
@@ -228,7 +225,7 @@ public class RoyaltyRulesDifferentPanel extends JPanel implements ActionListener
 	private void setUpRoyaltiesTable(JTable table, String channelName) {
 		if (table != null) {
 			table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-			royaltyDetailsPanel.add(table);
+			royaltyDetailsPanel.add(new JScrollPane(table));
 			table.getSelectionModel().addListSelectionListener(this);
 			table.getColumnModel().removeColumn(table.getColumnModel().getColumn(0));
 			listRoyaltiesTablesSelectionModel.add(table.getSelectionModel());
@@ -380,5 +377,7 @@ public class RoyaltyRulesDifferentPanel extends JPanel implements ActionListener
 		setTableSettings(bookTitles);
 
 		bookTitles.getSelectionModel().addListSelectionListener(this);
+		this.revalidate();
+		this.repaint();
 	}
 }
