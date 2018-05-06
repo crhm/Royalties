@@ -122,11 +122,15 @@ public class RoyaltyRulesSamePanel extends JPanel implements ActionListener, Lis
 						ch.deleteRoyalty(book, person);
 					}
 				}
-
+				updateData();
 			}
 		} else if (e.getSource() == addButton) {
 			if (bookTitles.getSelectedRow() != -1) {
-				AddRoyaltyDialog addRoyaltyDialog = new AddRoyaltyDialog();
+				int bookRow = bookTitles.convertRowIndexToModel(bookTitles.getSelectedRow());
+				Long bookNumber = (Long) bookTitles.getModel().getValueAt(bookRow, 0);
+				Book book = SalesHistory.get().getBookWithNumber(bookNumber);
+
+				AddRoyaltyDialogAllChannels addRoyaltyDialog = new AddRoyaltyDialogAllChannels(book);
 				addRoyaltyDialog.addWindowListener(new WindowAdapter() {
 					@Override
 					public void windowClosed(WindowEvent e) { //update and repaint table on close of addRoyaltyDialog

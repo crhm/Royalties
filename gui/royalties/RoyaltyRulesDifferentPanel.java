@@ -4,6 +4,8 @@ import java.awt.BorderLayout;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -106,7 +108,17 @@ public class RoyaltyRulesDifferentPanel extends JPanel implements ActionListener
 			}
 		} else if (e.getSource() == addButton) {
 			if (bookTitles.getSelectedRow() != -1) {
-				//TODO
+				int bookRow = bookTitles.convertRowIndexToModel(bookTitles.getSelectedRow());
+				Long bookNumber = (Long) bookTitles.getModel().getValueAt(bookRow, 0);
+				Book book = SalesHistory.get().getBookWithNumber(bookNumber);
+
+				AddRoyaltyDialogOneChannel addRoyaltyDialog = new AddRoyaltyDialogOneChannel(book);
+				addRoyaltyDialog.addWindowListener(new WindowAdapter() {
+					@Override
+					public void windowClosed(WindowEvent e) { //update and repaint table on close of addRoyaltyDialog
+						updateData();
+					}				
+				});
 			}
 		} else if (e.getSource() == editButton) {
 			//new EditRoyaltyDialog(currentChannel, currentBook, currentPerson);
