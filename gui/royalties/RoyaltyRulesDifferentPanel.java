@@ -1,6 +1,7 @@
 package gui.royalties;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -75,7 +76,7 @@ public class RoyaltyRulesDifferentPanel extends JPanel implements ActionListener
 
 		//Adds components to the main container panel
 		containerPanel.add(new JScrollPane(bookTitles));
-		containerPanel.add(royaltyDetailsPanel);
+		containerPanel.add(new JScrollPane(royaltyDetailsPanel));
 
 		//Because no royalty is selected to start with
 		deleteButton.setEnabled(false);
@@ -225,7 +226,11 @@ public class RoyaltyRulesDifferentPanel extends JPanel implements ActionListener
 	private void setUpRoyaltiesTable(JTable table, String channelName) {
 		if (table != null) {
 			table.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
-			royaltyDetailsPanel.add(new JScrollPane(table));
+			JScrollPane tableScrollPane = new JScrollPane();
+			tableScrollPane.setMinimumSize(table.getMinimumSize());
+			tableScrollPane.setPreferredSize(table.getMinimumSize());
+			tableScrollPane.setViewportView(table);
+			royaltyDetailsPanel.add(tableScrollPane);
 			table.getSelectionModel().addListSelectionListener(this);
 			table.getColumnModel().removeColumn(table.getColumnModel().getColumn(0));
 			listRoyaltiesTablesSelectionModel.add(table.getSelectionModel());
@@ -256,6 +261,7 @@ public class RoyaltyRulesDifferentPanel extends JPanel implements ActionListener
 			};
 			JTable table = new JTable(model);
 			table.getColumnModel().getColumn(0).setMaxWidth(120);
+			table.setMinimumSize(new Dimension(150, 60));
 			//Disables the user-reordering table columns
 			table.getTableHeader().setReorderingAllowed(false);
 
