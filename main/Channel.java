@@ -203,14 +203,18 @@ public class Channel implements java.io.Serializable {
 	}
 
 	/**Removes the royalty mapping for the person passed as argument for the book passed as argument.
-	 * 
+	 * If the book subsequently has no royalties at all for that channel, then the book is removed from the list of Royalties
 	 * @param book
 	 * @param person
 	 */
 	public void deleteRoyalty(Book book, Person person) {
 		HashMap<Person, IRoyaltyType> newRoyaltiesMapping = listRoyalties.get(book);
 		newRoyaltiesMapping.remove(person);
-		listRoyalties.replace(book, newRoyaltiesMapping);
+		if (newRoyaltiesMapping.isEmpty()) {
+			listRoyalties.remove(book);
+		} else {
+			listRoyalties.replace(book, newRoyaltiesMapping);
+		}
 	}
 
 	@Override

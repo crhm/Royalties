@@ -271,9 +271,7 @@ public class RoyaltyRulesDifferentPanel extends JPanel implements ActionListener
 	 */
 	private Object[][] getDataRoyalties(Book b, String channelName){
 		HashMap<Person, IRoyaltyType> listRoyalties = SalesHistory.get().getChannel(channelName).getListRoyalties().get(b);
-		if (listRoyalties != null && !listRoyalties.isEmpty()) {
-			//the second part of that if-clause is needed in case there used to be a royalty which has now been deleted, because
-			//then Channel's getListRoyalties.get(book) method returns an empty HashMap rather than none at all.
+		if (listRoyalties != null) {
 			int numberOfRows = listRoyalties.keySet().size();
 			Object[][] data = new Object[numberOfRows][4];
 			int count = 0;
