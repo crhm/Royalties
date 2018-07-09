@@ -285,17 +285,19 @@ public class SalesHistory implements java.io.Serializable {
 	}
 
 	//Remove methods
-	/**Removes a book from the list of books managed by PLP
-	 * @param book the Book to remove from the list of Books managed by PLP
+	/**Removes a book from the list of books managed by PLP, and from any channel's royalty list.
+	 * @param book the Book to remove from the app
 	 */
 	public void removeBook(Book book) {
-		//TODO make explicit that this doesn't affect past sales? Should it?
+		for (Channel c : listChannels) {
+			c.replaceBook(book, null);
+		}
 		this.listPLPBooks.remove(book);
 	}
 
 	/**Removes a person from the list of persons, from being listed as an author anywhere, from having any royalties, 
 	 * and from being listed as a royalty holder
-	 * @param person the Person to remove from the system
+	 * @param person the Person to remove from the app
 	 */
 	public void removePerson(Person person) {
 		for (Book b : listPLPBooks) {
@@ -433,8 +435,6 @@ public class SalesHistory implements java.io.Serializable {
 			c.printStackTrace();
 		}
 	}
-
-	//TODO make serialisation output be a filename with date and time? and then in deserialise choose filename with most recent date?
 
 	/**Serialises SalesHistory by calling its custom writeObject() method, and outputs it to a file called "/tmp/data.ser"
 	 */

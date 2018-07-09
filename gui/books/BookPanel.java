@@ -162,10 +162,10 @@ public class BookPanel extends JPanel implements ActionListener, ListSelectionLi
 			});
 
 		} else if (e.getSource() == deleteButton) { 
-			//TODO figure out stuff below
-			// What should the consequences be for existing sales of that book?
-			// What should the consequences be if it is in royalty lists?
-			int option = JOptionPane.showConfirmDialog(this, "Please confirm you want to delete this book.", "Warning!", 
+			int option = JOptionPane.showConfirmDialog(this, "Please confirm you want to delete this book."
+					+ "\nDeleting this book will not affect past sales for which royalties"
+					+ "\nhave already been calculated, but it will remove it from royalty lists"
+					+ "\nfor any future royalty calculation.", "Warning!", 
 					JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
 			if (option == 0) { //If user clicks OK
 				int row = booksTable.convertRowIndexToModel(booksTable.getSelectedRow());

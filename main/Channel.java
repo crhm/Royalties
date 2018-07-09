@@ -171,7 +171,8 @@ public class Channel implements java.io.Serializable {
 	}
 
 	/**Removes the mapping of royalties for oldBook, and adds its royalties to the list mapped by newBook, unless the royaltyHolder preexists there, 
-	 * in which case it does not add it (thus keeping the royalty as it was for newBook originally)
+	 * in which case it does not add it (thus keeping the royalty as it was for newBook originally).
+	 * If newBook is null, oldDook will be removed from the channel's list of royalties altogether.
 	 * @param oldBook
 	 * @param newBook
 	 */
