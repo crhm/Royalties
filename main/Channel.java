@@ -87,49 +87,11 @@ public class Channel implements java.io.Serializable {
 	public HashMap<Book, HashMap<Person, IRoyaltyType>> getListRoyalties() {
 		return listRoyalties;
 	}
-
-	/**Adds a royalty to the list of royalties of this channel.
-	 * <br>If book is not in SalesHistory's list of books, it is added to it.
-	 * <br>If SalesHistory's list of royalty holders has no one by royaltyHolderName, it creates and adds one.
-	 * @param b Book for which the royalty is held
-	 * @param royaltyHolderName Person which holds the royalty's name
-	 * @param royalty royalty type that is held by the person for this book
-	 * @throws IllegalArgumentException if book b is null or has an empty title, or royaltyHolderName is empty
-	 */
-	public void addRoyalty(Book b, String royaltyHolderName, IRoyaltyType royalty) {
-		//Argument validation
-		validateBook(b);
-		if (royaltyHolderName.isEmpty()) {
-			throw new IllegalArgumentException("Error: royaltyHolderName cannot be empty.");
-		}
-
-		//Obtains the list of royalties for this book if one exists, or creates an empty one if not
-		HashMap<Person, IRoyaltyType> listHolder = null;
-		if (listRoyalties.containsKey(b)) {
-			listHolder = listRoyalties.get(b);
-		} else {
-			listHolder = new HashMap<Person, IRoyaltyType>();
-		}
-
-		//Obtains the person with the name passed as argument from SalesHistory's list of royalty holders, 
-		//or creates one if one does not yet exist, and adds it to SalesHistory.
-		Person royaltyHolder2 = null;
-		if (SalesHistory.get().getPerson(royaltyHolderName) != null) {
-			royaltyHolder2 = SalesHistory.get().getPerson(royaltyHolderName);
-		} else {
-			royaltyHolder2 = ObjectFactory.createPerson(royaltyHolderName);
-			SalesHistory.get().addRoyaltyHolder(royaltyHolder2);
-		}
-
-		//Adds the royalty holder + royalty combination to the list of royalties, and links the book to this list of royalties
-		listHolder.put(royaltyHolder2, royalty);
-		this.listRoyalties.put(b, listHolder);
-	}
 	
-	//TODO determine and make explicit behavior if royalty for this person + book already exists
 	/**Adds a royalty to the list of royalties of this channel.
 	 * <br>If book is not in SalesHistory's list of books, it is added to it.
 	 * <br>If SalesHistory's list of royalty holders has no one by royaltyHolderName, it creates and adds one.
+	 * <br>Warning: If a royalty already exists for that royalty holder for that book, it will be replaced by the new one.
 	 * @param b Book for which the royalty is held
 	 * @param royaltyHolder Person which holds the royalty
 	 * @param royalty royalty type that is held by the person for this book
@@ -169,6 +131,7 @@ public class Channel implements java.io.Serializable {
 
 	/** Adds a list of Foreign Exchange rates for different currencies into US Dollars, associated with the month and year 
 	 *  that it corresponds to, to the app's list of historical FX rates.
+	 *  Warning: if one already exists, the old value will be replaced.
 	 * @param monthAndYear String representing the month and year (following the format "Oct 2017")
 	 * @param listForex HashMap mapping currency codes (a String following the format "EUR") with the exchange rate into dollars (a double).
 	 * @throws IllegalArgumentException if monthAndYear is empty, null, or incorrect format, or listFX is empty, null or incorrect keys.

@@ -7,6 +7,7 @@ import java.io.IOException;
 import main.Book;
 import main.Channel;
 import main.ObjectFactory;
+import main.Person;
 import main.SalesHistory;
 import main.royalties.IRoyaltyType;
 import main.royalties.RoyaltyPercentage;
@@ -71,7 +72,13 @@ public class ChannelRoyaltiesFileFormat extends FileFormat implements java.io.Se
 		while (personsIndex < 9) { //because there are never more than 4 royalty holders, hence never more than 10 columns and last royalty holder should be on 9th
 			if (lineDivided[personsIndex].length() > 1) {
 				IRoyaltyType royalty = new RoyaltyPercentage(Double.parseDouble(lineDivided[personsIndex + 1]));
-				this.channel.addRoyalty(book, lineDivided[personsIndex], royalty);
+				Person royaltyHolder = null;
+				if (SalesHistory.get().getPerson(lineDivided[personsIndex]) != null) {
+					royaltyHolder = SalesHistory.get().getPerson(lineDivided[personsIndex]);
+				} else {
+					royaltyHolder = ObjectFactory.createPerson(lineDivided[personsIndex]);
+				}
+				this.channel.addRoyalty(book, royaltyHolder, royalty);
 			}
 			personsIndex = personsIndex + 2; //because royalty holders are every two columns
 		}
@@ -101,7 +108,8 @@ public class ChannelRoyaltiesFileFormat extends FileFormat implements java.io.Se
 				}
 			}
 			if (newBook) {
-				book = ObjectFactory.createBook(bookTitle, "", identifier);
+				book = ObjectFactory.createBook(bookTitle);
+				book.addIdentifier(identifier);
 			}
 		}
 		return book;

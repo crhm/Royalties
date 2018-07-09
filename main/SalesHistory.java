@@ -239,7 +239,7 @@ public class SalesHistory implements java.io.Serializable {
 	public Set<Book> getListPLPBooks() {
 		return listPLPBooks;
 	}
-	
+
 	/**Calls UniformRoyalties.check(Book b) on all books, to see if they have royalties that are the same across channels, and returns
 	 *  the mapping of those books to their royalties (and sets uniformRoyalties to it).
 	 * @return the uniformRoyalties
@@ -277,46 +277,6 @@ public class SalesHistory implements java.io.Serializable {
 	 */
 	public void addSale(Sale sale) {
 		this.salesHistory.add(sale);	
-	}
-
-	/**Adds the royalty passed as argument to the book passed as argument, for all channels.
-	 * <br>Will create a new person of the name passed as argument if one does not already exist.
-	 * @param b Book to which the royalty belonds
-	 * @param royaltyHolderName name of the person to whom the royalty will be owed
-	 * @param royalty royalty to be attributed.
-	 * @throws IllegalArgumentException if royaltyHolderName is empty, or any of the arguments are null, 
-	 * or the royaltyHolderName matches that of an existing royalty holder for that book.
-	 */
-	public void addUniformRoyalty(Book b, String royaltyHolderName, IRoyaltyType royalty) {
-		if (royaltyHolderName.isEmpty() || royaltyHolderName == null || b == null || royalty == null) {
-			throw new IllegalArgumentException("Error: royaltyHolderName cannot be empty, and arguments cannot be null.");
-		}
-
-		//Obtains the list of royalties for this book if one exists, or creates an empty one if not
-		HashMap<Person, IRoyaltyType> listHolder = null;
-		if (uniformRoyalties.containsKey(b)) {
-			listHolder = uniformRoyalties.get(b);
-		} else {
-			listHolder = new HashMap<Person, IRoyaltyType>();
-		}
-
-		//Obtains the person with the name passed as argument from SalesHistory's list of persons, 
-		//or creates one if one does not yet exist, and adds it to SalesHistory.
-		Person royaltyHolder = null;
-		if (SalesHistory.get().getPerson(royaltyHolderName) != null) {
-			royaltyHolder = SalesHistory.get().getPerson(royaltyHolderName);
-			if (uniformRoyalties.get(b).containsKey(royaltyHolder)) {
-				throw new IllegalArgumentException("Error: that book already has a royaltyHolder with that name. "
-						+ "Edit existing royalty if you mean to change it.");
-			}
-		} else {
-			royaltyHolder = ObjectFactory.createPerson(royaltyHolderName);
-			SalesHistory.get().addRoyaltyHolder(royaltyHolder);
-		}
-
-		//Adds the royalty holder + royalty combination to the list of royalties, and links the book to this list of royalties
-		listHolder.put(royaltyHolder, royalty);
-		this.uniformRoyalties.put(b, listHolder);
 	}
 
 	/** Adds a Person to the complete list of Royalty holders
@@ -378,9 +338,9 @@ public class SalesHistory implements java.io.Serializable {
 				}
 			}
 		}
-		
+
 		listRoyaltyHolders.remove(person.getName());
-		
+
 		this.listPersons.remove(person);
 	}
 
@@ -535,7 +495,7 @@ public class SalesHistory implements java.io.Serializable {
 			c.printStackTrace();
 		}
 	}
-	
+
 	//TODO make serialisation output be a filename with date and time? and then in deserialise choose filename with most recent date?
 
 	/**Serialises SalesHistory by calling its custom writeObject() method, and outputs it to a file called "/tmp/data.ser"

@@ -29,68 +29,25 @@ public class Book implements java.io.Serializable{
 	private Set<String> identifiers = new HashSet<String>();
 	private double totalUnitsSold;
 	private final long bookNumber;
-
-	/**Book constructor.
+	
+	/**Simplest Book constructor.
 	 * <br>Removes quote characters from title, and makes it the main title as well as adding it to the list of titles.
-	 * <br>Author becomes the book's author1 (it may be null).
-	 * <br>Author2, prefaceAuthor, afterwordAuthor and translator are initialised as null (see other constructor for options).
-	 * <br>Creates an ArrayList of Strings and places identifier in it.
+	 * <br>Author1 Author2, prefaceAuthor, afterwordAuthor and translator are initialised as null (see other constructor for options).
+	 * <br>Identifiers list remains empty.
 	 * <br>Initialises totalUnitsSold to 0.
 	 * @param title String title of book (Cannot be empty, cannot be null)
-	 * @param author Person to be the author1 (can be null)
-	 * @param identifier String unique ID of book, e.g. ISBN, ISBN-13, e-ISBN or ASIN (Can be empty, cannot be null)
-	 * @throws IllegalArgumentException if title is empty or null or if identifier is null.
+	 * @throws IllegalArgumentException if title is empty or null
 	 */
-	public Book(String title, Person author, String identifier) {
+	public Book(String title) {
 		validateTitle(title);
-		if (identifier == null) {
-			throw new IllegalArgumentException("Error: identifier may be empty but may not be null.");
-		}
 		this.bookNumber = SalesHistory.get().getNextBookID();
 		this.title = title.replace("\"", "");
 		this.listTitles.add(this.title);
-		this.author1 = author;
+		this.author1 = null;
 		this.author2 = null;
 		this.afterwordAuthor = null;
 		this.prefaceAuthor = null;
-		this.translator = null;
-		if (!identifier.isEmpty()) {
-			this.identifiers.add(identifier);
-		}
-		this.totalUnitsSold = 0;
-	}
-	
-	/**Book constructor for detailed input of various authors.
-	* <br>Removes quote characters from title, and makes it the main title as well as adding it to the list of titles.
-	 * <br>Author1, author2, prefaceAuthor, afterwordAuthor and translator may be null.
-	 * <br>Creates an ArrayList of Strings and places identifier in it.
-	 * <br>Initialises totalUnitsSold to 0.
-	 * @param title String title of book (Cannot be empty, cannot be null)
-	 * @param author1 Main author (Person or null)
-	 * @param author2 Secondary author  (Person or null)
-	 * @param translator  (Person or null)
-	 * @param prefaceAuthor  (Person or null)
-	 * @param afterwordAuthor  (Person or null)
-	 * @param identifier String unique ID of book, e.g. ISBN, ISBN-13, e-ISBN or ASIN (Can be empty, cannot be null)
-	 * @throws IllegalArgumentException if title is empty or null or if identifier is null.
-	 */
-	public Book(String title, Person author1, Person author2, Person translator, Person prefaceAuthor, Person afterwordAuthor, String identifier) {
-		validateTitle(title);
-		if (identifier == null) {
-			throw new IllegalArgumentException("Error: identifier may be empty but may not be null.");
-		}
-		this.bookNumber = SalesHistory.get().getNextBookID();
-		this.title = title.replace("\"", "");
-		this.listTitles.add(this.title);
-		this.author1 = author1;
-		this.author2 = author2;
-		this.afterwordAuthor = afterwordAuthor;
-		this.prefaceAuthor = prefaceAuthor;
-		this.translator = translator;
-
-		if (!identifier.isEmpty()) {
-			this.identifiers.add(identifier);
-		}
+		this.translator = null;		
 		this.totalUnitsSold = 0;
 	}
 

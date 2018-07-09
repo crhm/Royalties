@@ -97,7 +97,15 @@ public abstract class FileFormat {
 			}
 		}
 		if (needToCreateNewBook) {
-			book = ObjectFactory.createBook(bookTitle, authorName, identifier);
+			book = ObjectFactory.createBook(bookTitle);
+			Person author = null;
+			if (SalesHistory.get().getPerson(authorName) != null) {
+				author = SalesHistory.get().getPerson(authorName);
+			} else {
+				author = ObjectFactory.createPerson(authorName);
+			}
+			book.setAuthor1(author);
+			book.addIdentifier(identifier);
 		}
 		return book;
 	}

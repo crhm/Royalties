@@ -24,12 +24,12 @@ class SaleTest {
 	static void setUpBeforeClass() throws Exception {
 		channel = new Channel("Channel", new AmazonFileFormat(), true);
 		SalesHistory.get().addChannel(channel);
-		book = new Book("Title", null, "");
+		book = new Book("Title");
 		SalesHistory.get().addBook(book);
 		instance1 = new Sale(channel, "US", "Jan 2009", book, 8, 0.7, 10, 0.5, 53.2, Currency.getInstance("USD"));
 		person = new Person("Name");
 		SalesHistory.get().addRoyaltyHolder(person);
-		channel.addRoyalty(book, "Name", new RoyaltyPercentage(0.5));
+		channel.addRoyalty(book, person, new RoyaltyPercentage(0.5));
 	}
 
 	@AfterAll

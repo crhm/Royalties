@@ -12,9 +12,15 @@ public class RoyaltiesTest {
 		ImportFactory.ImportData("Data/UsuableFormats/85711804_1017_AU.txt");
 		Book uACS = SalesHistory.get().getBook("Under A Cruel Star");
 		Book jDPAB = SalesHistory.get().getBook("Jacqueline du Pré: A Biography");
-		SalesHistory.get().getChannel("Apple").addRoyalty(uACS, "AAAAA", new RoyaltyPercentage(0.5));
-		SalesHistory.get().getChannel("Apple").addRoyalty(uACS, "BB", new RoyaltyPercentage(0.1));
-		SalesHistory.get().getChannel("Apple").addRoyalty(jDPAB, "CCC", new RoyaltyPercentage(0.25));
+		Person AAAAA = new Person("AAAAA");
+		Person BB = new Person("BB");
+		Person CCC = new Person("CCC");
+		SalesHistory.get().addPerson(AAAAA);
+		SalesHistory.get().addPerson(BB);
+		SalesHistory.get().addPerson(CCC);
+		SalesHistory.get().getChannel("Apple").addRoyalty(uACS, AAAAA, new RoyaltyPercentage(0.5));
+		SalesHistory.get().getChannel("Apple").addRoyalty(uACS, BB, new RoyaltyPercentage(0.1));
+		SalesHistory.get().getChannel("Apple").addRoyalty(jDPAB, CCC, new RoyaltyPercentage(0.25));
 		for (Sale s : SalesHistory.get().getSalesHistory()) {
 			System.out.println(s);
 		}

@@ -35,24 +35,11 @@ class ObjectFactoryTest {
 	@AfterEach
 	void tearDown() throws Exception {
 	}
-
+	
 	@Test
-	void testCreateBookNoExtraAuthors() {
-		Book book1 = ObjectFactory.createBook("Title", "NewAuthor", "ISBN");
-		assertEquals(book1, SalesHistory.get().getBook("Title"));
-		assertEquals("NewAuthor", SalesHistory.get().getPerson("NewAuthor").getName());
-		
-		SalesHistory.get().addPerson(new Person("ExistingAuthor"));
-		Book book2 = ObjectFactory.createBook("Title2", "ExistingAuthor", "ISBN2");
-		assertEquals(book2, SalesHistory.get().getBook("Title2"));
-	}
-
-	@Test
-	void testCreateBookWithAllAuthors() {
-		SalesHistory.get().addPerson(new Person("ExistingAuthor2"));
-		Book book3 = ObjectFactory.createBook("Title", "NONEXISTENT", "ExistingAuthor2", "ExistingAuthor2", null, null, "ISBN");
-		assertEquals(SalesHistory.get().getPerson("ExistingAuthor2"), book3.getAuthor2());
-		assertNull(book3.getAuthor1());
+	void testCreateBook() {
+		Book book = ObjectFactory.createBook("Title");
+		assertEquals(book, SalesHistory.get().getBookWithNumber(book.getBookNumber()));
 	}
 
 	@Test
@@ -77,7 +64,7 @@ class ObjectFactoryTest {
 	@Test
 	void testCreateSale() {
 		Channel channel3 = ObjectFactory.createChannel("NewChannel3", new AmazonFileFormat(), true);
-		Book book4 = ObjectFactory.createBook("Title4", "ExistingAuthor", "ISBN4");
+		Book book4 = ObjectFactory.createBook("Title4");
 		Sale sale = ObjectFactory.createSale(channel3, "US", "Jan 2009", book4, 10, 0.7, 10, 0, 70, Currency.getInstance("USD"));
 		assertEquals(sale, SalesHistory.get().getSalesHistory().get(0));
 	}

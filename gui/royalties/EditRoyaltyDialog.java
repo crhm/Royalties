@@ -37,13 +37,13 @@ public class EditRoyaltyDialog extends JFrame implements ActionListener {
 	Book book;
 	IRoyaltyType royaltyType;
 	
-	public EditRoyaltyDialog(String channelName, String bookTitle, String personName) {
+	public EditRoyaltyDialog(String channelName, Book book, Person person) {
 		super();
 		this.setTitle("Edit Royalty Details");
 		this.setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		
-		person = SalesHistory.get().getPerson(personName);
-		book = SalesHistory.get().getBook(bookTitle);
+		this.person = person;
+		this.book = book;
 		royaltyType = SalesHistory.get().getChannel(channelName).getListRoyalties().get(book).get(person);
 		
 		contentPanel = new JPanel(new GridLayout(4, 2));

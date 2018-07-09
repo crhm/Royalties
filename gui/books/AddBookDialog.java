@@ -271,7 +271,7 @@ public class AddBookDialog extends JFrame implements ActionListener {
 				return; //stop here and don't do anything below since there is no title
 			}
 
-			Book newBook = ObjectFactory.createBook(title, "", "");
+			Book newBook = ObjectFactory.createBook(title);
 			newBook.setAuthor1(author1);
 			newBook.setAuthor2(author2);
 			newBook.setTranslator(translator);

@@ -25,9 +25,7 @@ class BookTest {
 
 	@BeforeEach
 	void setUp() throws Exception {
-		instance1 = new Book("Title", null, "ISBN");
-		Person translator = new Person("Translator");
-		instance2 = new Book("Title2", null, null, translator, null, null, "ISBN2");
+		instance1 = new Book("Title");
 	}
 
 	@AfterEach
@@ -39,7 +37,7 @@ class BookTest {
 		assertNotNull(instance1);
 		assertEquals("Title", instance1.getTitle());
 		assertEquals(1, instance1.getListTitles().size());
-		assertEquals(1, instance1.getIdentifiers().size());
+		assertEquals(0, instance1.getIdentifiers().size());
 		assertEquals(0, instance1.getTotalUnitsSold());
 		assertNull(instance1.getAuthor1());
 		assertNull(instance1.getAuthor2());
@@ -47,23 +45,11 @@ class BookTest {
 		assertNull(instance1.getPrefaceAuthor());
 		assertNull(instance1.getAfterwordAuthor());
 		
-		assertNotNull(instance2);
-		assertEquals("Title2", instance2.getTitle());
-		assertEquals(1, instance2.getListTitles().size());
-		assertEquals(1, instance2.getIdentifiers().size());
-		assertEquals(0, instance2.getTotalUnitsSold());
-		assertNull(instance2.getAuthor1());
-		assertNull(instance2.getAuthor2());
-		assertNotNull(instance2.getTranslator());
-		assertNull(instance2.getPrefaceAuthor());
-		assertNull(instance2.getAfterwordAuthor());
-		
-		assertEquals(instance1.getBookNumber() + 1, instance2.getBookNumber());
 	}
 
 	@Test
 	void testAddUnitsToTotalSold() {
-		Book instance3 = new Book("TEST", null, "");
+		Book instance3 = new Book("TEST");
 		instance3.addUnitsToTotalSold(9);
 		assertEquals(9, instance3.getTotalUnitsSold());
 		instance3.addUnitsToTotalSold(-8);
@@ -72,7 +58,7 @@ class BookTest {
 
 	@Test
 	void testAddIdentifier() {
-		Book instance4 = new Book("TEST", null, "");
+		Book instance4 = new Book("TEST");
 		instance4.addIdentifier("ISBN-13");
 		assertEquals(1, instance4.getIdentifiers().size());
 		instance4.addIdentifier("E-ISBN");
@@ -81,7 +67,7 @@ class BookTest {
 	
 	@Test
 	void testAddTitle() {
-		Book instance5 = new Book("TEST", null, "");
+		Book instance5 = new Book("TEST");
 		assertEquals(1, instance5.getListTitles().size());
 		instance5.addTitle("TEST2");
 		assertEquals(2, instance5.getListTitles().size());
@@ -89,9 +75,13 @@ class BookTest {
 
 	@Test
 	void testMerge() {
-		Book instance6 = new Book("Title1", new Person("Author1"), "ISBN1");
+		Book instance6 = new Book("Title1");
+		instance6.setAuthor1(new Person("Author1"));
+		instance6.addIdentifier("ISBN1");
 		instance6.addUnitsToTotalSold(70);
-		Book instance7 = new Book("Title2", null, null, new Person("Translator"), null, null, "ISBN2");
+		Book instance7 = new Book("Title2");
+		instance7.setTranslator(new Person("Translator"));
+		instance7.addIdentifier("ISBN2");
 		instance7.addUnitsToTotalSold(30);
 		instance6.merge(instance7);
 		assertEquals(2, instance6.getListTitles().size());

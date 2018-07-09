@@ -5,92 +5,17 @@ import java.util.Currency;
 import importing.FileFormat;
 
 public class ObjectFactory {
-
-	/**Constructs a book and then adds them to SalesHistory.
-	 * <br>If a person with the name personName exists in SalesHistory, that person is given as author of the book. 
-	 * Otherwise, if personName isn't an empty string, a new person is created (by calling ObjectFactory.createPerson).
-	 * <br><br>Book constructor removes quote characters from title and author arguments, and then initialises Book variables to them.
-	 * <br>Creates an ArrayList of Strings and places identifier in it.
-	 * <br>Initialises totalUnitsSold to 0.
-	 * @param title String title of book (Cannot be empty, cannot be null)
-	 * @param personName String name of author (Can be empty, cannot be null)
-	 * @param identifier String unique ID of book, e.g. ISBN, ISBN-13, e-ISBN or ASIN (Can be empty, cannot be null)
-	 * @throws IllegalArgumentException if title is empty or any of the arguments are null.
-	 */
-	public static Book createBook(String title, String personName, String identifier) {
-		Person author = null;
-		if (personName == null) {
-			throw new IllegalArgumentException("Error: personName can be empty but cannot be null.");
-		}
-		if (SalesHistory.get().getPerson(personName) != null) {
-			author = SalesHistory.get().getPerson(personName);
-		} else if (!personName.isEmpty()){
-			author = ObjectFactory.createPerson(personName);
-		}
-		Book book = new Book(title, author, identifier);
-		SalesHistory.get().addBook(book);
-		return book;
-	}
-
-	/**Constructs a book and then adds them to SalesHistory.
-	 * <br>For the five authors, they will be null if their corresponding argument is null or empty. They will be an existing 
-	 * Person if one is found with that name in SalesHistory, or they will be a new person if not (and added to SalesHistory).
+	
+	/**Constructs a book and then adds it to SalesHistory.
+	 * <br>All authors are initialised to null, no identifiers are added.
 	 * <br><br>Book constructor removes quote characters from title.
 	 * <br>Creates an ArrayList of Strings and places identifier in it.
 	 * <br>Initialises totalUnitsSold to 0.
-	 * @param title may not be empty or null
-	 * @param author1Name Maybe be empty or null
-	 * @param author2Name Maybe be empty or null
-	 * @param translatorName Maybe be empty or null
-	 * @param prefaceAuthorName Maybe be empty or null
-	 * @param afterwordAuthorName Maybe be empty or null
-	 * @param identifier Maybe be empty but not null
-	 * @return the created book
-	 * @throws IllegalArgumentException if the above rules are not followed
+	 * @param title String title of book (Cannot be empty, cannot be null)
+	 * @throws IllegalArgumentException if title is empty or null.
 	 */
-	public static Book createBook(String title, String author1Name, String author2Name, String translatorName, 
-			String prefaceAuthorName, String afterwordAuthorName, String identifier) {
-		Person author1 = null;
-		Person author2 = null;
-		Person translator = null;
-		Person prefaceAuthor = null;
-		Person afterwordAuthor = null;
-		if (author1Name != null && !author1Name.isEmpty()) {
-			if (SalesHistory.get().getPerson(author1Name) != null) {
-				author1 = SalesHistory.get().getPerson(author1Name);
-			} else {
-				author1 = ObjectFactory.createPerson(author1Name);
-			}
-		}
-		if (author2Name != null && !author2Name.isEmpty()) {
-			if (SalesHistory.get().getPerson(author2Name) != null) {
-				author2 = SalesHistory.get().getPerson(author2Name);
-			} else {
-				author2 = ObjectFactory.createPerson(author2Name);
-			}
-		}
-		if (translatorName != null && !translatorName.isEmpty()) {
-			if (SalesHistory.get().getPerson(translatorName) != null) {
-				translator = SalesHistory.get().getPerson(translatorName);
-			} else {
-				translator = ObjectFactory.createPerson(translatorName);
-			}
-		}
-		if (prefaceAuthorName != null && !prefaceAuthorName.isEmpty()) {
-			if (SalesHistory.get().getPerson(prefaceAuthorName) != null) {
-				prefaceAuthor = SalesHistory.get().getPerson(prefaceAuthorName);	
-			} else {
-				prefaceAuthor = ObjectFactory.createPerson(prefaceAuthorName);
-			}
-		}
-		if (afterwordAuthorName != null && !afterwordAuthorName.isEmpty()) {
-			if (SalesHistory.get().getPerson(afterwordAuthorName) != null) {
-				afterwordAuthor = SalesHistory.get().getPerson(afterwordAuthorName);
-			} else {
-				afterwordAuthor = ObjectFactory.createPerson(afterwordAuthorName);
-			}
-		}
-		Book book = new Book(title, author1, author2, translator, prefaceAuthor, afterwordAuthor, identifier);
+	public static Book createBook(String title) {
+		Book book = new Book(title);
 		SalesHistory.get().addBook(book);
 		return book;
 	}
