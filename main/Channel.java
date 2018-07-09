@@ -111,8 +111,6 @@ public class Channel implements java.io.Serializable {
 		} else {
 			listHolder = new HashMap<Person, IRoyaltyType>();
 		}		
-
-		SalesHistory.get().addRoyaltyHolder(royaltyHolder);
 		
 		//Adds the royalty holder + royalty combination to the list of royalties, and links the book to this list of royalties
 		listHolder.put(royaltyHolder, royalty);

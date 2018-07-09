@@ -46,7 +46,6 @@ public class SalesHistory implements java.io.Serializable {
 	}
 
 	private List<Sale> salesHistory = new ArrayList<Sale>();
-	private HashMap<String, Person> listRoyaltyHolders = new HashMap<String, Person>(); //TODO keep as a set rather than a hashMap?
 	private Set<Channel> listChannels = new HashSet<Channel>();
 	private Set<Book> listPLPBooks = new HashSet<Book>();
 	private Set<Person> listAuthors = new HashSet<Person>();
@@ -271,13 +270,6 @@ public class SalesHistory implements java.io.Serializable {
 		this.salesHistory.add(sale);	
 	}
 
-	/** Adds a Person to the complete list of Royalty holders
-	 * @param royaltyHolder Person to add to the complete list of Royalty holders
-	 */
-	public void addRoyaltyHolder(Person royaltyHolder) {
-		this.listRoyaltyHolders.put(royaltyHolder.getName(), royaltyHolder);
-	}
-
 	/** Adds a book to the list of Books managed by PLP
 	 * @param book the Book to add to the list of Books managed by PLP.
 	 */
@@ -330,8 +322,6 @@ public class SalesHistory implements java.io.Serializable {
 				}
 			}
 		}
-
-		listRoyaltyHolders.remove(person.getName());
 
 		this.listPersons.remove(person);
 	}
@@ -388,7 +378,7 @@ public class SalesHistory implements java.io.Serializable {
 	//	SERIALISATION METHODS
 	/**Writes SalesHistory state to the ObjectOutputStream.
 	 * <br>Writes by serialising the following SalesHistory variables (in this order, same as read by readObject()):
-	 * listChannels, listPLPBooks, listRoyaltyHolders, salesHistory, listAuthors, listPersons, listMonths, nextBookID, nextPersonID.
+	 * listChannels, listPLPBooks, salesHistory, listAuthors, listPersons, listMonths, nextBookID, nextPersonID.
 	 * @param out ObjectOutputStream to write to.
 	 * @throws IOException
 	 */
@@ -396,7 +386,6 @@ public class SalesHistory implements java.io.Serializable {
 		try {
 			out.writeObject(listChannels);
 			out.writeObject(listPLPBooks);
-			out.writeObject(listRoyaltyHolders);
 			out.writeObject(salesHistory);
 			out.writeObject(listAuthors);
 			out.writeObject(listPersons);
@@ -412,7 +401,7 @@ public class SalesHistory implements java.io.Serializable {
 
 	/**Reads SalesHistory state from the ObjectInputStream.
 	 * <br>Expects to find (in same order as written by writeObject()):
-	 * listChannels, listPLPBooks, listRoyaltyHolders, salesHistory, listAuthors, listPersons, listMonths, nextBookID, nextPersonID.
+	 * listChannels, listPLPBooks, salesHistory, listAuthors, listPersons, listMonths, nextBookID, nextPersonID.
 	 * <br><br>It then assigns these to the corresponding class variables of the singleton instance of SalesHistory.
 	 * @param in ObjectInputStream to read from.
 	 * @throws IOException
@@ -423,7 +412,6 @@ public class SalesHistory implements java.io.Serializable {
 		try {
 			Set<Channel> listChannels = (Set<Channel>) in.readObject();
 			Set<Book> listPLPBooks = (Set<Book>) in.readObject();
-			HashMap<String, Person> listRoyaltyHolders = (HashMap<String, Person>) in.readObject();
 			List<Sale> salesHistory = (List<Sale>) in.readObject();
 			Set<Person> listAuthors = (Set<Person>) in.readObject();
 			Set<Person> listPersons = (Set<Person>) in.readObject();
@@ -433,7 +421,6 @@ public class SalesHistory implements java.io.Serializable {
 			in.close();
 			this.listChannels = listChannels;
 			this.listPLPBooks = listPLPBooks;
-			this.listRoyaltyHolders = listRoyaltyHolders;
 			this.salesHistory = salesHistory;
 			this.listAuthors = listAuthors;
 			this.listPersons = listPersons;
@@ -453,7 +440,7 @@ public class SalesHistory implements java.io.Serializable {
 	 */
 	public void serialise() { 
 		try {
-			FileOutputStream fileOut = new FileOutputStream("/tmp/data21.ser");
+			FileOutputStream fileOut = new FileOutputStream("/tmp/data22.ser");
 			ObjectOutputStream out = new ObjectOutputStream(fileOut);
 			SalesHistory.get().writeObject(out);
 			fileOut.close();
@@ -466,7 +453,7 @@ public class SalesHistory implements java.io.Serializable {
 	 */
 	public void deSerialise() {
 		try {
-			FileInputStream fileIn = new FileInputStream("/tmp/data21.ser");
+			FileInputStream fileIn = new FileInputStream("/tmp/data22.ser");
 			ObjectInputStream in = new ObjectInputStream(fileIn);
 			SalesHistory.get().readObject(in);
 			fileIn.close();

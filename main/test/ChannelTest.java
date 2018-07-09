@@ -14,7 +14,6 @@ import importing.sales.AmazonFileFormat;
 import main.Book;
 import main.Channel;
 import main.Person;
-import main.SalesHistory;
 import main.royalties.IRoyaltyType;
 import main.royalties.RoyaltyPercentage;
 
@@ -60,7 +59,6 @@ class ChannelTest {
 	void testAddRoyalty() {
 		Book book = new Book("Title");
 		Person person = new Person("Name");
-		SalesHistory.get().addRoyaltyHolder(person);
 		IRoyaltyType royalty = new RoyaltyPercentage(0.05);
 		instance1.addRoyalty(book, person, royalty);
 		assertEquals(royalty, instance1.getListRoyalties().get(book).get(person));

@@ -30,7 +30,6 @@ class SalesHistoryTest {
 		SalesHistory.get().addSale(sale);
 		person = new Person("Name");
 		SalesHistory.get().addPerson(person);
-		SalesHistory.get().addRoyaltyHolder(person);
 		
 		channel.addRoyalty(book, person, new RoyaltyPercentage(0.5)); 
 		//The above has to be after adding the royaltyholder to SalesHistory otherwise it didn't work
