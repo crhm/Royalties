@@ -315,7 +315,7 @@ public class Book implements java.io.Serializable{
 	//GENERATED METHODS
 	@Override
 	public String toString() {
-		return "Book [title=" + title + ", author=" + author1 + ", identifier=" + identifiers + ", totalUnitsSold=" + totalUnitsSold +"]";
+		return title;
 	}
 
 	/* (non-Javadoc)

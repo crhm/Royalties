@@ -131,7 +131,7 @@ public class Person implements java.io.Serializable {
 	//GENERATED METHODS
 	@Override
 	public String toString() {
-		return "Person [name=" + name + ", balance=" + balance + "]";
+		return name;
 	}
 	
 	/* (non-Javadoc)

@@ -6,6 +6,7 @@ import java.awt.GridLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashSet;
 
 import javax.swing.BorderFactory;
@@ -46,11 +47,11 @@ public class EditBookDialog extends JFrame implements ActionListener {
 	private JTextField tfTitle;
 	private JTextField tfIdentifiers;
 	private JTextField tfOtherTitles;
-	private JComboBox<String> cBAuthor1;
-	private JComboBox<String> cBAuthor2;
-	private JComboBox<String> cBPrefaceAuthor;
-	private JComboBox<String> cBAfterwordAuthor;
-	private JComboBox<String> cBTranslator;
+	private JComboBox<Person> cBAuthor1;
+	private JComboBox<Person> cBAuthor2;
+	private JComboBox<Person> cBPrefaceAuthor;
+	private JComboBox<Person> cBAfterwordAuthor;
+	private JComboBox<Person> cBTranslator;
 	
 	private Book book;
 	
@@ -180,76 +181,83 @@ public class EditBookDialog extends JFrame implements ActionListener {
 	
 	private void makeAuthorsComboBoxes() {
 		//Making an array of authors
-		String[] listAuthors = new String[SalesHistory.get().getListAuthors().size()];
+		Person[] listAuthors = new Person[SalesHistory.get().getListAuthors().size()];
 		int count = 0;
 		for (Person p : SalesHistory.get().getListAuthors()) {
-			listAuthors[count] = p.getName();
+			listAuthors[count] = p;
 			count++;
 		}
-		Arrays.sort(listAuthors);
-		DefaultComboBoxModel<String> model1 = new DefaultComboBoxModel<String>(listAuthors);
-		DefaultComboBoxModel<String> model2 = new DefaultComboBoxModel<String>(listAuthors);
-		DefaultComboBoxModel<String> model3 = new DefaultComboBoxModel<String>(listAuthors);
-		DefaultComboBoxModel<String> model4 = new DefaultComboBoxModel<String>(listAuthors);
-		DefaultComboBoxModel<String> model5 = new DefaultComboBoxModel<String>(listAuthors);
+		Arrays.sort(listAuthors, new Comparator<Person>() {
+
+			@Override
+			public int compare(Person o1, Person o2) {
+				return o1.getName().compareTo(o2.getName());
+			}
+			
+		});
+		DefaultComboBoxModel<Person> model1 = new DefaultComboBoxModel<Person>(listAuthors);
+		DefaultComboBoxModel<Person> model2 = new DefaultComboBoxModel<Person>(listAuthors);
+		DefaultComboBoxModel<Person> model3 = new DefaultComboBoxModel<Person>(listAuthors);
+		DefaultComboBoxModel<Person> model4 = new DefaultComboBoxModel<Person>(listAuthors);
+		DefaultComboBoxModel<Person> model5 = new DefaultComboBoxModel<Person>(listAuthors);
 
 		//AUTHOR 1
-		cBAuthor1 = new JComboBox<String>();
+		cBAuthor1 = new JComboBox<Person>();
 		cBAuthor1.setModel(model1);
 		cBAuthor1.setEditable(true);
 		if (book.getAuthor1() != null) {
-			int index1 = model1.getIndexOf(book.getAuthor1().getName());
+			int index1 = model1.getIndexOf(book.getAuthor1());
 			cBAuthor1.setSelectedIndex(index1);
 		} else {
-			cBAuthor1.insertItemAt("", 0);
+			cBAuthor1.insertItemAt(null, 0);
 			cBAuthor1.setSelectedIndex(0);
 		}
 		
 		//AUTHOR 2
-		cBAuthor2 = new JComboBox<String>();
+		cBAuthor2 = new JComboBox<Person>();
 		cBAuthor2.setModel(model2);
 		cBAuthor2.setEditable(true);
 		if (book.getAuthor2() != null) {
-			int index2 = model2.getIndexOf(book.getAuthor2().getName());
+			int index2 = model2.getIndexOf(book.getAuthor2());
 			cBAuthor2.setSelectedIndex(index2);
 		} else {
-			cBAuthor2.insertItemAt("", 0);
+			cBAuthor2.insertItemAt(null, 0);
 			cBAuthor2.setSelectedIndex(0);
 		}
 		
 		//TRANSLATOR
-		cBTranslator = new JComboBox<String>();
+		cBTranslator = new JComboBox<Person>();
 		cBTranslator.setModel(model3);
 		cBTranslator.setEditable(true);
 		if (book.getTranslator() != null) {
-			int index3 = model3.getIndexOf(book.getTranslator().getName());
+			int index3 = model3.getIndexOf(book.getTranslator());
 			cBTranslator.setSelectedIndex(index3);
 		} else {
-			cBTranslator.insertItemAt("", 0);
+			cBTranslator.insertItemAt(null, 0);
 			cBTranslator.setSelectedIndex(0);
 		}
 
 		//PREFACE AUTHOR
-		cBPrefaceAuthor = new JComboBox<String>();
+		cBPrefaceAuthor = new JComboBox<Person>();
 		cBPrefaceAuthor.setModel(model4);
 		cBPrefaceAuthor.setEditable(true);
 		if (book.getPrefaceAuthor() != null) {
-			int index4 = model4.getIndexOf(book.getPrefaceAuthor().getName());
+			int index4 = model4.getIndexOf(book.getPrefaceAuthor());
 			cBPrefaceAuthor.setSelectedIndex(index4);
 		} else {
-			cBPrefaceAuthor.insertItemAt("", 0);
+			cBPrefaceAuthor.insertItemAt(null, 0);
 			cBPrefaceAuthor.setSelectedIndex(0);
 		}
 		
 		//AFTERWORD AUTHOR
-		cBAfterwordAuthor = new JComboBox<String>();
+		cBAfterwordAuthor = new JComboBox<Person>();
 		cBAfterwordAuthor.setModel(model5);
 		cBAfterwordAuthor.setEditable(true);
 		if (book.getAfterwordAuthor() != null) {
-			int index5 = model5.getIndexOf(book.getAfterwordAuthor().getName());
+			int index5 = model5.getIndexOf(book.getAfterwordAuthor());
 			cBAfterwordAuthor.setSelectedIndex(index5);
 		} else {
-			cBAfterwordAuthor.insertItemAt("", 0);
+			cBAfterwordAuthor.insertItemAt(null, 0);
 			cBAfterwordAuthor.setSelectedIndex(0);
 		}
 	}
@@ -260,11 +268,55 @@ public class EditBookDialog extends JFrame implements ActionListener {
 			this.dispose();
 		} else if (e.getSource() == bttnConfirm) {
 			String title = this.tfTitle.getText();
-			String author1Name = (String) this.cBAuthor1.getSelectedItem();
-			String author2Name = (String) this.cBAuthor2.getSelectedItem();
-			String translatorName = (String) this.cBTranslator.getSelectedItem();
-			String prefaceAuthorName = (String) this.cBPrefaceAuthor.getSelectedItem();
-			String afterwordAuthorName = (String) this.cBAfterwordAuthor.getSelectedItem();
+			Person author1 = null;
+			Person author2 = null;
+			Person translator = null;
+			Person prefaceAuthor = null;
+			Person afterwordAuthor = null;
+			try {
+				author1 = (Person) this.cBAuthor1.getSelectedItem();
+			} catch (ClassCastException newAuthorExc) {
+				if (this.cBAuthor1.getSelectedItem() != null && !((String) this.cBAuthor1.getSelectedItem()).isEmpty()) {
+					author1 = ObjectFactory.createPerson((String) this.cBAuthor1.getSelectedItem());	
+				} 
+			}
+			book.setAuthor1(author1);
+			
+			try {
+				author2 = (Person) this.cBAuthor2.getSelectedItem();
+			} catch (ClassCastException newAuthorExc) {
+				if (this.cBAuthor2.getSelectedItem() != null && !((String) this.cBAuthor2.getSelectedItem()).isEmpty()) {
+					author2 = ObjectFactory.createPerson((String) this.cBAuthor2.getSelectedItem());	
+				} 
+			}
+			book.setAuthor2(author2); 
+			
+			try {
+				translator = (Person) this.cBTranslator.getSelectedItem();
+			} catch (ClassCastException newAuthorExc) {
+				if (this.cBTranslator.getSelectedItem() != null && !((String) this.cBTranslator.getSelectedItem()).isEmpty()) {
+					translator = ObjectFactory.createPerson((String) this.cBTranslator.getSelectedItem());	
+				} 
+			}
+			book.setTranslator(translator); 
+			
+			try {
+				prefaceAuthor = (Person) this.cBPrefaceAuthor.getSelectedItem();
+			} catch (ClassCastException newAuthorExc) {
+				if (this.cBPrefaceAuthor.getSelectedItem() != null && !((String) this.cBPrefaceAuthor.getSelectedItem()).isEmpty()) {
+					prefaceAuthor = ObjectFactory.createPerson((String) this.cBPrefaceAuthor.getSelectedItem());	
+				} 
+			}
+			book.setPrefaceAuthor(prefaceAuthor); 
+			
+			try {
+				afterwordAuthor = (Person) this.cBAfterwordAuthor.getSelectedItem();
+			} catch (ClassCastException newAuthorExc) {
+				if (this.cBAfterwordAuthor.getSelectedItem() != null && !((String) this.cBAfterwordAuthor.getSelectedItem()).isEmpty()) {
+					afterwordAuthor = ObjectFactory.createPerson((String) this.cBAfterwordAuthor.getSelectedItem());	
+				} 
+			}
+			book.setAfterwordAuthor(afterwordAuthor); 
 			
 			String identifiers = this.tfIdentifiers.getText();
 			String otherTitles = this.tfOtherTitles.getText();
@@ -277,41 +329,7 @@ public class EditBookDialog extends JFrame implements ActionListener {
 			
 			//Setting the new details
 			book.setTitle(title);
-			if (SalesHistory.get().getPerson(author1Name) != null) {
-				book.setAuthor1(SalesHistory.get().getPerson(author1Name));
-			} else if (!author1Name.isEmpty()) {
-				Person author1 = ObjectFactory.createPerson(author1Name);
-				book.setAuthor1(author1);
-			}
 			
-			if (SalesHistory.get().getPerson(author2Name) != null) {
-				book.setAuthor2(SalesHistory.get().getPerson(author2Name));
-			} else if (!author2Name.isEmpty()) {
-				Person author2 = ObjectFactory.createPerson(author2Name);
-				book.setAuthor2(author2);
-			}			
-			
-			if (SalesHistory.get().getPerson(translatorName) != null) {
-				book.setTranslator(SalesHistory.get().getPerson(translatorName));
-			} else if (!translatorName.isEmpty()) {
-				Person translator = ObjectFactory.createPerson(translatorName);
-				book.setTranslator(translator);
-			}
-			
-			if (SalesHistory.get().getPerson(prefaceAuthorName) != null) {
-				book.setPrefaceAuthor(SalesHistory.get().getPerson(prefaceAuthorName));
-			} else if (!prefaceAuthorName.isEmpty()) {
-				Person prefaceAuthor = ObjectFactory.createPerson(prefaceAuthorName);
-				book.setPrefaceAuthor(prefaceAuthor);
-			}	
-			
-			if (SalesHistory.get().getPerson(afterwordAuthorName) != null) {
-				book.setAfterwordAuthor(SalesHistory.get().getPerson(afterwordAuthorName));
-			} else if (!afterwordAuthorName.isEmpty()) {
-				Person afterwordAuthor = ObjectFactory.createPerson(afterwordAuthorName);
-				book.setAfterwordAuthor(afterwordAuthor);
-			}
-	
 			book.setIdentifiers(new HashSet<String>());
 			//Making sure that if several identifiers are inputted, they are all added separately
 			String[] identifiersSeparated = null;
