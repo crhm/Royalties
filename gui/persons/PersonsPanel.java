@@ -182,7 +182,9 @@ public class PersonsPanel extends JPanel implements ActionListener, ListSelectio
 				}				
 			});
 		} else if (e.getSource() == deleteButton) { //Delete selected person is clicked
-			int option = JOptionPane.showConfirmDialog(this, "Please confirm you want to delete this person.", "Warning!", 
+			int option = JOptionPane.showConfirmDialog(this, "Please confirm you want to delete this person. "
+					+ "\nThey will no longer be listed as an author to any books,"
+					+ "\ntheir royalties will be deleted,\nand their balance will disappear.", "Warning!", 
 					JOptionPane.OK_CANCEL_OPTION, JOptionPane.WARNING_MESSAGE);
 			if (option == 0) { //If user clicks OK
 				int row1 = royaltyHoldersTable.convertRowIndexToModel(selectedIndex1);

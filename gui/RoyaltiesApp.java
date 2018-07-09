@@ -48,7 +48,7 @@ public class RoyaltiesApp extends JFrame implements Runnable, ChangeListener {
 
 			RoyaltiesApp test = new RoyaltiesApp();
 			Thread guiThread = new Thread(test, "Swing GUI");
-			guiThread.start();		
+			guiThread.start();	
 		} catch (Exception e) {
 			e.printStackTrace();
 		}

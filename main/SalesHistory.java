@@ -345,14 +345,42 @@ public class SalesHistory implements java.io.Serializable {
 	 * @param book the Book to remove from the list of Books managed by PLP
 	 */
 	public void removeBook(Book book) {
+		//TODO make explicit that this doesn't affect past sales? Should it?
 		this.listPLPBooks.remove(book);
 	}
 
-	/**Removes a person from the list of persons
-	 * and adds its personNumber to the list of deleted persons
-	 * @param person the Person to remove from the list of persons
+	/**Removes a person from the list of persons, from being listed as an author anywhere, from having any royalties, 
+	 * and from being listed as a royalty holder
+	 * @param person the Person to remove from the system
 	 */
 	public void removePerson(Person person) {
+		for (Book b : listPLPBooks) {
+			if (b.getAuthor1() == person) {
+				b.setAuthor1(null);
+			}
+			if (b.getAuthor2() == person) {
+				b.setAuthor2(null);
+			}
+			if (b.getTranslator() == person) {
+				b.setTranslator(null);
+			}
+			if (b.getPrefaceAuthor() == person) {
+				b.setPrefaceAuthor(null);
+			}
+			if (b.getAfterwordAuthor() == person) {
+				b.setPrefaceAuthor(null);
+			}
+		}
+		for (Channel c : listChannels) {
+			for (Book b : c.getListRoyalties().keySet()) {
+				if (c.getListRoyalties().get(b).containsKey(person)) {
+					c.deleteRoyalty(b, person);
+				}
+			}
+		}
+		
+		listRoyaltyHolders.remove(person.getName());
+		
 		this.listPersons.remove(person);
 	}
 
@@ -465,7 +493,6 @@ public class SalesHistory implements java.io.Serializable {
 			out.writeObject(nextBookID);
 			out.writeObject(nextPersonID);
 			out.close();
-			System.out.println("Serialized data is saved.");
 		} catch (IOException i) {
 			i.printStackTrace();
 		}
