@@ -1,6 +1,7 @@
 package gui.royalties;
 
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.HashMap;
 
 import javax.swing.JFrame;
@@ -51,15 +52,20 @@ public class AddRoyaltyDialogAllChannels extends AddRoyaltyDialog {
 		panelDataEntry.add(lblRoyaltyHolder);
 
 		//Making the comboBox of persons
-		String[] listPersons = new String[SalesHistory.get().getListPersons().size()];
+		Person[] listPersons = new Person[SalesHistory.get().getListPersons().size()];
 		int count = 0;
 		for (Person p : SalesHistory.get().getListPersons()) {
-			listPersons[count] = p.getName();
+			listPersons[count] = p;
 			count++;
 		}
-		Arrays.sort(listPersons);
-		DefaultComboBoxModel<String> modelPersons = new DefaultComboBoxModel<String>(listPersons);
-		cbbRoyaltyHolder = new JComboBox<String>();
+		Arrays.sort(listPersons, new Comparator<Person>() {
+			@Override
+			public int compare(Person o1, Person o2) {
+				return o1.getName().compareTo(o2.getName());
+			}			
+		});
+		DefaultComboBoxModel<Person> modelPersons = new DefaultComboBoxModel<Person>(listPersons);
+		cbbRoyaltyHolder = new JComboBox<Person>();
 		cbbRoyaltyHolder.setModel(modelPersons);
 		cbbRoyaltyHolder.setSelectedIndex(-1);
 		panelDataEntry.add(cbbRoyaltyHolder);
@@ -110,7 +116,7 @@ public class AddRoyaltyDialogAllChannels extends AddRoyaltyDialog {
 		try {
 			Double fixedAmount = Double.parseDouble(tfFixedAmount.getText());
 			for (Channel ch : SalesHistory.get().getListChannels()) {
-				ch.addRoyalty(book, (String) cbbRoyaltyHolder.getSelectedItem(), new RoyaltyFixedAmount(fixedAmount));
+				ch.addRoyalty(book, (Person) cbbRoyaltyHolder.getSelectedItem(), new RoyaltyFixedAmount(fixedAmount));
 			}
 		} catch (NumberFormatException error) {
 			JOptionPane.showMessageDialog(this, "Error: Please enter a valid amount (must be a number).", 
@@ -125,7 +131,7 @@ public class AddRoyaltyDialogAllChannels extends AddRoyaltyDialog {
 	 */
 	protected void addFixedPercentage() {
 		if (tfFixedPercentage.getText().isEmpty()) {
-			JOptionPane.showMessageDialog(this, "Error: An percentage is required to create fixed-percentage royalty.", 
+			JOptionPane.showMessageDialog(this, "Error: A percentage is required to create fixed-percentage royalty.", 
 					"Error", JOptionPane.ERROR_MESSAGE);
 			return;
 		}
@@ -135,7 +141,7 @@ public class AddRoyaltyDialogAllChannels extends AddRoyaltyDialog {
 				throw new NumberFormatException();
 			}
 			for (Channel ch : SalesHistory.get().getListChannels()) {
-				ch.addRoyalty(book, (String) cbbRoyaltyHolder.getSelectedItem(), new RoyaltyPercentage(percentage/100));
+				ch.addRoyalty(book, (Person) cbbRoyaltyHolder.getSelectedItem(), new RoyaltyPercentage(percentage/100));
 			}
 		} catch (NumberFormatException error) {
 			JOptionPane.showMessageDialog(this, "Error: Please enter a valid percentage (must be a number between 1-100).", 
@@ -179,7 +185,7 @@ public class AddRoyaltyDialogAllChannels extends AddRoyaltyDialog {
 		}
 
 		for (Channel ch : SalesHistory.get().getListChannels()) {
-			ch.addRoyalty(book, (String) cbbRoyaltyHolder.getSelectedItem(), new RoyaltyDependentOnUnitsSold(ranges, defaultPercentage/100));
+			ch.addRoyalty(book, (Person) cbbRoyaltyHolder.getSelectedItem(), new RoyaltyDependentOnUnitsSold(ranges, defaultPercentage/100));
 		}
 		this.dispose();
 	}

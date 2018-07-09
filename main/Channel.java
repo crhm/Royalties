@@ -92,7 +92,7 @@ public class Channel implements java.io.Serializable {
 	 * <br>If book is not in SalesHistory's list of books, it is added to it.
 	 * <br>If SalesHistory's list of royalty holders has no one by royaltyHolderName, it creates and adds one.
 	 * @param b Book for which the royalty is held
-	 * @param royaltyHolder Person which holds the royalty
+	 * @param royaltyHolderName Person which holds the royalty's name
 	 * @param royalty royalty type that is held by the person for this book
 	 * @throws IllegalArgumentException if book b is null or has an empty title, or royaltyHolderName is empty
 	 */
@@ -123,6 +123,37 @@ public class Channel implements java.io.Serializable {
 
 		//Adds the royalty holder + royalty combination to the list of royalties, and links the book to this list of royalties
 		listHolder.put(royaltyHolder2, royalty);
+		this.listRoyalties.put(b, listHolder);
+	}
+	
+	//TODO determine and make explicit behavior if royalty for this person + book already exists
+	/**Adds a royalty to the list of royalties of this channel.
+	 * <br>If book is not in SalesHistory's list of books, it is added to it.
+	 * <br>If SalesHistory's list of royalty holders has no one by royaltyHolderName, it creates and adds one.
+	 * @param b Book for which the royalty is held
+	 * @param royaltyHolder Person which holds the royalty
+	 * @param royalty royalty type that is held by the person for this book
+	 * @throws IllegalArgumentException if book b is null or has an empty title, or royaltyHolderName is empty
+	 */
+	public void addRoyalty(Book b, Person royaltyHolder, IRoyaltyType royalty) {
+		//Argument validation
+		validateBook(b);
+		if (royaltyHolder == null) {
+			throw new IllegalArgumentException("Error: royaltyHolder cannot be null.");
+		}
+
+		//Obtains the list of royalties for this book if one exists, or creates an empty one if not
+		HashMap<Person, IRoyaltyType> listHolder = null;
+		if (listRoyalties.containsKey(b)) {
+			listHolder = listRoyalties.get(b);
+		} else {
+			listHolder = new HashMap<Person, IRoyaltyType>();
+		}		
+
+		SalesHistory.get().addRoyaltyHolder(royaltyHolder);
+		
+		//Adds the royalty holder + royalty combination to the list of royalties, and links the book to this list of royalties
+		listHolder.put(royaltyHolder, royalty);
 		this.listRoyalties.put(b, listHolder);
 	}
 

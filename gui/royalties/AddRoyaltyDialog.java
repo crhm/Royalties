@@ -14,6 +14,7 @@ import javax.swing.SwingConstants;
 import javax.swing.JTextField;
 
 import main.Book;
+import main.Person;
 
 /**Abstract class holding variables and methods shared between AddRoyaltyDialogOneChannel and AddRoyaltyDialogAllChannels, such as 
  * the data validation methods for user inputs and the display of different things in the lower panel depending on the user's choice 
@@ -31,7 +32,7 @@ abstract class AddRoyaltyDialog extends JFrame implements ActionListener {
 	protected JComboBox<String> cbbChannels;
 	protected JLabel lblChannel;
 
-	protected JComboBox<String> cbbRoyaltyHolder;
+	protected JComboBox<Person> cbbRoyaltyHolder;
 	protected JComboBox<String> cbbRoyaltyType;
 
 	protected JTextField tfFixedPercentage;
