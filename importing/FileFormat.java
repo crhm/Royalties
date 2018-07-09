@@ -101,7 +101,7 @@ public abstract class FileFormat {
 			Person author = null;
 			if (SalesHistory.get().getPerson(authorName) != null) {
 				author = SalesHistory.get().getPerson(authorName);
-			} else {
+			} else if (!authorName.isEmpty()){
 				author = ObjectFactory.createPerson(authorName);
 			}
 			book.setAuthor1(author);
