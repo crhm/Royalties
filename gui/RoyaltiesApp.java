@@ -3,6 +3,9 @@ package gui;
 import java.io.File;
 
 import javax.swing.JFrame;
+import javax.swing.JMenu;
+import javax.swing.JMenuBar;
+import javax.swing.JMenuItem;
 import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -12,6 +15,7 @@ import gui.books.BookPanel;
 import gui.channels.ChannelPanel;
 import gui.dataverification.DataVerificationPanel;
 import gui.dataverification.SalesImportSummaryPanel;
+import gui.importfiles.ImportListener;
 import gui.persons.PersonsPanel;
 import gui.royalties.RoyaltyRulesDifferentPanel;
 import gui.royalties.RoyaltyRulesSamePanel;
@@ -41,6 +45,10 @@ public class RoyaltiesApp extends JFrame implements Runnable, ChangeListener {
 	SalesImportSummaryPanel salesImportSummaryPanel = new SalesImportSummaryPanel();
 	SalesPanel salesPanel= new SalesPanel();
 	DataVerificationPanel dataVerificationPanel = new DataVerificationPanel();
+	
+	JMenuBar menuBar = new JMenuBar();
+	JMenu fileMenu = new JMenu("File");
+	JMenuItem importFile = new JMenuItem("Import File");
 
 	public static void main(String[] args) {
 		try {
@@ -67,7 +75,11 @@ public class RoyaltiesApp extends JFrame implements Runnable, ChangeListener {
 			}
 		});
 
-
+		fileMenu.add(importFile);
+		menuBar.add(fileMenu);
+		this.setJMenuBar(menuBar);
+		importFile.addActionListener(new ImportListener());
+		
 		allTabs.addTab("PLP Books", bookPanel);
 		allTabs.addTab("Persons", personsPanel);
 		allTabs.addTab("Authors", authorsPanel);
@@ -90,6 +102,7 @@ public class RoyaltiesApp extends JFrame implements Runnable, ChangeListener {
 	@Override
 	public void run() {
 		initialize();
+		
 	} 
 
 	/**Gets royalties data by deserialising SalesHistory if it finds the corresponding file, 
