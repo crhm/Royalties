@@ -15,13 +15,11 @@ import gui.books.BookPanel;
 import gui.channels.ChannelPanel;
 import gui.dataverification.DataVerificationPanel;
 import gui.dataverification.SalesImportSummaryPanel;
-import gui.importfiles.ImportListener;
 import gui.persons.PersonsPanel;
 import gui.royalties.RoyaltyRulesDifferentPanel;
 import gui.royalties.RoyaltyRulesSamePanel;
 import gui.royaltyholders.RoyaltyHoldersPanel;
 import gui.sales.SalesPanel;
-import importing.test.ImportEverything;
 import main.SalesHistory;
 
 /**GUI for royalties app. Opens a full screen window with several panels displaying different information:
@@ -45,7 +43,7 @@ public class RoyaltiesApp extends JFrame implements Runnable, ChangeListener {
 	SalesImportSummaryPanel salesImportSummaryPanel = new SalesImportSummaryPanel();
 	SalesPanel salesPanel= new SalesPanel();
 	DataVerificationPanel dataVerificationPanel = new DataVerificationPanel();
-	
+
 	JMenuBar menuBar = new JMenuBar();
 	JMenu fileMenu = new JMenu("File");
 	JMenuItem importFile = new JMenuItem("Import File");
@@ -78,8 +76,10 @@ public class RoyaltiesApp extends JFrame implements Runnable, ChangeListener {
 		fileMenu.add(importFile);
 		menuBar.add(fileMenu);
 		this.setJMenuBar(menuBar);
-		importFile.addActionListener(new ImportListener());
-		
+		ImportListener importListener = new ImportListener();
+		importListener.setAppToUpdate(this);
+		importFile.addActionListener(importListener);
+
 		allTabs.addTab("PLP Books", bookPanel);
 		allTabs.addTab("Persons", personsPanel);
 		allTabs.addTab("Authors", authorsPanel);
@@ -102,21 +102,16 @@ public class RoyaltiesApp extends JFrame implements Runnable, ChangeListener {
 	@Override
 	public void run() {
 		initialize();
-		
+
 	} 
 
-	/**Gets royalties data by deserialising SalesHistory if it finds the corresponding file, 
-	 * or by importing everything if it doesn't.
+	/**Gets data by deserialising SalesHistory if it finds the corresponding file, 
 	 * @throws InterruptedException if a thread interrupts the import thread.
 	 */
 	private static void obtainData() throws InterruptedException {
-		File f = new File("/tmp/data22.ser");
+		File f = new File("/tmp/data25.ser");
 		if(f.exists() && !f.isDirectory()) { 
 			SalesHistory.get().deSerialise();
-		} else {
-			Thread importThread = new Thread(new ImportEverything(), "Importing data");
-			importThread.start();
-			importThread.join(); //wait for this thread to die before starting next one
 		}
 	}
 
@@ -137,5 +132,4 @@ public class RoyaltiesApp extends JFrame implements Runnable, ChangeListener {
 		case (9) : dataVerificationPanel.updateData(); break;
 		}
 	}
-
 }

@@ -1,10 +1,11 @@
-package gui.importfiles;
+package gui;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.File;
 
 import javax.swing.JFileChooser;
+import javax.swing.event.ChangeEvent;
 
 import importing.ImportFactory;
 
@@ -16,19 +17,25 @@ import importing.ImportFactory;
 public class ImportListener implements ActionListener{
 
 	final JFileChooser fc = new JFileChooser();
-	
+
+	private RoyaltiesApp appToUpdate;
+
+	public void setAppToUpdate(RoyaltiesApp appToUpdate) {
+		this.appToUpdate = appToUpdate;
+	}
+
 	@Override
 	public void actionPerformed(ActionEvent e) {
-		
 		fc.setMultiSelectionEnabled(true);
-		
+
 		int returnVal = fc.showOpenDialog(null);
-		
+
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
-			 File[] files = fc.getSelectedFiles();
-			 for (File file : files) {
-				 ImportFactory.ImportData(file.getPath());
-			 }			
+			File[] files = fc.getSelectedFiles();
+			for (File file : files) {
+				ImportFactory.ImportData(file.getPath());
+			}
+			appToUpdate.stateChanged(new ChangeEvent("Files Imported"));
 		}
 	}
 
