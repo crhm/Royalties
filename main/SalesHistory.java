@@ -54,6 +54,9 @@ public class SalesHistory implements java.io.Serializable {
 
 	private AtomicLong nextBookID = new AtomicLong(1);
 	private AtomicLong nextPersonID = new AtomicLong(1);
+	
+	private List<String> importedFiles = new ArrayList<String>();
+
 
 	//GET IDS FOR OBJECT CREATION
 	/** 
@@ -377,10 +380,21 @@ public class SalesHistory implements java.io.Serializable {
 		}
 	}
 
+	/**
+	 * @return the importedFiles
+	 */
+	public List<String> getImportedFiles() {
+		return importedFiles;
+	}
+	
+	public void addImportedFile(String fileName) {
+		this.importedFiles.add(fileName);
+	}
+
 	//	SERIALISATION METHODS
 	/**Writes SalesHistory state to the ObjectOutputStream.
 	 * <br>Writes by serialising the following SalesHistory variables (in this order, same as read by readObject()):
-	 * listChannels, listPLPBooks, salesHistory, listAuthors, listPersons, listMonths, nextBookID, nextPersonID.
+	 * listChannels, listPLPBooks, salesHistory, listAuthors, listPersons, listMonths, nextBookID, nextPersonID, importedFiles
 	 * @param out ObjectOutputStream to write to.
 	 * @throws IOException
 	 */
@@ -394,6 +408,7 @@ public class SalesHistory implements java.io.Serializable {
 			out.writeObject(listMonths);
 			out.writeObject(nextBookID);
 			out.writeObject(nextPersonID);
+			out.writeObject(importedFiles);
 			out.close();
 		} catch (IOException i) {
 			i.printStackTrace();
@@ -403,7 +418,7 @@ public class SalesHistory implements java.io.Serializable {
 
 	/**Reads SalesHistory state from the ObjectInputStream.
 	 * <br>Expects to find (in same order as written by writeObject()):
-	 * listChannels, listPLPBooks, salesHistory, listAuthors, listPersons, listMonths, nextBookID, nextPersonID.
+	 * listChannels, listPLPBooks, salesHistory, listAuthors, listPersons, listMonths, nextBookID, nextPersonID, importedFiles.
 	 * <br><br>It then assigns these to the corresponding class variables of the singleton instance of SalesHistory.
 	 * @param in ObjectInputStream to read from.
 	 * @throws IOException
@@ -420,6 +435,7 @@ public class SalesHistory implements java.io.Serializable {
 			Set<String> listMonths = (Set<String>) in.readObject();
 			AtomicLong nextBookID = (AtomicLong) in.readObject();
 			AtomicLong nextPersonID = (AtomicLong) in.readObject();
+			List<String> importedFiles = (List<String>) in.readObject();
 			in.close();
 			this.listChannels = listChannels;
 			this.listPLPBooks = listPLPBooks;
@@ -429,6 +445,7 @@ public class SalesHistory implements java.io.Serializable {
 			this.listMonths = listMonths;
 			this.nextBookID = nextBookID;
 			this.nextPersonID = nextPersonID;
+			this.importedFiles = importedFiles;
 		} catch (IOException i) {
 			i.printStackTrace();
 		} catch (ClassNotFoundException c) {
@@ -440,7 +457,7 @@ public class SalesHistory implements java.io.Serializable {
 	 */
 	public void serialise() { 
 		try {
-			FileOutputStream fileOut = new FileOutputStream("/tmp/data31.ser");
+			FileOutputStream fileOut = new FileOutputStream("/tmp/data34.ser");
 			ObjectOutputStream out = new ObjectOutputStream(fileOut);
 			SalesHistory.get().writeObject(out);
 			fileOut.close();
@@ -453,7 +470,7 @@ public class SalesHistory implements java.io.Serializable {
 	 */
 	public void deSerialise() {
 		try {
-			FileInputStream fileIn = new FileInputStream("/tmp/data31.ser");
+			FileInputStream fileIn = new FileInputStream("/tmp/data34.ser");
 			ObjectInputStream in = new ObjectInputStream(fileIn);
 			SalesHistory.get().readObject(in);
 			fileIn.close();

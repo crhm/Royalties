@@ -7,6 +7,7 @@ import importing.sales.AppleFileFormat;
 import importing.sales.CreatespaceFileFormat;
 import importing.sales.KoboFileFormat;
 import importing.sales.NookFileFormat;
+import main.SalesHistory;
 
 public class ImportFactory implements java.io.Serializable {
 
@@ -33,6 +34,8 @@ public class ImportFactory implements java.io.Serializable {
 			temp = new AmazonForexFileFormat();
 		}
 		temp.importData(fileName);
+		String[] pathSeparated = fileName.split("/");
+		SalesHistory.get().addImportedFile(pathSeparated[pathSeparated.length - 1]);
 	}
 
 }

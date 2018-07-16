@@ -9,8 +9,8 @@ import javax.swing.JOptionPane;
 import javax.swing.event.ChangeEvent;
 
 import gui.RoyaltiesApp;
-import importing.DataAlreadyImportedException;
 import importing.ImportFactory;
+import main.SalesHistory;
 
 /**ActionListener for user clicking "Import File" in the File menu.
  * Opens a file chooser and tries to import the files chosen by the user, by calling 
@@ -40,14 +40,16 @@ public class ImportListener implements ActionListener{
 		if (returnVal == JFileChooser.APPROVE_OPTION) {
 			File[] files = fc.getSelectedFiles();
 			for (File file : files) {
-				try {
+				if (SalesHistory.get().getImportedFiles().contains(file.getName())) {
+					int userChoice = JOptionPane.showConfirmDialog(this.appToUpdate, "Warning! A file with this "
+							+ "name has been imported before:\n" + file.getName() 
+							+ "\nAre you sure you want to import this file anyway?"
+							+ "\nIt may result in duplicate sales.", "Warning!", JOptionPane.YES_NO_OPTION , JOptionPane.WARNING_MESSAGE);
+					if (userChoice == JOptionPane.YES_OPTION) {
+						ImportFactory.ImportData(file.getPath());
+					}
+				} else {
 					ImportFactory.ImportData(file.getPath());
-				} catch (DataAlreadyImportedException ex) {
-					String template = "<html><body><p style='width: 200px;'>%s</p></body></html>";
-					String message = "Please note: " + file.getName() + " was not imported because "
-							+ "data for this channel and this date were already present in the app.";
-					String toDisplay = String.format(template, message);
-					JOptionPane.showMessageDialog(null, toDisplay, "Error!", JOptionPane.ERROR_MESSAGE);
 				}
 			}
 			appToUpdate.stateChanged(new ChangeEvent("Files Imported"));
