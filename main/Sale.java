@@ -34,7 +34,7 @@ public class Sale implements java.io.Serializable {
 
 	/**Sale constructor. Initialises all variables as the arguments passed by user.
 	 * @param channel Channel through which the sale was made. Must be one recognised by SalesHistory.
-	 * @param country Format is not fixed for this at this stage.
+	 * @param country Format is not fixed for this at this stage. Can be null or empty.
 	 * @param date String representing month and year following the format "Oct 2017"
 	 * @param book Item sold. Must be a book managed by PLP.
 	 * @param netUnitsSold May be negative to represent returns / refunds.
@@ -49,7 +49,6 @@ public class Sale implements java.io.Serializable {
 	public Sale(Channel channel, String country, String date, Book book, double netUnitsSold, 
 			double royaltyTypePLP, double price, double deliveryCost, double revenuesPLP, Currency currency) {
 		validateChannel(channel);
-		validateCountry(country);
 		validateDate(date);
 		validateBook(book);
 		validateCurrency(currency);
@@ -67,6 +66,73 @@ public class Sale implements java.io.Serializable {
 		this.deliveryCost = tempDeliveryCost.doubleValue();
 		BigDecimal tempRevenuesPLP = new BigDecimal(revenuesPLP).setScale(2, RoundingMode.HALF_UP);
 		this.revenuesPLP = tempRevenuesPLP.doubleValue();
+		this.currency = currency;
+	}
+	
+	/**Sale constructor. Initialises corresponding variables as the arguments passed by user, 
+	 *  and royaltyTypePLP, price and deliveryCost to -1.
+	 * @param channel Channel through which the sale was made. Must be one recognised by SalesHistory.
+	 * @param date String representing month and year following the format "Oct 2017"
+	 * @param book Item sold. Must be a book managed by PLP.
+	 * @param netUnitsSold May be negative to represent returns / refunds.
+	 * @param revenuesPLP Should be (Price - deliverCost) * netUnitsSold * royaltyPLP. (Will be rounded Half Up to two decimal places).
+	 * @param currency Because of need to calculate balances in USD if the sale was in a foreign currency
+	 * @throws IllegalArgumentException if arguments are null, or empty strings, or violate above stated rules.
+	 */
+	public Sale(Channel channel, String country, String date, Book book, double netUnitsSold, double revenuesPLP, Currency currency) {
+		validateChannel(channel);
+		validateDate(date);
+		validateBook(book);
+		validateCurrency(currency);
+		book.addUnitsToTotalSold(netUnitsSold);
+		this.channel = channel;
+		this.country = "";
+		this.date = date;
+		this.book = book;
+		this.netUnitsSold = netUnitsSold;
+		this.royaltyTypePLP = -1;
+		this.price = -1;
+		this.deliveryCost = -1;
+		BigDecimal tempRevenuesPLP = new BigDecimal(revenuesPLP).setScale(2, RoundingMode.HALF_UP);
+		this.revenuesPLP = tempRevenuesPLP.doubleValue();
+		this.currency = currency;
+	}
+	
+	/**Sale constructor. Initialises all variables as the arguments passed by user, and revenuesPLP 
+	 * to be (Price - deliveryCost) * netUnitsSold * royaltyPLP. (Will be rounded Half Up to two decimal places).
+	 * @param channel Channel through which the sale was made. Must be one recognised by SalesHistory.
+	 * @param country Format is not fixed for this at this stage. (can be empty string or null)
+	 * @param date String representing month and year following the format "Oct 2017"
+	 * @param book Item sold. Must be a book managed by PLP.
+	 * @param netUnitsSold May be negative to represent returns / refunds.
+	 * @param royaltyTypePLP Percentage of channel revenue that PLP gets per sale. (Will be rounded Half Up to two decimal places).
+	 * @param price May be 0. Always without tax. Use offer price if there is one rather than full price. 
+	 * (Will be rounded Half Up to two decimal places).
+	 * @param deliveryCost May be 0. (Will be rounded Half Up to two decimal places).
+	 * @param currency Because of need to calculate balances in USD if the sale was in a foreign currency
+	 * @throws IllegalArgumentException if arguments are null, or empty strings, or violate above stated rules.
+	 */
+	public Sale(Channel channel, String country, String date, Book book, double netUnitsSold, 
+			double royaltyTypePLP, double price, double deliveryCost, Currency currency) {
+		validateChannel(channel);
+		validateDate(date);
+		validateBook(book);
+		validateCurrency(currency);
+		book.addUnitsToTotalSold(netUnitsSold);
+		this.channel = channel;
+		this.country = country;
+		this.date = date;
+		this.book = book;
+		this.netUnitsSold = netUnitsSold;
+		BigDecimal tempRoyaltyType = new BigDecimal(royaltyTypePLP).setScale(2, RoundingMode.HALF_UP);
+		this.royaltyTypePLP = tempRoyaltyType.doubleValue();
+		BigDecimal tempPrice = new BigDecimal(price).setScale(2, RoundingMode.HALF_UP);
+		this.price = tempPrice.doubleValue();
+		BigDecimal tempDeliveryCost = new BigDecimal(deliveryCost).setScale(2, RoundingMode.HALF_UP);
+		this.deliveryCost = tempDeliveryCost.doubleValue();
+		double tempRevenuesPLP = (this.price - this.deliveryCost) * this.netUnitsSold * this.royaltyTypePLP;
+		BigDecimal roundedRevenuesPLP = new BigDecimal(tempRevenuesPLP).setScale(2, RoundingMode.HALF_UP);
+		this.revenuesPLP = roundedRevenuesPLP.doubleValue();
 		this.currency = currency;
 	}
 
@@ -207,15 +273,6 @@ public class Sale implements java.io.Serializable {
 	private void validateCurrency(Currency currency) {
 		if (currency == null) {
 			throw new IllegalArgumentException("Error: currency cannot be null");
-		}
-	}
-
-	/**Checks that country is not null or empty
-	 * @throws IllegalArgumentException if field takes unauthorised value
-	 */
-	private void validateCountry(String country) {
-		if (country == null || country.isEmpty()){
-			throw new IllegalArgumentException("Error: country cannot be empty or null");
 		}
 	}
 
