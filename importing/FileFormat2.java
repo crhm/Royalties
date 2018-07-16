@@ -3,6 +3,8 @@ package importing;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Currency;
@@ -17,11 +19,12 @@ import main.SalesHistory;
 public class FileFormat2 {
 
 	private int firstLineOfData;
-	private int minLengthOfLine;
+	private int minLengthOfLine = 15;
 	private SimpleDateFormat oldDateFormat;
 	private final SimpleDateFormat newDateFormat = new SimpleDateFormat("MMM yyyy");
-	private int dateColumnIndex;
-	private int dateRowIndex;
+	private int dateColumnIndex = -1;
+	private int dateRowIndex = -1;
+	private String date = null;
 	private Channel channel;
 
 	private ObjectToImport bookTitleSettings = null;
@@ -38,7 +41,61 @@ public class FileFormat2 {
 
 	/**
 	 * @param firstLineOfData
-	 * @param minLengthOfLine
+	 * @param oldDateFormat
+	 * @param channel
+	 * @param dateColumnIndex
+	 * @param dateRowIndex
+	 * @param bookTitleSettings
+	 * @param bookAuthorSettings
+	 * @param bookIDSettings
+	 * @param netUnitsSoldSettings
+	 * @param revenuesPLPSettings
+	 * @param priceSettings
+	 * @param royaltyTypePLPSettings
+	 * @param deliveryCostSettings
+	 * @param dateSettings
+	 * @param currencySettings
+	 * @param countrySettings
+	 */
+	public FileFormat2(int firstLineOfData, SimpleDateFormat oldDateFormat, Channel channel,
+			int dateColumnIndex, int dateRowIndex, ObjectToImport bookTitleSettings, ObjectToImport bookAuthorSettings, 
+			ObjectToImport bookIDSettings, ObjectToImport netUnitsSoldSettings,
+			ObjectToImport revenuesPLPSettings, ObjectToImport priceSettings, ObjectToImport royaltyTypePLPSettings,
+			ObjectToImport deliveryCostSettings, ObjectToImport currencySettings, ObjectToImport countrySettings) {
+		
+		validate(channel);
+		
+		validate(oldDateFormat);
+		
+		validateIndexes(firstLineOfData);
+		validateIndexes(dateColumnIndex);
+		validateIndexes(dateRowIndex);
+		
+		validate(bookTitleSettings);
+		validate(netUnitsSoldSettings);
+		validate(currencySettings);
+		
+		checkRevenue(revenuesPLPSettings, priceSettings, royaltyTypePLPSettings);
+		
+		this.firstLineOfData = firstLineOfData;
+		this.oldDateFormat = oldDateFormat;
+		this.channel = channel;
+		this.dateColumnIndex = dateColumnIndex;
+		this.dateRowIndex = dateRowIndex;
+		this.bookTitleSettings = bookTitleSettings;
+		this.bookAuthorSettings = bookAuthorSettings;
+		this.bookIDSettings = bookIDSettings;
+		this.netUnitsSoldSettings = netUnitsSoldSettings;
+		this.revenuesPLPSettings = revenuesPLPSettings;
+		this.priceSettings = priceSettings;
+		this.royaltyTypePLPSettings = royaltyTypePLPSettings;
+		this.deliveryCostSettings = deliveryCostSettings;
+		this.currencySettings = currencySettings;
+		this.countrySettings = countrySettings;
+	}
+	
+	/**
+	 * @param firstLineOfData
 	 * @param oldDateFormat
 	 * @param channel
 	 * @param bookTitleSettings
@@ -53,13 +110,26 @@ public class FileFormat2 {
 	 * @param currencySettings
 	 * @param countrySettings
 	 */
-	public FileFormat2(int firstLineOfData, int minLengthOfLine, SimpleDateFormat oldDateFormat, Channel channel,
-			ObjectToImport bookTitleSettings, ObjectToImport bookAuthorSettings, ObjectToImport bookIDSettings, ObjectToImport netUnitsSoldSettings,
+	public FileFormat2(int firstLineOfData, SimpleDateFormat oldDateFormat, Channel channel, ObjectToImport bookTitleSettings, 
+			ObjectToImport bookAuthorSettings, ObjectToImport bookIDSettings, ObjectToImport netUnitsSoldSettings,
 			ObjectToImport revenuesPLPSettings, ObjectToImport priceSettings, ObjectToImport royaltyTypePLPSettings,
 			ObjectToImport deliveryCostSettings, ObjectToImport dateSettings, ObjectToImport currencySettings,
 			ObjectToImport countrySettings) {
+		
+		validate(channel);
+		
+		validate(oldDateFormat);
+		
+		validateIndexes(firstLineOfData);
+		
+		validate(bookTitleSettings);
+		validate(netUnitsSoldSettings);
+		validate(currencySettings);
+		validate(dateSettings);
+		
+		checkRevenue(revenuesPLPSettings, priceSettings, royaltyTypePLPSettings);
+		
 		this.firstLineOfData = firstLineOfData;
-		this.minLengthOfLine = minLengthOfLine;
 		this.oldDateFormat = oldDateFormat;
 		this.channel = channel;
 		this.bookTitleSettings = bookTitleSettings;
@@ -81,6 +151,13 @@ public class FileFormat2 {
 	 */
 	public void importData(String filePath) {
 		String[] allLines = readFile(filePath);
+		
+		if(dateRowIndex != -1 && dateColumnIndex != -1) {
+			//Obtains the date to give to all sales from the cell in the first line and second column of the csv
+			//And formats it into the expected format.
+			String[] dateLine = allLines[dateRowIndex].split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)", -1);
+			this.date = obtainDate(dateLine[dateColumnIndex]);	
+		}
 
 		//Parses data for each sale and imports it by calling importSale on each sales line of csv
 		//Stops if counter reaches the total number of lines of csv, or if the line is shorter than minLengthOfLine,
@@ -103,28 +180,55 @@ public class FileFormat2 {
 			lineDivided[counter] = s.trim();
 			counter++;
 		}
-
-		String date = obtainDate(dateSettings.getFormattedString(lineDivided[dateSettings.getColumnIndex()]));
+		
+		if(dateRowIndex != -1 && dateColumnIndex != -1) {
+			this.date = obtainDate(dateSettings.getFormattedString(lineDivided[dateSettings.getColumnIndex()]));
+		}
 
 		String bookTitle = bookTitleSettings.getFormattedString(lineDivided[bookTitleSettings.getColumnIndex()]);
-		String bookAuthor = bookAuthorSettings.getFormattedString(lineDivided[bookAuthorSettings.getColumnIndex()]);
-		String bookID = bookIDSettings.getFormattedString(lineDivided[bookIDSettings.getColumnIndex()]);
+		String bookAuthor = "";
+		if (bookAuthorSettings != null) {
+			bookAuthor = bookAuthorSettings.getFormattedString(lineDivided[bookAuthorSettings.getColumnIndex()]);
+		}
+		String bookID = "";
+		if (bookIDSettings != null) {
+			bookID = bookIDSettings.getFormattedString(lineDivided[bookIDSettings.getColumnIndex()]);
+		}
 
 		Book book = obtainBook(bookTitle, bookAuthor, bookID);
 
 		double netUnitsSold = Double.parseDouble(netUnitsSoldSettings.getFormattedString(lineDivided[netUnitsSoldSettings.getColumnIndex()]));
 
-		double price = Double.parseDouble(priceSettings.getFormattedString(lineDivided[priceSettings.getColumnIndex()]));
+		double price = -1;
+		if (priceSettings != null) {
+			price = Double.parseDouble(priceSettings.getFormattedString(lineDivided[priceSettings.getColumnIndex()]));
+		}
 
-		double deliveryCost = Double.parseDouble(deliveryCostSettings.getFormattedString(lineDivided[deliveryCostSettings.getColumnIndex()]));
+		double deliveryCost = -1;
+		if (deliveryCostSettings != null) {
+			deliveryCost = Double.parseDouble(deliveryCostSettings.getFormattedString(lineDivided[deliveryCostSettings.getColumnIndex()]));
+		}
 
-		double revenuesPLP = Double.parseDouble(revenuesPLPSettings.getFormattedString(lineDivided[revenuesPLPSettings.getColumnIndex()]));
-
-		double royaltyTypePLP = Double.parseDouble(royaltyTypePLPSettings.getFormattedString(lineDivided[royaltyTypePLPSettings.getColumnIndex()]));
+		double royaltyTypePLP = -1; 
+		if (royaltyTypePLPSettings != null) {
+			royaltyTypePLP = Double.parseDouble(royaltyTypePLPSettings.getFormattedString(lineDivided[royaltyTypePLPSettings.getColumnIndex()]));
+		}
+		
+		double revenuesPLP = -1;
+		if (revenuesPLPSettings != null) {
+			revenuesPLP = Double.parseDouble(revenuesPLPSettings.getFormattedString(lineDivided[revenuesPLPSettings.getColumnIndex()]));
+		} else {
+			double tempRevenuesPLP = (price - deliveryCost) * royaltyTypePLP * netUnitsSold;
+			BigDecimal roundedRevenuesPLP = new BigDecimal(tempRevenuesPLP).setScale(2, RoundingMode.HALF_UP);
+			revenuesPLP = roundedRevenuesPLP.doubleValue();
+		}
 
 		Currency currency = Currency.getInstance(currencySettings.getFormattedString(lineDivided[currencySettings.getColumnIndex()]));
 
-		String country = countrySettings.getFormattedString(lineDivided[countrySettings.getColumnIndex()]);
+		String country = "";
+		if (countrySettings != null) {
+			country = countrySettings.getFormattedString(lineDivided[countrySettings.getColumnIndex()]);
+		}
 
 		//Creates the sale and adds its to the app
 		ObjectFactory.createSale(channel, country, date, book, netUnitsSold, royaltyTypePLP, price, deliveryCost, revenuesPLP, currency);
@@ -244,6 +348,37 @@ public class FileFormat2 {
 			channel = ObjectFactory.createChannel(channelName, fileFormat, isCurrencyAlwaysUSD);
 		}		
 		return channel;
+	}
+	
+	private void validate(ObjectToImport objectToCheck) throws IllegalArgumentException {
+		if (objectToCheck == null) {
+			throw new IllegalArgumentException("ObjectToImport details must not be null for bookTitle, netUnitsSold, and currency");
+		}
+	}
+	
+	private void validate(Channel channel) throws IllegalArgumentException {
+		if (channel == null) {
+			throw new IllegalArgumentException("Channel must not be null.");
+		}
+	}
+	
+	private void validate(SimpleDateFormat sdf) throws IllegalArgumentException {
+		if (sdf == null) {
+			throw new IllegalArgumentException("oldDateFormat must not be null");
+		}
+	}
+	
+	private void checkRevenue(ObjectToImport revenuesPLPSettings, ObjectToImport priceSettings, 
+			ObjectToImport royaltyTypePLPSettings) throws IllegalArgumentException  {
+		if (revenuesPLPSettings == null && priceSettings == null || royaltyTypePLPSettings == null) {
+			throw new IllegalArgumentException("ObjectToImport details must not be null for price and royalty type if they are null for revenuesPLP");
+		}
+	}
+	
+	private void validateIndexes(int index) {
+		if (index < 0) {
+			throw new IllegalArgumentException("Column and row indexes must be positive integers.");
+		}
 	}
 
 }
