@@ -20,6 +20,9 @@ import gui.royalties.RoyaltyRulesDifferentPanel;
 import gui.royalties.RoyaltyRulesSamePanel;
 import gui.royaltyholders.RoyaltyHoldersPanel;
 import gui.sales.SalesPanel;
+import importing.ChannelRoyaltiesFileFormat;
+import importing.sales.*;
+import main.Channel;
 import main.SalesHistory;
 
 /**GUI for royalties app. Opens a full screen window with several panels displaying different information:
@@ -105,13 +108,26 @@ public class RoyaltiesApp extends JFrame implements Runnable, ChangeListener {
 
 	} 
 
-	/**Gets data by deserialising SalesHistory if it finds the corresponding file, 
+	/**Gets data by deserialising SalesHistory if it finds the corresponding file.
+	 * If it doesn't, it at least imports the royalty holders. 
 	 * @throws InterruptedException if a thread interrupts the import thread.
 	 */
 	private static void obtainData() throws InterruptedException {
-		File f = new File("/tmp/data25.ser");
+		File f = new File("/tmp/data28.ser");
 		if(f.exists() && !f.isDirectory()) { 
 			SalesHistory.get().deSerialise();
+		} else {
+			SalesHistory.get().addChannel(new Channel("Kobo", new KoboFileFormat(), true));
+			SalesHistory.get().addChannel(new Channel("Createspace", new CreatespaceFileFormat(), true));
+			SalesHistory.get().addChannel(new Channel("Apple", new AppleFileFormat()));
+			SalesHistory.get().addChannel(new Channel("Amazon", new AmazonFileFormat()));
+			SalesHistory.get().addChannel(new Channel("Nook", new NookFileFormat(), true));
+			ChannelRoyaltiesFileFormat test = new ChannelRoyaltiesFileFormat();
+			test.importData("Data/Amazon Royalties.csv");
+			test.importData("Data/Nook Royalties.csv");
+			test.importData("Data/Createspace Royalties.csv");
+			test.importData("Data/Kobo Royalties.csv");
+			test.importData("Data/Apple Royalties.csv");
 		}
 	}
 
