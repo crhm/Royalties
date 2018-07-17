@@ -69,8 +69,8 @@ public class SalesFileFormat {
 	 * @throws IllegalArgumentException if channel, oldDateFormat, bookTitleSettings, netUnitsSoldSettings or currencySettings are null, 
 	 * or if revenuesPLP is and price and royaltyTypePLP are not both provided, or if indexes are not positive integers. 
 	 */
-	public SalesFileFormat(int firstLineOfData, SimpleDateFormat oldDateFormat, Channel channel,
-			int dateColumnIndex, int dateRowIndex, ObjectToImport bookTitleSettings, ObjectToImport bookAuthorSettings, 
+	public SalesFileFormat(int firstLineOfData, SimpleDateFormat oldDateFormat, Channel channel,  int dateRowIndex,
+			int dateColumnIndex, ObjectToImport bookTitleSettings, ObjectToImport bookAuthorSettings, 
 			ObjectToImport bookIDSettings, ObjectToImport netUnitsSoldSettings,
 			ObjectToImport revenuesPLPSettings, ObjectToImport priceSettings, ObjectToImport royaltyTypePLPSettings,
 			ObjectToImport deliveryCostSettings, ObjectToImport currencySettings, ObjectToImport countrySettings) {
@@ -446,7 +446,7 @@ public class SalesFileFormat {
 
 	private void checkRevenue(ObjectToImport revenuesPLPSettings, ObjectToImport priceSettings, 
 			ObjectToImport royaltyTypePLPSettings) throws IllegalArgumentException  {
-		if (revenuesPLPSettings == null && priceSettings == null || royaltyTypePLPSettings == null) {
+		if (revenuesPLPSettings == null && (priceSettings == null || royaltyTypePLPSettings == null)) {
 			throw new IllegalArgumentException("ObjectToImport details must not be null for price and royalty type if they are null for revenuesPLP");
 		}
 	}
