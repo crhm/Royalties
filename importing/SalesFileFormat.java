@@ -21,7 +21,7 @@ public class SalesFileFormat {
 
 	//TODO figure out what to do with all potential parsing errors for doubles and dates and currencies etc...
 
-	private String valuesSeparatedBy = ",(?=([^\"]*\"[^\"]*\")*[^\"]*$)";
+	private String valuesSeparatedBy = ",(?=([^\"]*\"[^\"]*\")*[^\"]*$)"; //commas, except those in quotation marks
 	private int firstLineOfData;
 	private int minLengthOfLine = 15;
 	private SimpleDateFormat oldDateFormat;
@@ -421,7 +421,7 @@ public class SalesFileFormat {
 			}
 		}
 		if (needToCreateNewChannel) {
-			channel = ObjectFactory.createChannel(channelName, fileFormat, isCurrencyAlwaysUSD);
+			channel = ObjectFactory.createChannel(channelName, isCurrencyAlwaysUSD);
 		}		
 		return channel;
 	}

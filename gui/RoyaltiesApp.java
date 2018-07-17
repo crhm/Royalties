@@ -22,7 +22,6 @@ import gui.royalties.RoyaltyRulesSamePanel;
 import gui.royaltyholders.RoyaltyHoldersPanel;
 import gui.sales.SalesPanel;
 import importing.ChannelRoyaltiesFileFormat;
-import importing.sales.*;
 import main.Channel;
 import main.SalesHistory;
 
@@ -118,11 +117,11 @@ public class RoyaltiesApp extends JFrame implements Runnable, ChangeListener {
 		if(f.exists() && !f.isDirectory()) { 
 			SalesHistory.get().deSerialise();
 		} else {
-			SalesHistory.get().addChannel(new Channel("Kobo", new KoboFileFormat(), true));
-			SalesHistory.get().addChannel(new Channel("Createspace", new CreatespaceFileFormat(), true));
-			SalesHistory.get().addChannel(new Channel("Apple", new AppleFileFormat()));
-			SalesHistory.get().addChannel(new Channel("Amazon", new AmazonFileFormat()));
-			SalesHistory.get().addChannel(new Channel("Nook", new NookFileFormat(), true));
+			SalesHistory.get().addChannel(new Channel("Kobo", true));
+			SalesHistory.get().addChannel(new Channel("Createspace", true));
+			SalesHistory.get().addChannel(new Channel("Apple", false));
+			SalesHistory.get().addChannel(new Channel("Amazon", false));
+			SalesHistory.get().addChannel(new Channel("Nook", true));
 			ChannelRoyaltiesFileFormat test = new ChannelRoyaltiesFileFormat();
 			test.importData("Data/Amazon Royalties.csv");
 			test.importData("Data/Nook Royalties.csv");

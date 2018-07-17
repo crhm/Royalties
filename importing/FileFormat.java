@@ -145,7 +145,7 @@ public abstract class FileFormat {
 			}
 		}
 		if (needToCreateNewChannel) {
-			channel = ObjectFactory.createChannel(channelName, fileFormat, isCurrencyAlwaysUSD);
+			channel = ObjectFactory.createChannel(channelName, isCurrencyAlwaysUSD);
 		}		
 		return channel;
 	}

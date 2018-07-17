@@ -2,10 +2,12 @@ package main;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Currency;
 import java.util.HashMap;
+import java.util.List;
 
-import importing.FileFormat;
+import importing.SalesFileFormat;
 import main.royalties.IRoyaltyType;
 
 /**Class designed to represent the different channels through which PLP sells books, e.g. Apple, Amazon, Nook, Kobo, Createspace...
@@ -25,36 +27,21 @@ import main.royalties.IRoyaltyType;
 public class Channel implements java.io.Serializable {
 
 	private static final long serialVersionUID = 6186357366182288547L;
-	private FileFormat fileFormat;
+	private final List<SalesFileFormat> listSalesFileFormats = new ArrayList<SalesFileFormat>();
 	private final String name;
 	private final HashMap<Book, HashMap<Person, IRoyaltyType>> listRoyalties = new HashMap<Book, HashMap<Person, IRoyaltyType>>();
 	private final HashMap<String, HashMap<String, Double>> historicalForex = new HashMap<String, HashMap<String, Double>>();
 	private final Boolean saleCurrencyIsAlwaysUSD;
 
-	/**Channel constructor. Initialises channel names and fileFormat to the corresponding arguments passed by user.
-	 * <br>Initialises saleCurrencyIsAlwaysUSD to false by default. Use other constructor for channels that need it set to true.
+	/**Channel constructor. Initialises channel name to the corresponding argument passed by user.
+	 * <br>Allows one to set the value of saleCurrencyIsAlwaysUSD.
 	 * @param name String name of channel
-	 * @param fileFormat FileFormat implementation to be associated with the channel
+	 * @param saleCurrencyIsAlwaysUSD whether or not, for that channel, currency will always be USD
 	 * @throws IllegalArgumentException if field takes an unpermitted value (name is null, empty, or already taken).
 	 */
-	public Channel(String name, FileFormat fileFormat) {
+	public Channel(String name, Boolean saleCurrencyIsAlwaysUSD) {
 		validateName(name);
 		this.name = name;
-		this.fileFormat = fileFormat;
-		this.saleCurrencyIsAlwaysUSD = false;
-	}
-
-	/**Channel constructor. Initialises channel names and fileFormat to the corresponding arguments passed by user.
-	 * <br>Allows one to set the value of saleCurrencyIsAlwaysUSD to true, which simplifies royalties calculations.
-	 * @param name String name of channel
-	 * @param fileFormat FileFormat implementation to be associated with the channel
-	 * @param saleCurrencyIsAlwaysUSD
-	 * @throws IllegalArgumentException if field takes an unpermitted value (name is null, empty, or already taken).
-	 */
-	public Channel(String name, FileFormat fileFormat, Boolean saleCurrencyIsAlwaysUSD) {
-		validateName(name);
-		this.name = name;
-		this.fileFormat = fileFormat;
 		this.saleCurrencyIsAlwaysUSD = saleCurrencyIsAlwaysUSD;
 	}
 
@@ -66,12 +53,18 @@ public class Channel implements java.io.Serializable {
 		return saleCurrencyIsAlwaysUSD;
 	}
 
-	public FileFormat getfileFormat() {
-		return fileFormat;
+	/**
+	 * @return the listSalesFileFormats
+	 */
+	public List<SalesFileFormat> getListSalesFileFormats() {
+		return listSalesFileFormats;
 	}
-
-	public void setfileFormat(FileFormat fileFormat) {
-		this.fileFormat = fileFormat;
+	
+	/**
+	 * @param salesFileFormat the SalesFileFormat to add to this channel's list of SalesFileFormats
+	 */
+	public void addSalesFileFormat(SalesFileFormat salesFileFormat) {
+		this.listSalesFileFormats.add(salesFileFormat);
 	}
 
 	public String getName() {

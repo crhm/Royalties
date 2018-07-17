@@ -2,8 +2,6 @@ package main;
 
 import java.util.Currency;
 
-import importing.FileFormat;
-
 public class ObjectFactory {
 	
 	/**Constructs a book and then adds it to SalesHistory.
@@ -33,28 +31,14 @@ public class ObjectFactory {
 	}
 
 	/**Constructs a channel and then adds it to SalesHistory.
-	 * Channel constructor initialises channel names and fileFormat to the corresponding arguments passed by user.
+	 * Channel constructor initialises channel name to the corresponding argument passed by user.
 	 * <br>Initialises saleCurrencyIsAlwaysUSD to false by default. Use other constructor for channels that need it set to true.
 	 * @param channelName String name of channel
-	 * @param fileFormat FileFormat implementation to be associated with the channel
-	 * @throws IllegalArgumentException if field takes an unpermitted value (name is null, empty, or already taken).
-	 */
-	public static Channel createChannel(String channelName, FileFormat channelFormat) {
-		Channel channel = new Channel(channelName, channelFormat);
-		SalesHistory.get().addChannel(channel);
-		return channel;
-	}
-
-	/**Constructs a channel and then adds it to SalesHistory.
-	 * Channel constructor initialises channel names and fileFormat to the corresponding arguments passed by user.
-	 * <br>Initialises saleCurrencyIsAlwaysUSD to false by default. Use other constructor for channels that need it set to true.
-	 * @param channelName String name of channel
-	 * @param channelFormat FileFormat implementation to be associated with the channel
 	 * @param isCurrencyAlwaysUSD determines whether there'll be need to look for exchange rates or not
 	 * @throws IllegalArgumentException if field takes an unpermitted value (name is null, empty, or already taken).
 	 */
-	public static Channel createChannel(String channelName, FileFormat channelFormat, Boolean isCurrencyAlwaysUSD) {
-		Channel channel = new Channel(channelName, channelFormat, isCurrencyAlwaysUSD);
+	public static Channel createChannel(String channelName, Boolean isCurrencyAlwaysUSD) {
+		Channel channel = new Channel(channelName, isCurrencyAlwaysUSD);
 		SalesHistory.get().addChannel(channel);
 		return channel;
 	}

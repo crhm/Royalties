@@ -10,7 +10,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import importing.sales.AmazonFileFormat;
 import main.Book;
 import main.Channel;
 import main.ObjectFactory;
@@ -50,20 +49,20 @@ class ObjectFactoryTest {
 
 	@Test
 	void testCreateChannelDefaultBoolean() {
-		Channel channel = ObjectFactory.createChannel("NewChannel", new AmazonFileFormat());
+		Channel channel = ObjectFactory.createChannel("NewChannel", false);
 		assertEquals(channel, SalesHistory.get().getChannel("NewChannel"));
 	}
 
 	@Test
 	void testCreateChannelCustomBoolean() {
-		Channel channel2 = ObjectFactory.createChannel("NewChannel2", new AmazonFileFormat(), true);
+		Channel channel2 = ObjectFactory.createChannel("NewChannel2", true);
 		assertEquals(channel2, SalesHistory.get().getChannel("NewChannel2"));
 		assertTrue(channel2.getSaleCurrencyIsAlwaysUSD());
 	}
 
 	@Test
 	void testCreateSale() {
-		Channel channel3 = ObjectFactory.createChannel("NewChannel3", new AmazonFileFormat(), true);
+		Channel channel3 = ObjectFactory.createChannel("NewChannel3", true);
 		Book book4 = ObjectFactory.createBook("Title4");
 		Sale sale = ObjectFactory.createSale(channel3, "US", "Jan 2009", book4, 10, 0.7, 10, 0, 70, Currency.getInstance("USD"));
 		assertEquals(sale, SalesHistory.get().getSalesHistory().get(0));

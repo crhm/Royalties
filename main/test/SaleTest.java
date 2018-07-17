@@ -10,7 +10,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import importing.sales.AmazonFileFormat;
 import main.royalties.RoyaltyPercentage;
 import main.*;
 
@@ -22,7 +21,7 @@ class SaleTest {
 
 	@BeforeAll
 	static void setUpBeforeClass() throws Exception {
-		channel = new Channel("Channel", new AmazonFileFormat(), true);
+		channel = new Channel("Channel", true);
 		SalesHistory.get().addChannel(channel);
 		book = new Book("Title");
 		SalesHistory.get().addBook(book);

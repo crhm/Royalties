@@ -10,7 +10,6 @@ import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 
-import importing.sales.AmazonFileFormat;
 import main.Book;
 import main.Channel;
 import main.Person;
@@ -31,8 +30,8 @@ class ChannelTest {
 
 	@BeforeEach
 	void setUp() throws Exception {
-	instance1 = new Channel("Name", new AmazonFileFormat());
-	instance2 = new Channel("Name", new AmazonFileFormat(), true);
+	instance1 = new Channel("Name", false);
+	instance2 = new Channel("Name", true);
 	}
 
 	@AfterEach
@@ -44,7 +43,6 @@ class ChannelTest {
 		assertNotNull(instance1);
 		assertEquals("Name", instance1.getName());
 		assertFalse(instance1.getSaleCurrencyIsAlwaysUSD());
-		assertNotNull(instance1.getfileFormat());
 	}
 
 	@Test
@@ -52,7 +50,6 @@ class ChannelTest {
 		assertNotNull(instance2);
 		assertEquals("Name", instance2.getName());
 		assertTrue(instance2.getSaleCurrencyIsAlwaysUSD());
-		assertNotNull(instance2.getfileFormat());
 	}
 
 	@Test
