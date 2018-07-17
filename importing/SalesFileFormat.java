@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Currency;
 import java.util.Date;
 
@@ -28,6 +29,7 @@ public class SalesFileFormat {
 	private int dateColumnIndex = -1;
 	private int dateRowIndex = -1;
 	private String date = null;
+	private int monthsFromDate = 0;
 	private Channel channel;
 
 	private ObjectToImport bookTitleSettings = null;
@@ -44,6 +46,8 @@ public class SalesFileFormat {
 
 	/** Constructor for date occuring only once in csv, not every line.
 	 * <br>Default value separation is the comma. To change it, use setValuesSeparatedBy(String s) method.
+	 * <br>If a format has an incorrect date that you need to systematically offset by a number of months, cf. -2 for Nook, 
+	 * use the setMonthsFromDate(int) method.
 	 * @param firstLineOfData index of first row of sales (must be a positive integer)
 	 * @param oldDateFormat Format of the date in the csv, such as "yyyy-MM-dd" (cannot be null)
 	 * @param channel Channel for which this FileFormat applies (cannot be null)
@@ -104,6 +108,8 @@ public class SalesFileFormat {
 
 	/** Constructor for the date occuring every line rather than just once in csv.
 	 * <br>Default value separation is the comma. To change it, use setValuesSeparatedBy(String s) method.
+	 * <br>If a format has an incorrect date that you need to systematically offset by a number of months, cf. -2 for Nook, 
+	 * use the setMonthsFromDate(int) method.
 	 * @param firstLineOfData index of first row of sales (must be a positive integer)
 	 * @param oldDateFormat Format of the date in the csv, such as "yyyy-MM-dd" (cannot be null)
 	 * @param channel Channel for which this FileFormat applies (cannot be null)
@@ -167,6 +173,13 @@ public class SalesFileFormat {
 		this.valuesSeparatedBy = valuesSeparatedBy;
 	}
 
+	/**Use this method if a format has an incorrect date that you need to systematically offset by a number of months, cf. -2 for Nook
+	 * @param monthsFromDate the monthsFromDate to set
+	 */
+	public void setMonthsFromDate(int monthsFromDate) {
+		this.monthsFromDate = monthsFromDate;
+	}
+
 	/**Imports the data found in the file, whose path (from src folder) + name + extension is the parameter filePath, into the 
 	 * app. Performs that action differently depending on the IFileFormat implementation it is called on.
 	 * @param filePath
@@ -178,7 +191,23 @@ public class SalesFileFormat {
 			//Obtains the date to give to all sales from the cell in the first line and second column of the csv
 			//And formats it into the expected format.
 			String[] dateLine = allLines[dateRowIndex].split(valuesSeparatedBy, -1);
-			this.date = obtainDate(dateLine[dateColumnIndex]);	
+			String tempDate = obtainDate(dateLine[dateColumnIndex]);	
+			if (monthsFromDate != 0) {
+				Date date = null;
+				Date actualDate = null;
+				try {
+					date = oldDateFormat.parse(dateLine[dateColumnIndex]);
+					Calendar c = Calendar.getInstance(); 
+					c.setTime(date); 
+					c.add(Calendar.MONTH, monthsFromDate);
+					actualDate = c.getTime();
+				} catch (ParseException e) {
+				}
+				this.date = newDateFormat.format(actualDate);	
+			} else {
+				this.date = tempDate;
+			}
+
 		}
 
 		//Parses data for each sale and imports it by calling importSale on each sales line of csv
@@ -201,8 +230,24 @@ public class SalesFileFormat {
 			counter++;
 		}
 
-		if(dateRowIndex != -1 && dateColumnIndex != -1) {
-			this.date = obtainDate(dateSettings.getFormattedString(lineDivided[dateSettings.getColumnIndex()]));
+		if(dateRowIndex == -1 && dateColumnIndex == -1) {
+			String tempDate = obtainDate(dateSettings.getFormattedString(lineDivided[dateSettings.getColumnIndex()]));	
+			if (monthsFromDate != 0) {
+				Date date = null;
+				Date actualDate = null;
+				try {
+					date = oldDateFormat.parse(dateSettings.getFormattedString(lineDivided[dateSettings.getColumnIndex()]));
+					Calendar c = Calendar.getInstance(); 
+					c.setTime(date); 
+					c.add(Calendar.MONTH, monthsFromDate);
+					actualDate = c.getTime();
+				} catch (ParseException e) {
+					e.printStackTrace();
+				}
+				this.date = newDateFormat.format(actualDate);	
+			} else {
+				this.date = tempDate;
+			}
 		}
 
 		String bookTitle = bookTitleSettings.getFormattedString(lineDivided[bookTitleSettings.getColumnIndex()]);

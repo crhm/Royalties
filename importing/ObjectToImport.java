@@ -129,7 +129,7 @@ public class ObjectToImport {
 				formattedString = defaultValue;
 			}
 		}
-		if (fixedValue == null && !fixedValue.isEmpty()) {
+		if (fixedValue != null && !fixedValue.isEmpty()) {
 			formattedString = fixedValue;
 		}
 		return formattedString;
