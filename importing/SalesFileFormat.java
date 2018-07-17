@@ -16,8 +16,11 @@ import main.ObjectFactory;
 import main.Person;
 import main.SalesHistory;
 
-public class FileFormat2 {
+public class SalesFileFormat {
 
+	//TODO figure out what to do with all potential parsing errors for doubles and dates and currencies etc...
+
+	private String valuesSeparatedBy = ",(?=([^\"]*\"[^\"]*\")*[^\"]*$)";
 	private int firstLineOfData;
 	private int minLengthOfLine = 15;
 	private SimpleDateFormat oldDateFormat;
@@ -39,44 +42,49 @@ public class FileFormat2 {
 	private ObjectToImport currencySettings = null;
 	private ObjectToImport countrySettings = null;
 
-	/**
-	 * @param firstLineOfData
-	 * @param oldDateFormat
-	 * @param channel
-	 * @param dateColumnIndex
-	 * @param dateRowIndex
-	 * @param bookTitleSettings
-	 * @param bookAuthorSettings
+	/** Constructor for date occuring only once in csv, not every line.
+	 * <br>Default value separation is the comma. To change it, use setValuesSeparatedBy(String s) method.
+	 * @param firstLineOfData index of first row of sales (must be a positive integer)
+	 * @param oldDateFormat Format of the date in the csv, such as "yyyy-MM-dd" (cannot be null)
+	 * @param channel Channel for which this FileFormat applies (cannot be null)
+	 * @param dateColumnIndex index of the column in which to find the date (must be a positive integer)
+	 * @param dateRowIndex index of the row in which to find the date (must be a positive integer)
+	 * @param bookTitleSettings cannot be null
+	 * @param bookAuthorSettings 
 	 * @param bookIDSettings
-	 * @param netUnitsSoldSettings
-	 * @param revenuesPLPSettings
-	 * @param priceSettings
-	 * @param royaltyTypePLPSettings
-	 * @param deliveryCostSettings
-	 * @param dateSettings
-	 * @param currencySettings
+	 * @param netUnitsSoldSettings cannot be null. getFormattedString() must return a number that can be parsed as a double.
+	 * @param revenuesPLPSettings can be null only if price and royaltyTypePLP are not (since they'll be used to calculate it). 
+	 * getFormattedString() must return a number that can be parsed as a double.
+	 * @param priceSettings necessary if revenuesPLP is not provided directly.
+	 * getFormattedString() must return a number that can be parsed as a double.
+	 * @param royaltyTypePLPSettings necessary if revenuesPLP is not provided directly. Works for percentages written as 70 and as 0.7. 
+	 * getFormattedString() must return a number that can be parsed as a double.
+	 * @param deliveryCostSettings getFormattedString() must return a number that can be parsed as a double.
+	 * @param currencySettings cannot be null. getFormattedString() must return a valid three letter currency code.
 	 * @param countrySettings
+	 * @throws IllegalArgumentException if channel, oldDateFormat, bookTitleSettings, netUnitsSoldSettings or currencySettings are null, 
+	 * or if revenuesPLP is and price and royaltyTypePLP are not both provided, or if indexes are not positive integers. 
 	 */
-	public FileFormat2(int firstLineOfData, SimpleDateFormat oldDateFormat, Channel channel,
+	public SalesFileFormat(int firstLineOfData, SimpleDateFormat oldDateFormat, Channel channel,
 			int dateColumnIndex, int dateRowIndex, ObjectToImport bookTitleSettings, ObjectToImport bookAuthorSettings, 
 			ObjectToImport bookIDSettings, ObjectToImport netUnitsSoldSettings,
 			ObjectToImport revenuesPLPSettings, ObjectToImport priceSettings, ObjectToImport royaltyTypePLPSettings,
 			ObjectToImport deliveryCostSettings, ObjectToImport currencySettings, ObjectToImport countrySettings) {
-		
+
 		validate(channel);
-		
+
 		validate(oldDateFormat);
-		
+
 		validateIndexes(firstLineOfData);
 		validateIndexes(dateColumnIndex);
 		validateIndexes(dateRowIndex);
-		
+
 		validate(bookTitleSettings);
 		validate(netUnitsSoldSettings);
 		validate(currencySettings);
-		
+
 		checkRevenue(revenuesPLPSettings, priceSettings, royaltyTypePLPSettings);
-		
+
 		this.firstLineOfData = firstLineOfData;
 		this.oldDateFormat = oldDateFormat;
 		this.channel = channel;
@@ -93,42 +101,49 @@ public class FileFormat2 {
 		this.currencySettings = currencySettings;
 		this.countrySettings = countrySettings;
 	}
-	
-	/**
-	 * @param firstLineOfData
-	 * @param oldDateFormat
-	 * @param channel
-	 * @param bookTitleSettings
+
+	/** Constructor for the date occuring every line rather than just once in csv.
+	 * <br>Default value separation is the comma. To change it, use setValuesSeparatedBy(String s) method.
+	 * @param firstLineOfData index of first row of sales (must be a positive integer)
+	 * @param oldDateFormat Format of the date in the csv, such as "yyyy-MM-dd" (cannot be null)
+	 * @param channel Channel for which this FileFormat applies (cannot be null)
+	 * @param bookTitleSettings cannot be null
 	 * @param bookAuthorSettings
 	 * @param bookIDSettings
-	 * @param netUnitsSoldSettings
-	 * @param revenuesPLPSettings
-	 * @param priceSettings
-	 * @param royaltyTypePLPSettings
-	 * @param deliveryCostSettings
-	 * @param dateSettings
-	 * @param currencySettings
+	 * @param netUnitsSoldSettings cannot be null. getFormattedString() must return a number that can be parsed as a double.
+	 * @param revenuesPLPSettings can be null only if price and royaltyTypePLP are not (since they'll be used to calculate it). 
+	 * getFormattedString() must return a number that can be parsed as a double.
+	 * @param priceSettings necessary if revenuesPLP is not provided directly. 
+	 * getFormattedString() must return a number that can be parsed as a double.
+	 * @param royaltyTypePLPSettings necessary if revenuesPLP is not provided directly. Works for percentages written as 70 and as 0.7. 
+	 * getFormattedString() must return a number that can be parsed as a double.
+	 * @param deliveryCostSettings getFormattedString() must return a number that can be parsed as a double.
+	 * @param dateSettings cannot be null. getFormattedString() must return a string of the format provided by oldDateFormat.
+	 * @param currencySettings cannot be null. getFormattedString() must return a valid three letter currency code.
 	 * @param countrySettings
+	 * @throws IllegalArgumentException if channel, oldDateFormat, bookTitleSettings, netUnitsSoldSettings, dateSettings
+	 *  or currencySettings are null, or if revenuesPLP is and price and royaltyTypePLP are not both provided, 
+	 *  or if indexes are not positive integers.
 	 */
-	public FileFormat2(int firstLineOfData, SimpleDateFormat oldDateFormat, Channel channel, ObjectToImport bookTitleSettings, 
+	public SalesFileFormat(int firstLineOfData, SimpleDateFormat oldDateFormat, Channel channel, ObjectToImport bookTitleSettings, 
 			ObjectToImport bookAuthorSettings, ObjectToImport bookIDSettings, ObjectToImport netUnitsSoldSettings,
 			ObjectToImport revenuesPLPSettings, ObjectToImport priceSettings, ObjectToImport royaltyTypePLPSettings,
 			ObjectToImport deliveryCostSettings, ObjectToImport dateSettings, ObjectToImport currencySettings,
 			ObjectToImport countrySettings) {
-		
+
 		validate(channel);
-		
+
 		validate(oldDateFormat);
-		
+
 		validateIndexes(firstLineOfData);
-		
+
 		validate(bookTitleSettings);
 		validate(netUnitsSoldSettings);
 		validate(currencySettings);
 		validate(dateSettings);
-		
+
 		checkRevenue(revenuesPLPSettings, priceSettings, royaltyTypePLPSettings);
-		
+
 		this.firstLineOfData = firstLineOfData;
 		this.oldDateFormat = oldDateFormat;
 		this.channel = channel;
@@ -145,17 +160,24 @@ public class FileFormat2 {
 		this.countrySettings = countrySettings;
 	}
 
+	/**Use this method if a format has values separated by something other than a comma, cf. tabulation for apple
+	 * @param valuesSeparatedBy the valuesSeparatedBy to set
+	 */
+	public void setValuesSeparatedBy(String valuesSeparatedBy) {
+		this.valuesSeparatedBy = valuesSeparatedBy;
+	}
+
 	/**Imports the data found in the file, whose path (from src folder) + name + extension is the parameter filePath, into the 
 	 * app. Performs that action differently depending on the IFileFormat implementation it is called on.
 	 * @param filePath
 	 */
 	public void importData(String filePath) {
 		String[] allLines = readFile(filePath);
-		
+
 		if(dateRowIndex != -1 && dateColumnIndex != -1) {
 			//Obtains the date to give to all sales from the cell in the first line and second column of the csv
 			//And formats it into the expected format.
-			String[] dateLine = allLines[dateRowIndex].split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)", -1);
+			String[] dateLine = allLines[dateRowIndex].split(valuesSeparatedBy, -1);
 			this.date = obtainDate(dateLine[dateColumnIndex]);	
 		}
 
@@ -169,18 +191,16 @@ public class FileFormat2 {
 		}
 	}
 
-	private void importSale(String line) {
-		//TODO - this is very simplified version, make it as full as possible
-		
+	private void importSale(String line) {		
 		//Divides sales line into its individual cells by splitting on commas that are not within quotes
 		//And trims all leading and trailing whitespace from each value.
-		String[] lineDivided = line.split(",(?=([^\"]*\"[^\"]*\")*[^\"]*$)", -1);
+		String[] lineDivided = line.split(valuesSeparatedBy, -1);
 		int counter = 0;
 		for (String s : lineDivided) {
 			lineDivided[counter] = s.trim();
 			counter++;
 		}
-		
+
 		if(dateRowIndex != -1 && dateColumnIndex != -1) {
 			this.date = obtainDate(dateSettings.getFormattedString(lineDivided[dateSettings.getColumnIndex()]));
 		}
@@ -204,16 +224,27 @@ public class FileFormat2 {
 			price = Double.parseDouble(priceSettings.getFormattedString(lineDivided[priceSettings.getColumnIndex()]));
 		}
 
-		double deliveryCost = -1;
+		double deliveryCost = 0;
 		if (deliveryCostSettings != null) {
-			deliveryCost = Double.parseDouble(deliveryCostSettings.getFormattedString(lineDivided[deliveryCostSettings.getColumnIndex()]));
+			try {
+				deliveryCost = Double.parseDouble(deliveryCostSettings.getFormattedString(lineDivided[deliveryCostSettings.getColumnIndex()]));
+				if (deliveryCost < 0) {
+					deliveryCost = deliveryCost * -1; //to account for a problem with odd number of returns in Amazon
+				}
+			} catch (NumberFormatException n) {
+				System.out.println("This could not be parsed as a double: " 
+						+ deliveryCostSettings.getFormattedString(lineDivided[deliveryCostSettings.getColumnIndex()]));
+			}
 		}
 
 		double royaltyTypePLP = -1; 
 		if (royaltyTypePLPSettings != null) {
 			royaltyTypePLP = Double.parseDouble(royaltyTypePLPSettings.getFormattedString(lineDivided[royaltyTypePLPSettings.getColumnIndex()]));
+			if (royaltyTypePLP > 1) { //To account percentages being written 70 instead of 0.7 
+				royaltyTypePLP = royaltyTypePLP / 100;
+			}
 		}
-		
+
 		double revenuesPLP = -1;
 		if (revenuesPLPSettings != null) {
 			revenuesPLP = Double.parseDouble(revenuesPLPSettings.getFormattedString(lineDivided[revenuesPLPSettings.getColumnIndex()]));
@@ -349,32 +380,32 @@ public class FileFormat2 {
 		}		
 		return channel;
 	}
-	
+
 	private void validate(ObjectToImport objectToCheck) throws IllegalArgumentException {
 		if (objectToCheck == null) {
 			throw new IllegalArgumentException("ObjectToImport details must not be null for bookTitle, netUnitsSold, and currency");
 		}
 	}
-	
+
 	private void validate(Channel channel) throws IllegalArgumentException {
 		if (channel == null) {
 			throw new IllegalArgumentException("Channel must not be null.");
 		}
 	}
-	
+
 	private void validate(SimpleDateFormat sdf) throws IllegalArgumentException {
 		if (sdf == null) {
 			throw new IllegalArgumentException("oldDateFormat must not be null");
 		}
 	}
-	
+
 	private void checkRevenue(ObjectToImport revenuesPLPSettings, ObjectToImport priceSettings, 
 			ObjectToImport royaltyTypePLPSettings) throws IllegalArgumentException  {
 		if (revenuesPLPSettings == null && priceSettings == null || royaltyTypePLPSettings == null) {
 			throw new IllegalArgumentException("ObjectToImport details must not be null for price and royalty type if they are null for revenuesPLP");
 		}
 	}
-	
+
 	private void validateIndexes(int index) {
 		if (index < 0) {
 			throw new IllegalArgumentException("Column and row indexes must be positive integers.");
