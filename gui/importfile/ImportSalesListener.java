@@ -14,16 +14,16 @@ import main.SalesHistory;
 
 /**ActionListener for user clicking "Import File" in the File menu.
  * Opens a file chooser and tries to import the files chosen by the user, by calling 
- * ImportFactory.ImportData on each.
+ * ImportFactory.ImportSales on each.
  * @author crhm
  */
-public class ImportListener implements ActionListener{
+public class ImportSalesListener implements ActionListener{
 
 	final JFileChooser fc = new JFileChooser();
 
 	private RoyaltiesApp appToUpdate;
 
-	/**Necessary so that ImportListener can notify RoyaltiesApp that its state has changed after the import 
+	/**Necessary so that ImportSalesListener can notify RoyaltiesApp that its state has changed after the import 
 	 * so that it updates the current panel.
 	 * @param appToUpdate
 	 */
@@ -46,10 +46,10 @@ public class ImportListener implements ActionListener{
 							+ "\nAre you sure you want to import this file anyway?"
 							+ "\nIt may result in duplicate sales.", "Warning!", JOptionPane.YES_NO_OPTION , JOptionPane.WARNING_MESSAGE);
 					if (userChoice == JOptionPane.YES_OPTION) {
-						ImportFactory.ImportData(file.getPath());
+						ImportFactory.ImportSales(file.getPath());
 					}
 				} else {
-					ImportFactory.ImportData(file.getPath());
+					ImportFactory.ImportSales(file.getPath());
 				}
 			}
 			appToUpdate.stateChanged(new ChangeEvent("Files Imported"));

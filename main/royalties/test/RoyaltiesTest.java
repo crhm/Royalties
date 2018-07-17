@@ -7,9 +7,9 @@ import main.*;
 public class RoyaltiesTest {
 	
 	public static void main(String args[]) {
-		ImportFactory.ImportData("Data/UsuableFormats/Apple payment data Oct 2017 -- financial_report.csv");
-		ImportFactory.ImportData("Data/UsuableFormats/Amazon payment data for Oct 2017 -- KDP Payments-1517170629138-0c18d9f0770c13d87289dfe806919f31.csv");
-		ImportFactory.ImportData("Data/UsuableFormats/85711804_1017_AU.txt");
+		ImportFactory.ImportSales("Data/UsuableFormats/Apple payment data Oct 2017 -- financial_report.csv");
+		ImportFactory.ImportSales("Data/UsuableFormats/Amazon payment data for Oct 2017 -- KDP Payments-1517170629138-0c18d9f0770c13d87289dfe806919f31.csv");
+		ImportFactory.ImportSales("Data/UsuableFormats/85711804_1017_AU.txt");
 		Book uACS = SalesHistory.get().getBook("Under A Cruel Star");
 		Book jDPAB = SalesHistory.get().getBook("Jacqueline du Pré: A Biography");
 		Person AAAAA = new Person("AAAAA");

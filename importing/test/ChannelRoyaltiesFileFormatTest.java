@@ -1,15 +1,10 @@
 package importing.test;
 
-import static org.junit.jupiter.api.Assertions.*;
-
 import org.junit.jupiter.api.AfterAll;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-
-import importing.ChannelRoyaltiesFileFormat;
-import main.SalesHistory;
 
 class ChannelRoyaltiesFileFormatTest {
 
@@ -31,10 +26,7 @@ class ChannelRoyaltiesFileFormatTest {
 
 	@Test
 	void testImportData() {
-		new ImportSeveralFiles("Data/File names.txt");
-		ChannelRoyaltiesFileFormat test = new ChannelRoyaltiesFileFormat();
-		test.importData("Data/Amazon Royalties.csv");
-		assertEquals(155, SalesHistory.get().getChannel("Amazon").getListRoyalties().keySet().size());
+		
 	}
 
 }

@@ -38,7 +38,7 @@ public class ImportEverything implements Runnable{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		new ImportSeveralFiles("Data/File names.txt");
+//		new ImportSeveralFiles("Data/File names.txt");
 		ChannelRoyaltiesFileFormat test = new ChannelRoyaltiesFileFormat();
 		test.importData("Data/Amazon Royalties.csv");
 		test.importData("Data/Nook Royalties.csv");

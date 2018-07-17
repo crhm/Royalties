@@ -15,7 +15,7 @@ import gui.books.BookPanel;
 import gui.channels.ChannelPanel;
 import gui.dataverification.DataVerificationPanel;
 import gui.dataverification.SalesImportSummaryPanel;
-import gui.importfile.ImportListener;
+import gui.importfile.ImportSalesListener;
 import gui.persons.PersonsPanel;
 import gui.royalties.RoyaltyRulesDifferentPanel;
 import gui.royalties.RoyaltyRulesSamePanel;
@@ -49,7 +49,8 @@ public class RoyaltiesApp extends JFrame implements Runnable, ChangeListener {
 
 	JMenuBar menuBar = new JMenuBar();
 	JMenu fileMenu = new JMenu("File");
-	JMenuItem importFile = new JMenuItem("Import File");
+	JMenuItem importSalesFile = new JMenuItem("Import Sales File");
+	JMenuItem importFXFile = new JMenuItem("Import FX File");
 
 	public static void main(String[] args) {
 		try {
@@ -76,12 +77,13 @@ public class RoyaltiesApp extends JFrame implements Runnable, ChangeListener {
 			}
 		});
 
-		fileMenu.add(importFile);
+		fileMenu.add(importSalesFile);
+		fileMenu.add(importFXFile);
 		menuBar.add(fileMenu);
 		this.setJMenuBar(menuBar);
-		ImportListener importListener = new ImportListener();
-		importListener.setAppToUpdate(this);
-		importFile.addActionListener(importListener);
+		ImportSalesListener importSalesListener = new ImportSalesListener();
+		importSalesListener.setAppToUpdate(this);
+		importSalesFile.addActionListener(importSalesListener);
 
 		allTabs.addTab("PLP Books", bookPanel);
 		allTabs.addTab("Persons", personsPanel);
