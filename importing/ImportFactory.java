@@ -3,11 +3,13 @@ package importing;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Arrays;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
 
 import importing.forex.AmazonForexFileFormat;
 import importing.forex.AppleForexFileFormat;
+import main.Channel;
 import main.SalesHistory;
 
 public class ImportFactory implements java.io.Serializable {
@@ -18,7 +20,9 @@ public class ImportFactory implements java.io.Serializable {
 		Boolean flagImported = false;
 		
 		String channelName = getChannelName(fileName);
+		System.out.println(channelName);
 		flagImported = tryImportForChannel(channelName, fileName);
+		System.out.println(flagImported);
 
 		if (flagImported) {
 			String[] pathSeparated = fileName.split("/");
@@ -68,10 +72,14 @@ public class ImportFactory implements java.io.Serializable {
 	private static String getChannelName(String fileName) {
 		String channelName = "";
 		try {
-
-			//TODO make this not be hardcoded (by having channel itself maintain a list of its names?)
-			String[] channelNames = {"Amazon", "AMAZON", "amazon", "Nook", "nook", "NOOK", "APPLE", "apple", "Apple", "KOBO", "Kobo",
-					"kobo", "CREATESPACE", "Createspace", "createspace", "CreateSpace"};
+			
+			//Making a list of all channel names
+			List<String> channelNames = new ArrayList<String>();
+			for (Channel ch : SalesHistory.get().getListChannels()) {
+				for (String name : ch.getListNames()) {
+					channelNames.add(name);
+				}
+			}
 			
 			for (String s : channelNames) { //Checks for channel name in fileName and formats it correctly for the getChannel(channelName) method
 				if (fileName.contains(s)) {
@@ -94,7 +102,7 @@ public class ImportFactory implements java.io.Serializable {
 				
 				for (String s : fileContentPerLine) {
 					//For each line in turn, see it contains any of channelNames, and return the first occurence of one in the line if it does.
-					 Optional<String> holder = Arrays.stream(channelNames).parallel().filter(s::contains).findFirst();
+					 Optional<String> holder = channelNames.parallelStream().filter(s::contains).findFirst();
 					 if (holder.isPresent()) { //If there is, 
 						 String unformatted = holder.get(); //get it, and format it (next line)
 						 channelName = unformatted.substring(0, 1).toUpperCase() + unformatted.substring(1).toLowerCase();

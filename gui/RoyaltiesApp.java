@@ -120,7 +120,9 @@ public class RoyaltiesApp extends JFrame implements Runnable, ChangeListener {
 			SalesHistory.get().deSerialise();
 		} else {
 			SalesHistory.get().addChannel(new Channel("Kobo", true));
-			SalesHistory.get().addChannel(new Channel("Createspace", true));
+			Channel createspace = new Channel("Createspace", true);
+			createspace.addName("CreateSpace");
+			SalesHistory.get().addChannel(createspace);
 			SalesHistory.get().addChannel(new Channel("Apple", false));
 			SalesHistory.get().addChannel(new Channel("Amazon", false));
 			SalesHistory.get().addChannel(new Channel("Nook", true));

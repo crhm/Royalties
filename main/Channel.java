@@ -29,6 +29,7 @@ public class Channel implements java.io.Serializable {
 	private static final long serialVersionUID = 6186357366182288547L;
 	private final List<SalesFileFormat> listSalesFileFormats = new ArrayList<SalesFileFormat>();
 	private final String name;
+	private final List<String> listNames = new ArrayList<String>();
 	private final HashMap<Book, HashMap<Person, IRoyaltyType>> listRoyalties = new HashMap<Book, HashMap<Person, IRoyaltyType>>();
 	private final HashMap<String, HashMap<String, Double>> historicalForex = new HashMap<String, HashMap<String, Double>>();
 	private final Boolean saleCurrencyIsAlwaysUSD;
@@ -43,6 +44,9 @@ public class Channel implements java.io.Serializable {
 		validateName(name);
 		this.name = name;
 		this.saleCurrencyIsAlwaysUSD = saleCurrencyIsAlwaysUSD;
+		this.listNames.add(name);
+		this.listNames.add(name.toLowerCase());
+		this.listNames.add(name.toUpperCase());
 	}
 
 	/**Returns a boolean reflecting whether or not all monetary values in all sales through that channel are in USD.
@@ -71,6 +75,20 @@ public class Channel implements java.io.Serializable {
 		return name;
 	}
 
+	/**
+	 * @return the listNames
+	 */
+	public List<String> getListNames() {
+		return listNames;
+	}
+
+	
+	public void addName(String name) {
+		this.listNames.add(name);
+		this.listNames.add(name.toLowerCase());
+		this.listNames.add(name.toUpperCase());
+	}
+	
 	/** Returns the list of royalties of that channel, as a HashMap mapping books to Hashmaps 
 	 * which map Persons to the type of Royalty that they hold. Hence each book may have several 
 	 * royalty holders with each a different type of royalty.
