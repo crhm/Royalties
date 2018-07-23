@@ -20,9 +20,16 @@ public class ImportFactory implements java.io.Serializable {
 		Boolean flagImported = false;
 		
 		String channelName = getChannelName(fileName);
-		System.out.println(channelName);
-		flagImported = tryImportForChannel(channelName, fileName);
-		System.out.println(flagImported);
+		if (!channelName.isEmpty()) {
+			//TODO user verification of channel it thinks it is?
+			flagImported = tryImportForChannel(channelName, fileName);
+		}
+		//Enters here if getChannelName failed to find one or if the importing (for the channel that was found) did not work.
+		if (!flagImported) { 
+//			NewImportFormatDialog newImportFormatDialog = new NewImportFormatDialog(fileName);
+			//TODO figure out a way to report the successful creation of a new format for a given channel and to 
+			//return here with the channel name so that the data can be imported.
+		}
 
 		if (flagImported) {
 			String[] pathSeparated = fileName.split("/");

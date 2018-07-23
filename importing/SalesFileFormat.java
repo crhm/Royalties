@@ -403,14 +403,13 @@ public class SalesFileFormat {
 	}
 
 	/**Checks if the app contains a channel of the name provided; returns it if it does.
-	 * If it does not, it creates one with that name and the fileFormat provided and adds it to the app.
+	 * If it does not, it creates one with that name and the boolean provided for isCurrencyAlwaysUSD and adds it to the app.
 	 * 
 	 * @param channelName String that is the channel name
-	 * @param fileFormat format to be associated with the channel if it is to be created
 	 * @param isCurrencyAlwaysUSD boolean representing whether or not all monetary amounts in all sales for that channel are USD
 	 * @return the right channel for the fileformat
 	 */
-	protected Channel obtainChannel(String channelName, FileFormat fileFormat, boolean isCurrencyAlwaysUSD) {
+	protected Channel obtainChannel(String channelName, boolean isCurrencyAlwaysUSD) {
 		//Checks if the Createspace channel already exists in app; if not, creates it.
 		Channel channel = null;
 		Boolean needToCreateNewChannel = true;
