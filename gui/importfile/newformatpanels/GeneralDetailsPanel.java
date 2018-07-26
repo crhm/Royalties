@@ -108,7 +108,7 @@ public class GeneralDetailsPanel extends FormatDetailsPanel{
 		}
 	}
 
-	public int getFirstLine() {
+	private int getFirstLine() {
 		int firstLine = -1;
 		try {
 			firstLine = Integer.parseInt(tfFirstLine.getText().trim());	
@@ -119,7 +119,7 @@ public class GeneralDetailsPanel extends FormatDetailsPanel{
 		return firstLine;
 	}
 
-	public Channel getChannel() {
+	private Channel getChannel() {
 		Channel channel = null;
 		try {
 			channel = (Channel) cbbChannel.getSelectedItem();

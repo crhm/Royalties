@@ -16,6 +16,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTabbedPane;
 
+import gui.importfile.newformatpanels.DateDetailsPanel;
 import gui.importfile.newformatpanels.DateFormatDetailsPanel;
 import gui.importfile.newformatpanels.FormatDetailsPanel;
 import gui.importfile.newformatpanels.GeneralDetailsPanel;
@@ -93,6 +94,7 @@ public class NewImportFormatDialog extends JFrame implements ActionListener{
 		tabbedPane = new JTabbedPane(JTabbedPane.TOP);
 		tabbedPane.add("General Details", new GeneralDetailsPanel(this));
 		tabbedPane.add("Date Format", new DateFormatDetailsPanel(this));
+		tabbedPane.add("Date Options 1", new DateDetailsPanel(this));
 		tabbedPane.setEnabled(false);
 		choicesPanel.add(tabbedPane, BorderLayout.CENTER);
 
@@ -142,6 +144,13 @@ public class NewImportFormatDialog extends JFrame implements ActionListener{
 	 */
 	public void setDateColumnIndex(int dateColumnIndex) {
 		this.dateColumnIndex = dateColumnIndex;
+	}
+
+	/**
+	 * @return the dateColumnIndex
+	 */
+	public int getDateColumnIndex() {
+		return dateColumnIndex;
 	}
 
 	/**
