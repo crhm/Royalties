@@ -223,7 +223,7 @@ public class Channel implements java.io.Serializable {
 
 	@Override
 	public String toString() {
-		return "Channel [name=" + name + "]";
+		return this.name;
 	}
 
 
