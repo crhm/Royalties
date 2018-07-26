@@ -113,7 +113,8 @@ public class GeneralDetailsPanel extends FormatDetailsPanel{
 		try {
 			firstLine = Integer.parseInt(tfFirstLine.getText().trim());	
 		} catch (NumberFormatException e) {
-			System.out.println("String was not parsable as an integer. " + e.getStackTrace());
+			System.out.println("String was not parsable as an integer. ");
+			e.printStackTrace();
 		}
 		return firstLine;
 	}
@@ -123,7 +124,8 @@ public class GeneralDetailsPanel extends FormatDetailsPanel{
 		try {
 			channel = (Channel) cbbChannel.getSelectedItem();
 		} catch (Exception e) { 
-			System.out.println("There was an error retrieving the channel. " + e.getStackTrace());
+			System.out.println("There was an error retrieving the channel. ");
+			e.printStackTrace();
 		}
 		return channel;
 	}
@@ -141,6 +143,5 @@ public class GeneralDetailsPanel extends FormatDetailsPanel{
 	public void saveUserInput() {
 		this.overallDialog.setFirstLineOfData(getFirstLine());
 		this.overallDialog.setChannel(getChannel());
-		System.out.println("DONE!!");
 	}
 }
