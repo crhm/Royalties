@@ -31,9 +31,7 @@ public class ImportFactory implements java.io.Serializable {
 		if (!flagImported) { 
 			JOptionPane.showMessageDialog(null, "<html>This file's format is unrecognised: please "
 					+ "provide the format details so that the file can be imported.</html>", "Unrecognised File Format", JOptionPane.PLAIN_MESSAGE);
-			NewImportFormatDialog newImportFormatDialog = new NewImportFormatDialog(fileName);
-			//TODO figure out a way to report the successful creation of a new format for a given channel and to 
-			//return here with the channel name so that the data can be imported.
+			new NewImportFormatDialog(fileName);
 		}
 
 		if (flagImported) {

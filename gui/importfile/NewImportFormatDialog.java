@@ -16,19 +16,19 @@ import javax.swing.JOptionPane;
 import javax.swing.JTabbedPane;
 
 import gui.importfile.newformatpanels.*;
+import importing.ImportFactory;
 import importing.ObjectToImport;
 import importing.SalesFileFormat;
 import main.Channel;
 
 @SuppressWarnings("serial")
 public class NewImportFormatDialog extends JFrame implements ActionListener{
-	String filePath;
-	JButton bttnNext;
-	JScrollPane scrollPaneCSV;
-	JPanel choicesPanel;
-	JPanel detailsPanel;
-	JTabbedPane tabbedPane;
-
+	private String filePath;
+	private JButton bttnNext;
+	private JScrollPane scrollPaneCSV;
+	private JPanel choicesPanel;
+	private JPanel detailsPanel;
+	private JTabbedPane tabbedPane;
 
 	private String valuesSeparatedBy = ",(?=([^\"]*\"[^\"]*\")*[^\"]*$)"; //commas, except those in quotation marks
 	private int firstLineOfData;
@@ -110,19 +110,27 @@ public class NewImportFormatDialog extends JFrame implements ActionListener{
 	public void actionPerformed(ActionEvent e) {
 		if (e.getSource() == bttnNext) {
 			int activeTab = tabbedPane.getSelectedIndex();
-			//TODO make sure it doesn't go over last tab
 
 			FormatDetailsPanel currentPanel = (FormatDetailsPanel) tabbedPane.getSelectedComponent();
 			Boolean canSave = currentPanel.validateUserInput();
 			if (canSave) {
 				currentPanel.saveUserInput();
 				tabbedPane.setSelectedIndex(activeTab + 1);
+				if (tabbedPane.getSelectedIndex() == 13) {
+					bttnNext.setEnabled(false);
+					bttnSave.setEnabled(true);
+				}
 			} else {
 				JOptionPane.showMessageDialog(this, "Sorry, you cannot proceed to the next step until all information"
 						+ " is filled in correctly for this stage.", "Incomplete or Incorrect Information", JOptionPane.ERROR_MESSAGE);
 			}
 		}
 		if (e.getSource() == bttnSave) {
+			FormatDetailsPanel currentPanel = (FormatDetailsPanel) tabbedPane.getSelectedComponent();
+			Boolean canSave = currentPanel.validateUserInput();
+			if (canSave) {
+				currentPanel.saveUserInput();
+			}
 			SalesFileFormat newFormat = null;
 			if (dateRowIndex == -1) {
 				newFormat = new SalesFileFormat(firstLineOfData, oldDateFormat, channel, dateRowIndex, dateColumnIndex, bookTitleSettings, 
@@ -138,11 +146,11 @@ public class NewImportFormatDialog extends JFrame implements ActionListener{
 			if (monthsFromDate != 0) {
 				newFormat.setMonthsFromDate(monthsFromDate);
 			}
-			
+			channel.addSalesFileFormat(newFormat);
+			this.dispose();
+			ImportFactory.ImportSales(filePath);
 			//TODO finish (values separated by + importing file with this format now... and adding the salesfileformat to the channel
-			
 		}
-		//TODO make sure to activate and deactivate buttons when appropriate
 	}
 
 	/**
