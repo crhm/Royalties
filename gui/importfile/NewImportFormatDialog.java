@@ -6,7 +6,6 @@ import java.text.SimpleDateFormat;
 
 import javax.swing.JFrame;
 import java.awt.GridLayout;
-import java.awt.Toolkit;
 
 import javax.swing.JScrollPane;
 import javax.swing.JPanel;
@@ -16,11 +15,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JTabbedPane;
 
-import gui.importfile.newformatpanels.DateDetailsPanel;
-import gui.importfile.newformatpanels.DateFormatDetailsPanel;
-import gui.importfile.newformatpanels.DateProcessingDetailsPanel;
-import gui.importfile.newformatpanels.FormatDetailsPanel;
-import gui.importfile.newformatpanels.GeneralDetailsPanel;
+import gui.importfile.newformatpanels.*;
 import importing.ObjectToImport;
 import importing.SalesFileFormat;
 import main.Channel;
@@ -55,9 +50,6 @@ public class NewImportFormatDialog extends JFrame implements ActionListener{
 	private ObjectToImport currencySettings = null;
 	private ObjectToImport countrySettings = null;
 	private JButton bttnSave;
-
-	//TODO figure out how it's going to work with the panels passing the result of the user input to here, 
-	//and when to do it, and who does the validation, etc...
 
 	public NewImportFormatDialog(String filePath) {
 		this.filePath = filePath;
@@ -97,6 +89,16 @@ public class NewImportFormatDialog extends JFrame implements ActionListener{
 		tabbedPane.add("Date Format", new DateFormatDetailsPanel(this));
 		tabbedPane.add("Date Options 1", new DateDetailsPanel(this));
 		tabbedPane.add("Date Options 2", new DateProcessingDetailsPanel(this));
+		tabbedPane.add("Book Title", new BookTitleDetailsPanel(this));
+		tabbedPane.add("Book Author", new AuthorDetailsPanel(this));
+		tabbedPane.add("Book ID", new BookIDDetailsPanel(this));
+		tabbedPane.add("Net Units Sold", new NetUnitsSoldDetailsPanel(this));
+		tabbedPane.add("PLP Revenues", new RevenuesPLPDetailsPanel(this));
+		tabbedPane.add("Price", new PriceDetailsPanel(this));
+		tabbedPane.add("PLP Royalty Percentage", new RoyaltyTypePLPDetailsPanel(this));
+		tabbedPane.add("Delivery Costs", new DeliveryCostDetailsPanel(this));
+		tabbedPane.add("Currency", new CurrencyDetailsPanel(this));
+		tabbedPane.add("Country", new CountryDetailsPanel(this));
 		tabbedPane.setEnabled(false);
 		choicesPanel.add(tabbedPane, BorderLayout.CENTER);
 
@@ -122,7 +124,24 @@ public class NewImportFormatDialog extends JFrame implements ActionListener{
 			}
 		}
 		if (e.getSource() == bttnSave) {
-			//TODO
+			SalesFileFormat newFormat = null;
+			if (dateRowIndex == -1) {
+				newFormat = new SalesFileFormat(firstLineOfData, oldDateFormat, channel, dateRowIndex, dateColumnIndex, bookTitleSettings, 
+						bookAuthorSettings, bookIDSettings, netUnitsSoldSettings,
+						revenuesPLPSettings, priceSettings, royaltyTypePLPSettings,
+						deliveryCostSettings, currencySettings,countrySettings);
+			} else {
+				newFormat = new SalesFileFormat(firstLineOfData, oldDateFormat, channel, bookTitleSettings, 
+						bookAuthorSettings, bookIDSettings, netUnitsSoldSettings,
+						revenuesPLPSettings, priceSettings, royaltyTypePLPSettings,
+						deliveryCostSettings, dateSettings, currencySettings,countrySettings);
+			}
+			if (monthsFromDate != 0) {
+				newFormat.setMonthsFromDate(monthsFromDate);
+			}
+			
+			//TODO finish (values separated by + importing file with this format now... and adding the salesfileformat to the channel
+			
 		}
 		//TODO make sure to activate and deactivate buttons when appropriate
 	}
