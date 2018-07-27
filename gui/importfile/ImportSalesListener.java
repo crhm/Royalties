@@ -7,6 +7,7 @@ import java.io.File;
 import javax.swing.JFileChooser;
 import javax.swing.JOptionPane;
 import javax.swing.event.ChangeEvent;
+import javax.swing.filechooser.FileFilter;
 
 import gui.RoyaltiesApp;
 import importing.ImportFactory;
@@ -34,6 +35,7 @@ public class ImportSalesListener implements ActionListener{
 	@Override
 	public void actionPerformed(ActionEvent e) {
 		fc.setMultiSelectionEnabled(true);
+		fc.setFileFilter(new CustomFileFilter());
 
 		int returnVal = fc.showOpenDialog(null);
 
@@ -56,4 +58,26 @@ public class ImportSalesListener implements ActionListener{
 		}
 	}
 
+}
+
+class CustomFileFilter extends FileFilter{
+
+	@Override
+	public boolean accept(File f) {
+		if (f.isDirectory()) {
+			return true;
+		}
+		Boolean isCorrectFileExtension = false;
+        String s = f.getName();
+        if (s.endsWith(".csv") || s.endsWith(".txt")) {
+        	isCorrectFileExtension = true;
+        }
+		return isCorrectFileExtension;
+	}
+
+	@Override
+	public String getDescription() {
+		return "Only csv and txt files";
+	}
+	
 }

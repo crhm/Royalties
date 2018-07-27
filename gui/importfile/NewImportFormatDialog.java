@@ -53,10 +53,9 @@ public class NewImportFormatDialog extends JFrame implements ActionListener{
 
 	public NewImportFormatDialog(String filePath) {
 		this.filePath = filePath;
-
 		setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
 		setExtendedState(JFrame.MAXIMIZED_BOTH);
-		setTitle("Unrecognised File Format");
+		setTitle("New File Format");
 		getContentPane().setLayout(new GridLayout(2, 1, 0, 0));
 
 		scrollPaneCSV = new JScrollPane();
