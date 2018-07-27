@@ -92,8 +92,8 @@ public class ObjectToImport {
 	}
 
 	/**
-	 * @param defaultValue the defaultValue to set
 	 * @param defaultValueCondition the defaultValueCondition to set
+	 * @param defaultValue the defaultValue to set
 	 */
 	public void setConditionAndDefaultValue(String defaultValueCondition, String defaultValue) {
 		this.defaultValue = defaultValue;
