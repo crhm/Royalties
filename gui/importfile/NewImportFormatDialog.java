@@ -80,6 +80,7 @@ public class NewImportFormatDialog extends JFrame implements ActionListener{
 		nextPanel.add(bttnNext);
 
 		bttnSave = new JButton("Save");
+		bttnSave.addActionListener(this);
 		bttnSave.setEnabled(false);
 		nextPanel.add(bttnSave);
 
@@ -132,7 +133,7 @@ public class NewImportFormatDialog extends JFrame implements ActionListener{
 				currentPanel.saveUserInput();
 			}
 			SalesFileFormat newFormat = null;
-			if (dateRowIndex == -1) {
+			if (dateRowIndex != -1) {
 				newFormat = new SalesFileFormat(firstLineOfData, oldDateFormat, channel, dateRowIndex, dateColumnIndex, bookTitleSettings, 
 						bookAuthorSettings, bookIDSettings, netUnitsSoldSettings,
 						revenuesPLPSettings, priceSettings, royaltyTypePLPSettings,
@@ -149,7 +150,6 @@ public class NewImportFormatDialog extends JFrame implements ActionListener{
 			channel.addSalesFileFormat(newFormat);
 			this.dispose();
 			ImportFactory.ImportSales(filePath);
-			//TODO finish (values separated by + importing file with this format now... and adding the salesfileformat to the channel
 		}
 	}
 

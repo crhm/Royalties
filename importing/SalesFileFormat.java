@@ -3,6 +3,7 @@ package importing;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.ParseException;
@@ -17,10 +18,11 @@ import main.ObjectFactory;
 import main.Person;
 import main.SalesHistory;
 
-public class SalesFileFormat {
+public class SalesFileFormat implements Serializable{
 
 	//TODO figure out what to do with all potential parsing errors for doubles and dates and currencies etc...
 
+	private static final long serialVersionUID = -7080780186388290248L;
 	private String valuesSeparatedBy = ",(?=([^\"]*\"[^\"]*\")*[^\"]*$)"; //commas, except those in quotation marks
 	private int firstLineOfData;
 	private int minLengthOfLine = 15;

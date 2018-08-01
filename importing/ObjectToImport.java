@@ -1,5 +1,7 @@
 package importing;
 
+import java.io.Serializable;
+
 /**Class destined to hold the details of where to locate, and how to process, a certain string that stands for an object 
  * needing to be plugged into a sale. 
  * <br>The type of operations it can remember to perform on such a string are:
@@ -10,8 +12,9 @@ package importing;
  * @author crhm
  *
  */
-public class ObjectToImport {
+public class ObjectToImport implements Serializable {
 
+	private static final long serialVersionUID = 4760001939967102223L;
 	private Boolean shouldRemoveQuoteMarks = false;
 	private int columnIndex;
 	private Boolean removeFirstCharacter = false;
