@@ -139,8 +139,13 @@ public class SalesPanel extends JPanel implements ActionListener, TableColumnMod
 			data[rowCounter][6] = s.getRevenuesPLP();;
 			data[rowCounter][7] = s.getCurrency();
 			if (s.getChannel().getName().equals("Amazon") || s.getChannel().getName().equals("Apple")) {
-				data[rowCounter][8] = s.getChannel().getHistoricalForex().get(s.getDate()).get(s.getCurrency().getCurrencyCode());
-				data[rowCounter][9] = s.getRevenuesPLP() * (Double) data[rowCounter][8];
+				try {
+					data[rowCounter][8] = s.getChannel().getHistoricalForex().get(s.getDate()).get(s.getCurrency().getCurrencyCode());
+					data[rowCounter][9] = s.getRevenuesPLP() * (Double) data[rowCounter][8];
+				} catch (Exception e) { //TODO fix this mess properly and not like this (when the hist forex hasn't been imported)
+					data[rowCounter][8] = null;
+					data[rowCounter][9] = null;
+				}
 			} else {
 				data[rowCounter][8] = 1.00;
 				data[rowCounter][9] = s.getRevenuesPLP();

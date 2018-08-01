@@ -27,7 +27,6 @@ public class NewImportFormatDialog extends JFrame implements ActionListener{
 	private JButton bttnNext;
 	private JScrollPane scrollPaneCSV;
 	private JPanel choicesPanel;
-	private JPanel detailsPanel;
 	private JTabbedPane tabbedPane;
 
 	private String valuesSeparatedBy = ",(?=([^\"]*\"[^\"]*\")*[^\"]*$)"; //commas, except those in quotation marks
@@ -131,25 +130,28 @@ public class NewImportFormatDialog extends JFrame implements ActionListener{
 			Boolean canSave = currentPanel.validateUserInput();
 			if (canSave) {
 				currentPanel.saveUserInput();
-			}
-			SalesFileFormat newFormat = null;
-			if (dateRowIndex != -1) {
-				newFormat = new SalesFileFormat(firstLineOfData, oldDateFormat, channel, dateRowIndex, dateColumnIndex, bookTitleSettings, 
-						bookAuthorSettings, bookIDSettings, netUnitsSoldSettings,
-						revenuesPLPSettings, priceSettings, royaltyTypePLPSettings,
-						deliveryCostSettings, currencySettings,countrySettings);
+				SalesFileFormat newFormat = null;
+				if (dateRowIndex != -1) {
+					newFormat = new SalesFileFormat(firstLineOfData, oldDateFormat, channel, dateRowIndex, dateColumnIndex, bookTitleSettings, 
+							bookAuthorSettings, bookIDSettings, netUnitsSoldSettings,
+							revenuesPLPSettings, priceSettings, royaltyTypePLPSettings,
+							deliveryCostSettings, currencySettings,countrySettings);
+				} else {
+					newFormat = new SalesFileFormat(firstLineOfData, oldDateFormat, channel, bookTitleSettings, 
+							bookAuthorSettings, bookIDSettings, netUnitsSoldSettings,
+							revenuesPLPSettings, priceSettings, royaltyTypePLPSettings,
+							deliveryCostSettings, dateSettings, currencySettings,countrySettings);
+				}
+				if (monthsFromDate != 0) {
+					newFormat.setMonthsFromDate(monthsFromDate);
+				}
+				channel.addSalesFileFormat(newFormat);
+				this.dispose();
+				ImportFactory.ImportSales(filePath);
 			} else {
-				newFormat = new SalesFileFormat(firstLineOfData, oldDateFormat, channel, bookTitleSettings, 
-						bookAuthorSettings, bookIDSettings, netUnitsSoldSettings,
-						revenuesPLPSettings, priceSettings, royaltyTypePLPSettings,
-						deliveryCostSettings, dateSettings, currencySettings,countrySettings);
+				JOptionPane.showMessageDialog(this, "Sorry, you cannot proceed to the next step until all information"
+						+ " is filled in correctly for this stage.", "Incomplete or Incorrect Information", JOptionPane.ERROR_MESSAGE);
 			}
-			if (monthsFromDate != 0) {
-				newFormat.setMonthsFromDate(monthsFromDate);
-			}
-			channel.addSalesFileFormat(newFormat);
-			this.dispose();
-			ImportFactory.ImportSales(filePath);
 		}
 	}
 

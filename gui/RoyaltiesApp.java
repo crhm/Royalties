@@ -6,6 +6,7 @@ import javax.swing.JFrame;
 import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
+import javax.swing.JOptionPane;
 import javax.swing.JTabbedPane;
 import javax.swing.event.ChangeEvent;
 import javax.swing.event.ChangeListener;
@@ -73,7 +74,12 @@ public class RoyaltiesApp extends JFrame implements Runnable, ChangeListener {
 		this.addWindowListener(new java.awt.event.WindowAdapter() {
 			@Override
 			public void windowClosing(java.awt.event.WindowEvent windowEvent) {
-				SalesHistory.get().serialise();
+				int saveChanges = JOptionPane.showOptionDialog(null, "Do you want to save changes?", "Save changes?", 
+						JOptionPane.YES_NO_OPTION, JOptionPane.PLAIN_MESSAGE, null, null, null);
+				switch (saveChanges) {
+				case JOptionPane.YES_OPTION : SalesHistory.get().serialise(); break;
+				case JOptionPane.NO_OPTION : break;
+				}
 			}
 		});
 
@@ -115,7 +121,7 @@ public class RoyaltiesApp extends JFrame implements Runnable, ChangeListener {
 	 * @throws InterruptedException if a thread interrupts the import thread.
 	 */
 	private static void obtainData() throws InterruptedException {
-		File f = new File("/tmp/data40.ser");
+		File f = new File("/tmp/data42.ser");
 		if(f.exists() && !f.isDirectory()) { 
 			SalesHistory.get().deSerialise();
 		} else {
